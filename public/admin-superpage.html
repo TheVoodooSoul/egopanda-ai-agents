@@ -356,6 +356,14 @@
     </style>
 </head>
 <body>
+    <!-- Password Protection Check -->
+    <script>
+        // Check if user is authenticated
+        if (!sessionStorage.getItem('adminAuthorized')) {
+            // Redirect to admin login page
+            window.location.href = 'admin-login.html';
+        }
+    </script>
     <div class="admin-header">
         <div class="admin-title">🚀 EgoPanda Creative - Admin Command Center</div>
         <div class="admin-subtitle">Complete Business Control & Unlimited Agent Access | Last Updated: <span id="lastUpdate"></span></div>
@@ -539,6 +547,10 @@
                 <span class="metric-value">Excellent</span>
             </div>
             <div class="metric-row">
+                <span class="metric-label">GPT-5 API</span>
+                <span class="metric-value" id="apiStatus">Server-Side Configured ✓</span>
+            </div>
+            <div class="metric-row">
                 <span class="metric-label">Storage Used</span>
                 <span class="metric-value">Optimal</span>
             </div>
@@ -546,7 +558,13 @@
                 <span class="metric-label">Backup Status</span>
                 <span class="metric-value">Current</span>
             </div>
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 15px;">
+                <div style="padding: 10px; background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 8px; margin-bottom: 10px;">
+                    <div style="color: #4CAF50; font-weight: bold; margin-bottom: 5px;">✓ GPT-5 API Security Status</div>
+                    <div style="color: #cccccc; font-size: 13px;">GPT-5 API key is securely stored in server environment variables. No client-side configuration needed.</div>
+                </div>
+            </div>
+            <div style="margin-top: 15px;">
                 <button class="action-btn">System Settings</button>
                 <button class="action-btn">User Permissions</button>
                 <button class="action-btn secondary">Maintenance Mode</button>
@@ -804,7 +822,7 @@
             document.querySelector(`[onclick="selectAgent('${agentId}')"]`).style.background = 'rgba(255, 107, 53, 0.2)';
         }
 
-        function sendMessage() {
+        async function sendMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
             
@@ -820,30 +838,73 @@
                 </div>
             `;
             
-            // Simulate agent response
-            setTimeout(() => {
-                const responses = [
-                    `Absolutely! I'll get right on that for you. As your ${agent.specialty} specialist, this aligns perfectly with my current focus area.`,
-                    `Got it, Boss! I'm currently ${agent.mood.toLowerCase()}, so this is perfect timing. I'll prioritize this task immediately.`,
-                    `Understood! With my ${agent.happiness}% happiness level, I'm definitely up for this challenge. Let me dive in right away.`,
-                    `Perfect! This fits well with my current workload of ${agent.workload}%. I'll handle this with my usual attention to detail.`,
-                    `Excellent request! My ${agent.personality.toLowerCase()} approach will be perfect for this task.`
-                ];
+            // Show typing indicator
+            const typingIndicator = `
+                <div class="message agent typing" id="typing-indicator">
+                    <strong>${agent.name}:</strong> <span class="typing-dots">...</span>
+                </div>
+            `;
+            chatMessages.innerHTML += typingIndicator;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            try {
+                // Call real AI API
+                const response = await callAgentAI(selectedAgentName, message, agent);
                 
-                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                // Remove typing indicator
+                document.getElementById('typing-indicator').remove();
                 
+                // Add real AI response
                 chatMessages.innerHTML += `
                     <div class="message agent">
-                        <strong>${agent.name}:</strong> ${randomResponse}
+                        <strong>${agent.name}:</strong> ${response}
                     </div>
                 `;
                 
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 1000);
+            } catch (error) {
+                // Remove typing indicator
+                document.getElementById('typing-indicator')?.remove();
+                
+                // Show error message
+                chatMessages.innerHTML += `
+                    <div class="message agent" style="color: #ff6b35;">
+                        <strong>${agent.name}:</strong> I'm having trouble connecting to my AI systems right now. Please check the API configuration or try again in a moment.
+                    </div>
+                `;
+            }
             
             input.value = '';
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
+        
+        async function callAgentAI(agentId, userMessage, agentProfile) {
+            // Call our secure API endpoint instead of OpenAI directly
+            const response = await fetch('/api/chat-agent.js', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    agentId: agentId,
+                    message: userMessage,
+                    agentProfile: agentProfile
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `API call failed: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.error || 'AI response failed');
+            }
+            
+            return data.response;
+        }
+        
+        // GPT-5 API key is now managed server-side - no client configuration needed
 
         function quickAction(action) {
             if (!selectedAgentName) {
@@ -901,6 +962,8 @@
                 sendMessage();
             }
         });
+
+        // API status is now managed server-side - no client configuration needed
 
         // Auto-update timestamp every minute
         setInterval(() => {
