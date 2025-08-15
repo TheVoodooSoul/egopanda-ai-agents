@@ -85,6 +85,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            margin-left: 10px;
         }
 
         .login-link:hover {
@@ -92,6 +93,18 @@
             border-color: #00ff88;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 255, 136, 0.2);
+        }
+
+        .sign-up-btn {
+            background: linear-gradient(45deg, #00ff88, #4ecdc4) !important;
+            color: #000 !important;
+            border-color: #00ff88 !important;
+        }
+
+        .sign-up-btn:hover {
+            background: linear-gradient(45deg, #4ecdc4, #00ff88) !important;
+            color: #000 !important;
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4) !important;
         }
 
         .hero-content {
@@ -518,8 +531,11 @@
         
         <!-- Top Navigation -->
         <div class="top-nav">
-            <a href="login.html" class="login-link">
-                👤 Customer Login
+            <a href="login.html" class="login-link sign-in-btn">
+                👤 Sign In
+            </a>
+            <a href="signup.html" class="login-link sign-up-btn">
+                🚀 Sign Up
             </a>
         </div>
         

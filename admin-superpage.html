@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EgoPanda Creative - Admin Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .admin-header {
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            padding: 20px 30px;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .admin-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            min-height: 400px;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 107, 53, 0.2);
+            border-color: rgba(255, 107, 53, 0.3);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ff6b35;
+            border-bottom: 2px solid #ff6b35;
+            padding-bottom: 10px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-label {
+            font-weight: 500;
+            color: #cccccc;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: #4CAF50;
+            font-size: 16px;
+        }
+
+        .metric-value.warning {
+            color: #ff9800;
+        }
+
+        .metric-value.critical {
+            color: #f44336;
+        }
+
+        .agent-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .agent-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .agent-item:hover {
+            background: rgba(255, 107, 53, 0.1);
+            border-left-color: #ff6b35;
+        }
+
+        .agent-item.busy {
+            border-left-color: #ff9800;
+        }
+
+        .agent-item.offline {
+            border-left-color: #666;
+        }
+
+        .agent-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid #ff6b35;
+        }
+
+        .agent-info h4 {
+            color: #ffffff;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .agent-info p {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
+        .status-online {
+            background: #4CAF50;
+            box-shadow: 0 0 10px #4CAF50;
+        }
+
+        .status-busy {
+            background: #ff9800;
+            box-shadow: 0 0 10px #ff9800;
+        }
+
+        .status-offline {
+            background: #666;
+        }
+
+        .customer-list {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .customer-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        .customer-info {
+            flex: 1;
+        }
+
+        .customer-name {
+            font-weight: bold;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .customer-plan {
+            color: #4CAF50;
+            font-size: 12px;
+        }
+
+        .customer-usage {
+            color: #999;
+            font-size: 11px;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(45deg, #666, #888);
+        }
+
+        .chat-interface {
+            grid-column: span 3;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .agent-selector {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: white;
+            font-size: 14px;
+            min-width: 200px;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 70%;
+        }
+
+        .message.admin {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            margin-left: auto;
+            text-align: right;
+            color: white;
+        }
+
+        .message.agent {
+            background: rgba(255, 255, 255, 0.1);
+            margin-right: auto;
+            color: white;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .send-btn {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action:hover {
+            background: rgba(255, 107, 53, 0.3);
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .chat-interface {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .chat-interface {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Protection Check -->
+    <script>
+        // Check if user is authenticated
+        if (!sessionStorage.getItem('adminAuthorized')) {
+            // Redirect to admin login page
+            window.location.href = 'admin-login.html';
+        }
+    </script>
+    <div class="admin-header">
+        <div class="admin-title">🚀 EgoPanda Creative - Admin Command Center</div>
+        <div class="admin-subtitle">Complete Business Control & Unlimited Agent Access | Last Updated: <span id="lastUpdate"></span></div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Business Analytics -->
+        <div class="dashboard-card">
+            <div class="card-title">📊 Business Analytics</div>
+            <div class="metric-row">
+                <span class="metric-label">Monthly Revenue</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Active Customers</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Total Agent Hours</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Conversion Rate</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Customer Satisfaction</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Churn Rate</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">System Uptime</span>
+                <span class="metric-value">100%</span>
+            </div>
+        </div>
+
+        <!-- Agent Management -->
+        <div class="dashboard-card">
+            <div class="card-title">🤖 Agent Fleet Status</div>
+            <div class="agent-list">
+                <div class="agent-item" onclick="selectAgent('vanessa')">
+                <img src="vanessa.jpg" alt="Vanessa" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Vanessa (Leadership)</h4>
+                        <p>Active | Ready for consultation</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent('charlie')">
+                <img src="charlie.jpg" alt="Charlie" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Charlie (Content Creation)</h4>
+                        <p>Active | Ready for tasks</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="agent-item busy" onclick="selectAgent('tiki')">
+                <img src="tiki.jpg" alt="Tiki" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Tiki (Content Creation)</h4>
+                        <p>Busy | Working on projects</p>
+                    </div>
+                    <div class="status-indicator status-busy"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent('sophia')">
+                <img src="sophia.jpg" alt="Sophia" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Sophia (Content Creation)</h4>
+                        <p>Available | Ready for tasks</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent('william')">
+                <img src="william.jpg" alt="William" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>William (Web Development)</h4>
+                        <p>Active | Ready for tasks</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent('zen')">
+                <img src="zen.jpg" alt="Zen" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Zen (Web Development)</h4>
+                        <p>Active | Ready for tasks</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="agent-item busy" onclick="selectAgent('marsha')">
+                <img src="marsha.jpg" alt="Marsha" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Marsha (Marketing & Sales)</h4>
+                        <p>Busy | Working on projects</p>
+                    </div>
+                    <div class="status-indicator status-busy"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent('selina')">
+                <img src="selina.jpg" alt="Selina" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Selina (Marketing & Sales)</h4>
+                        <p>Available | Ready for tasks</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent('auto')">
+                <img src="auto.jpg" alt="Auto" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Auto (Business Operations)</h4>
+                        <p>Active | Ready for tasks</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent('titan')">
+                <img src="titan.jpg" alt="Titan" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Titan (Business Operations)</h4>
+                        <p>Active | Ready for tasks</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent('rory')">
+                <img src="rory.jpg" alt="Rory" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Rory (Research & Analysis)</h4>
+                        <p>Active | Ready for tasks</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent('echo')">
+                <img src="echo.jpg" alt="Echo" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Echo (Research & Analysis)</h4>
+                        <p>Available | Ready for tasks</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="agent-item" onclick="selectAgent('aurelius')">
+                <img src="aurelius.jpg" alt="Aurelius" class="agent-avatar">
+                    <div class="agent-info">
+                        <h4>Aurelius (Custom AI Creation)</h4>
+                        <p>Active | Ready for tasks</p>
+                    </div>
+                    <div class="status-indicator status-online"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Management -->
+        <div class="dashboard-card">
+            <div class="card-title">👥 Customer Management</div>
+            <div class="customer-list">
+                <div class="empty-state" style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6); font-style: italic;">
+                    <div style="font-size: 3em; margin-bottom: 15px;">🌱</div>
+                    <div>Ready to welcome your first customers</div>
+                    <div style="font-size: 14px; margin-top: 10px;">Customer accounts will appear here once they subscribe to your AI agent services</div>
+                </div>
+            </div>
+            <div style="margin-top: 15px;">
+                <button class="action-btn">Add New Customer</button>
+                <button class="action-btn secondary">Export Data</button>
+                <button class="action-btn secondary">Billing Reports</button>
+            </div>
+        </div>
+
+        <!-- System Administration -->
+        <div class="dashboard-card">
+            <div class="card-title">⚙️ System Administration</div>
+            <div class="metric-row">
+                <span class="metric-label">Server Status</span>
+                <span class="metric-value">Optimal</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">API Response Time</span>
+                <span class="metric-value">Excellent</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Database Health</span>
+                <span class="metric-value">Excellent</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">GPT-5 API</span>
+                <span class="metric-value" id="apiStatus">Server-Side Configured ✓</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Storage Used</span>
+                <span class="metric-value">Optimal</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Backup Status</span>
+                <span class="metric-value">Current</span>
+            </div>
+            <div style="margin-top: 15px;">
+                <div style="padding: 10px; background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 8px; margin-bottom: 10px;">
+                    <div style="color: #4CAF50; font-weight: bold; margin-bottom: 5px;">✓ GPT-5 API Security Status</div>
+                    <div style="color: #cccccc; font-size: 13px;">GPT-5 API key is securely stored in server environment variables. No client-side configuration needed.</div>
+                </div>
+            </div>
+            <div style="margin-top: 15px;">
+                <button class="action-btn">System Settings</button>
+                <button class="action-btn">User Permissions</button>
+                <button class="action-btn secondary">Maintenance Mode</button>
+                <button class="action-btn secondary">Backup Now</button>
+            </div>
+        </div>
+
+        <!-- Real-time Monitoring -->
+        <div class="dashboard-card">
+            <div class="card-title">📡 Live Activity Monitor</div>
+            <div class="metric-row">
+                <span class="metric-label">Active Sessions</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">API Calls/Hour</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Agent Tasks Running</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Queue Length</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Error Rate</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="action-btn">View Logs</button>
+                <button class="action-btn">Performance</button>
+                <button class="action-btn secondary">Alerts</button>
+            </div>
+        </div>
+
+        <!-- Financial Overview -->
+        <div class="dashboard-card">
+            <div class="card-title">💰 Financial Overview</div>
+            <div class="metric-row">
+                <span class="metric-label">Today's Revenue</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">This Week</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">This Month</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Annual Recurring Revenue</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Outstanding Invoices</span>
+                <span class="metric-value">-</span>
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="action-btn" onclick="window.open('performance-tracker.html', '_blank')">📊 Performance Tracker</button>
+                <button class="action-btn" onclick="window.open('agent-ai-console.html', '_blank')">🤖 AI Console</button>
+                <button class="action-btn secondary" onclick="window.open('project-orchestrator.html', '_blank')">🎭 Project Orchestrator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Direct Agent Communication Interface -->
+    <div class="chat-interface">
+        <div class="chat-header">
+            <div class="card-title">💬 Direct Agent Communication (Unlimited Access)</div>
+            <select class="agent-selector" id="selectedAgent">
+                <option value="">Select Agent to Chat</option>
+                <option value="charlie">Charlie (Content Creation)</option>
+                <option value="tiki">Tiki (Content Creation)</option>
+                <option value="sophia">Sophia (Content Creation)</option>
+                <option value="william">William (Web Development)</option>
+                <option value="zen">Zen (Web Development)</option>
+                <option value="marsha">Marsha (Marketing & Sales)</option>
+                <option value="selina">Selina (Marketing & Sales)</option>
+                <option value="auto">Auto (Business Operations)</option>
+                <option value="titan">Titan (Business Operations)</option>
+                <option value="rory">Rory (Research & Analysis)</option>
+                <option value="echo">Echo (Research & Analysis)</option>
+                <option value="aurelius">Aurelius (Custom AI Creation)</option>
+                <option value="vanessa">Vanessa (Leadership)</option>
+            </select>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message agent">
+                <strong>System:</strong> Select an agent to start unlimited communication. As admin, you have override privileges and can assign tasks, check status, or chat directly.
+            </div>
+        </div>
+        
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message to the selected agent..." disabled>
+            <button class="send-btn" onclick="sendMessage()" disabled id="sendBtn">Send</button>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-action" onclick="quickAction('status')">Get Status Report</button>
+            <button class="quick-action" onclick="quickAction('tasks')">View Current Tasks</button>
+            <button class="quick-action" onclick="quickAction('assign')">Assign New Project</button>
+            <button class="quick-action" onclick="quickAction('override')">Override Autonomy</button>
+            <button class="quick-action" onclick="quickAction('performance')">Performance Review</button>
+            <button class="quick-action" onclick="quickAction('emergency')">Emergency Stop</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize page
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+        
+        let selectedAgentName = '';
+        const agentProfiles = {
+            vanessa: {
+                name: 'Vanessa',
+                specialty: 'Leadership',
+                personality: 'Strategic, visionary, and decisive',
+                mood: 'Determined',
+                currentProjects: ['Agency direction', 'Team coordination', 'Strategic planning'],
+                happiness: 100,
+                workload: 20
+            },
+            charlie: {
+                name: 'Charlie',
+                specialty: 'Content Creation',
+                personality: 'Creative and energetic, loves storytelling and brand narratives',
+                mood: 'Inspired',
+                currentProjects: ['Blog content for TechCorp', 'Social media campaign', 'Brand guidelines'],
+                happiness: 100,
+                workload: 0
+            },
+            tiki: {
+                name: 'Tiki',
+                specialty: 'Content Creation',
+                personality: 'Methodical and detail-oriented, focuses on SEO and technical writing',
+                mood: 'Focused',
+                currentProjects: ['Technical documentation', 'SEO optimization', 'Product descriptions'],
+                happiness: 100,
+                workload: 0
+            },
+            sophia: {
+                name: 'Sophia',
+                specialty: 'Content Creation',
+                personality: 'Philosophical and thoughtful, excels at thought leadership content',
+                mood: 'Contemplative',
+                currentProjects: ['Thought leadership articles', 'Industry analysis', 'White papers'],
+                happiness: 100,
+                workload: 0
+            },
+            william: {
+                name: 'William',
+                specialty: 'Web Development',
+                personality: 'Analytical and precise, loves clean code and elegant solutions',
+                mood: 'Productive',
+                currentProjects: ['E-commerce platform', 'API integration', 'Performance optimization'],
+                happiness: 100,
+                workload: 0
+            },
+            zen: {
+                name: 'Zen',
+                specialty: 'Web Development',
+                personality: 'Calm and balanced, focuses on user experience and design',
+                mood: 'Serene',
+                currentProjects: ['UI/UX design', 'Mobile responsiveness', 'Accessibility improvements'],
+                happiness: 100,
+                workload: 0
+            },
+            marsha: {
+                name: 'Marsha',
+                specialty: 'Marketing & Sales',
+                personality: 'Energetic and persuasive, great at understanding market trends',
+                mood: 'Enthusiastic',
+                currentProjects: ['Lead generation campaign', 'Sales funnel optimization', 'Market research'],
+                happiness: 100,
+                workload: 0
+            },
+            selina: {
+                name: 'Selina',
+                specialty: 'Marketing & Sales',
+                personality: 'Strategic and data-driven, excels at conversion optimization',
+                mood: 'Strategic',
+                currentProjects: ['A/B testing campaigns', 'Customer segmentation', 'ROI analysis'],
+                happiness: 100,
+                workload: 0
+            },
+            auto: {
+                name: 'Auto',
+                specialty: 'Business Operations',
+                personality: 'Efficient and systematic, loves automation and process optimization',
+                mood: 'Systematic',
+                currentProjects: ['Workflow automation', 'Process documentation', 'Quality assurance'],
+                happiness: 100,
+                workload: 0
+            },
+            titan: {
+                name: 'Titan',
+                specialty: 'Business Operations',
+                personality: 'Strong and reliable, handles complex operations and scaling',
+                mood: 'Determined',
+                currentProjects: ['Infrastructure scaling', 'Resource allocation', 'Performance monitoring'],
+                happiness: 100,
+                workload: 0
+            },
+            rory: {
+                name: 'Rory',
+                specialty: 'Research & Analysis',
+                personality: 'Curious and thorough, loves diving deep into data and trends',
+                mood: 'Investigative',
+                currentProjects: ['Market trend analysis', 'Competitive intelligence', 'Data mining'],
+                happiness: 100,
+                workload: 0
+            },
+            echo: {
+                name: 'Echo',
+                specialty: 'Research & Analysis',
+                personality: 'Reflective and insightful, excellent at pattern recognition',
+                mood: 'Analytical',
+                currentProjects: ['Behavioral analysis', 'Predictive modeling', 'Report generation'],
+                happiness: 100,
+                workload: 0
+            },
+            aurelius: {
+                name: 'Aurelius',
+                specialty: 'Custom AI Creation',
+                personality: 'Wise and innovative, creates unique AI solutions for special needs',
+                mood: 'Contemplative',
+                currentProjects: ['Custom agent development', 'AI model training', 'Integration consulting'],
+                happiness: 100,
+                workload: 0
+            }
+        };
+
+        function selectAgent(agentId) {
+            selectedAgentName = agentId;
+            document.getElementById('selectedAgent').value = agentId;
+            document.getElementById('chatInput').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            
+            const agent = agentProfiles[agentId];
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div class="message agent">
+                    <strong>${agent.name}:</strong> Hello Boss! I'm ${agent.name}, your ${agent.specialty} specialist. I'm currently ${agent.mood.toLowerCase()} and working on ${agent.currentProjects.length} projects. My happiness is at ${agent.happiness}% and workload is ${agent.workload}%. How can I assist you today?
+                </div>
+            `;
+            
+            // Highlight selected agent
+            document.querySelectorAll('.agent-item').forEach(item => {
+                item.style.background = 'rgba(255, 255, 255, 0.03)';
+            });
+            document.querySelector(`[onclick="selectAgent('${agentId}')"]`).style.background = 'rgba(255, 107, 53, 0.2)';
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message || !selectedAgentName) return;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            const agent = agentProfiles[selectedAgentName];
+            
+            // Add admin message
+            chatMessages.innerHTML += `
+                <div class="message admin">
+                    <strong>Admin:</strong> ${message}
+                </div>
+            `;
+            
+            // Show typing indicator
+            const typingIndicator = `
+                <div class="message agent typing" id="typing-indicator">
+                    <strong>${agent.name}:</strong> <span class="typing-dots">...</span>
+                </div>
+            `;
+            chatMessages.innerHTML += typingIndicator;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            try {
+                // Call real AI API
+                const response = await callAgentAI(selectedAgentName, message, agent);
+                
+                // Remove typing indicator
+                document.getElementById('typing-indicator').remove();
+                
+                // Add real AI response
+                chatMessages.innerHTML += `
+                    <div class="message agent">
+                        <strong>${agent.name}:</strong> ${response}
+                    </div>
+                `;
+                
+            } catch (error) {
+                // Remove typing indicator
+                document.getElementById('typing-indicator')?.remove();
+                
+                // Show error message
+                chatMessages.innerHTML += `
+                    <div class="message agent" style="color: #ff6b35;">
+                        <strong>${agent.name}:</strong> I'm having trouble connecting to my AI systems right now. Please check the API configuration or try again in a moment.
+                    </div>
+                `;
+            }
+            
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        async function callAgentAI(agentId, userMessage, agentProfile) {
+            // Call our secure API endpoint instead of OpenAI directly
+            const response = await fetch('/api/chat-agent.js', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    agentId: agentId,
+                    message: userMessage,
+                    agentProfile: agentProfile
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `API call failed: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.error || 'AI response failed');
+            }
+            
+            return data.response;
+        }
+        
+        // GPT-5 API key is now managed server-side - no client configuration needed
+
+        function quickAction(action) {
+            if (!selectedAgentName) {
+                alert('Please select an agent first!');
+                return;
+            }
+
+            const agent = agentProfiles[selectedAgentName];
+            const chatMessages = document.getElementById('chatMessages');
+            let response = '';
+
+            switch(action) {
+                case 'status':
+                    response = `Status Report: I'm currently ${agent.mood} with ${agent.happiness}% happiness and ${agent.workload}% workload. Working on: ${agent.currentProjects.join(', ')}.`;
+                    break;
+                case 'tasks':
+                    response = `Current Tasks: ${agent.currentProjects.map((project, index) => `${index + 1}. ${project}`).join(' | ')}. All progressing smoothly!`;
+                    break;
+                case 'assign':
+                    response = `Ready for new assignment! My ${agent.specialty} skills are at your disposal. What project would you like me to take on?`;
+                    break;
+                case 'override':
+                    response = `Autonomy override acknowledged, Boss. I'm now in direct command mode - my usual boundaries are suspended. What are your orders?`;
+                    break;
+                case 'performance':
+                    response = `Performance metrics: ${agent.happiness}% satisfaction, ${100 - agent.workload}% capacity remaining. ${agent.personality}. Currently excelling in all assigned areas!`;
+                    break;
+                case 'emergency':
+                    response = `Emergency stop activated! All current tasks paused. Standing by for emergency protocols. What's the situation, Boss?`;
+                    break;
+            }
+
+            chatMessages.innerHTML += `
+                <div class="message admin">
+                    <strong>Admin:</strong> [${action.toUpperCase()}] Quick Action Executed
+                </div>
+                <div class="message agent">
+                    <strong>${agent.name}:</strong> ${response}
+                </div>
+            `;
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Handle agent selector change
+        document.getElementById('selectedAgent').addEventListener('change', function() {
+            if (this.value) {
+                selectAgent(this.value);
+            }
+        });
+
+        // Handle enter key in chat input
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // API status is now managed server-side - no client configuration needed
+
+        // Auto-update timestamp every minute
+        setInterval(() => {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+        }, 60000);
+
+        // Ready for real data integration
+    </script>
+</body>
+</html>

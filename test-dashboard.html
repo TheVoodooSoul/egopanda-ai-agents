@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EgoPanda Creative - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .top-nav {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .nav-logo {
+            color: #00ff88;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .tier-selector {
+            background: rgba(255, 217, 61, 0.1);
+            border: 1px solid #ffd93d;
+            border-radius: 20px;
+            padding: 5px 15px;
+            color: #ffd93d;
+            font-size: 12px;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .subscription-info {
+            background: rgba(255, 217, 61, 0.1);
+            border: 2px solid #ffd93d;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .tier-name {
+            color: #ffd93d;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tier-details {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+
+        .tier-stat {
+            text-align: center;
+        }
+
+        .tier-stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
+
+        .tier-stat-value {
+            color: #ffd93d;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .agent-card {
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card.available {
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .agent-card.available:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+        }
+
+        .agent-card.blocked {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.6;
+        }
+
+        .agent-card.blocked::before {
+            content: '🔒';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 20px;
+        }
+
+        .card-icon {
+            font-size: 4em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .available .card-title {
+            color: #00ff88;
+        }
+
+        .blocked .card-title {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .card-role {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .available .card-role {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .blocked .card-role {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .start-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .available .start-button {
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            color: #000;
+        }
+
+        .available .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.4);
+        }
+
+        .blocked .start-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+        }
+
+        .upgrade-message {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #ffa500;
+        }
+
+        .upgrade-button {
+            background: linear-gradient(45deg, #ffa500, #ff8c00);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .tier-demo-controls {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #ffd93d;
+            z-index: 1000;
+        }
+
+        .demo-title {
+            color: #ffd93d;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .tier-button {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tier-button.starter {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .tier-button.professional {
+            background: linear-gradient(45deg, #4ecdc4, #45b7aa);
+            color: white;
+        }
+
+        .tier-button.enterprise {
+            background: linear-gradient(45deg, #ffd93d, #f39c12);
+            color: black;
+        }
+
+        @media (max-width: 768px) {
+            .tier-demo-controls {
+                position: relative;
+                right: auto;
+                top: auto;
+                margin: 20px;
+            }
+        }
+    </style>
+    <script src="js/access-control.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="top-nav">
+        <a href="index.html" class="nav-logo">🐼 EgoPanda Creative</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <span class="tier-selector" id="currentTierDisplay">Loading...</span>
+            <a href="login.html" class="nav-link">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-title" id="welcomeTitle">Welcome to Your AI Agent Team</div>
+        <div class="header-subtitle" id="welcomeSubtitle">Access your authorized agents based on your subscription</div>
+    </div>
+
+    <!-- Subscription Info -->
+    <div class="subscription-info">
+        <div class="tier-name" id="tierName">Loading...</div>
+        <div class="tier-details">
+            <div class="tier-stat">
+                <div class="tier-stat-label">Monthly Price</div>
+                <div class="tier-stat-value" id="tierPrice">$0</div>
+            </div>
+            <div class="tier-stat">
+                <div class="tier-stat-label">Available Agents</div>
+                <div class="tier-stat-value" id="availableAgents">0</div>
+            </div>
+            <div class="tier-stat">
+                <div class="tier-stat-label">Projects Remaining</div>
+                <div class="tier-stat-value" id="projectsRemaining">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demo Controls (Remove in production) -->
+    <div class="tier-demo-controls">
+        <div class="demo-title">🚀 Demo: Switch Tiers</div>
+        <button class="tier-button starter" onclick="switchTier('STARTER')">Starter ($50)</button>
+        <button class="tier-button professional" onclick="switchTier('PROFESSIONAL')">Professional ($150)</button>
+        <button class="tier-button enterprise" onclick="switchTier('ENTERPRISE')">Enterprise ($300)</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container" id="agentGrid">
+        <!-- Agents will be populated by JavaScript -->
+    </div>
+
+    <script>
+        let accessControl;
+
+        function initializeDashboard() {
+            accessControl = new AccessControl();
+            updateUI();
+        }
+
+        function updateUI() {
+            const report = accessControl.generateAccessReport();
+            
+            // Update subscription info
+            document.getElementById('currentTierDisplay').textContent = `${report.subscription.name} Plan`;
+            document.getElementById('tierName').textContent = `${report.subscription.name} Plan - $${report.subscription.price}/month`;
+            document.getElementById('tierPrice').textContent = `$${report.subscription.price}`;
+            document.getElementById('availableAgents').textContent = `${report.access.available.length}/${report.subscription.agents}`;
+            document.getElementById('projectsRemaining').textContent = report.access.projectsRemaining;
+
+            // Update welcome message
+            document.getElementById('welcomeTitle').textContent = `Welcome to Your ${report.subscription.name} Dashboard`;
+            document.getElementById('welcomeSubtitle').textContent = `You have access to ${report.access.available.length} specialized AI agents`;
+
+            // Populate agent grid
+            populateAgentGrid(report.access.available, report.access.blocked);
+        }
+
+        function populateAgentGrid(availableAgents, blockedAgents) {
+            const grid = document.getElementById('agentGrid');
+            grid.innerHTML = '';
+
+            // Add available agents first
+            availableAgents.forEach(agent => {
+                const card = createAgentCard(agent, true);
+                grid.appendChild(card);
+            });
+
+            // Add blocked agents (showing what they're missing)
+            blockedAgents.slice(0, 6).forEach(agent => { // Show first 6 blocked agents
+                const card = createAgentCard(agent, false);
+                grid.appendChild(card);
+            });
+        }
+
+        function createAgentCard(agent, available) {
+            const card = document.createElement('div');
+            card.className = `agent-card ${available ? 'available' : 'blocked'}`;
+            
+            const icon = getAgentIcon(agent.category);
+            const upgradeMsg = available ? '' : accessControl.getUpgradeMessage(agent.id);
+            
+            card.innerHTML = `
+                <div class="card-icon">${icon}</div>
+                <div class="card-title">${agent.name}</div>
+                <div class="card-role">${agent.role}</div>
+                <button class="start-button" onclick="${available ? `startAgent('${agent.id}')` : `showUpgrade('${agent.id}')`}">
+                    ${available ? `Chat with ${agent.name}` : '🔒 Upgrade Required'}
+                </button>
+                ${!available ? `
+                    <div class="upgrade-message">
+                        ${upgradeMsg.message}
+                        <br>
+                        <button class="upgrade-button" onclick="showUpgradeOptions('${agent.id}')">
+                            Upgrade Now
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+            
+            return card;
+        }
+
+        function getAgentIcon(category) {
+            const icons = {
+                'content': '✍️',
+                'development': '💻',
+                'marketing': '📈',
+                'operations': '⚙️',
+                'research': '📊',
+                'management': '👑',
+                'design': '🎨',
+                'creation': '🤖',
+                'strategy': '🎯',
+                'guidance': '🧙‍♂️',
+                'transformation': '🔄',
+                'technical': '🛠️'
+            };
+            return icons[category] || '🤖';
+        }
+
+        function startAgent(agentId) {
+            if (!accessControl.hasAgentAccess(agentId)) {
+                showUpgrade(agentId);
+                return;
+            }
+
+            try {
+                accessControl.startProject();
+                // Redirect to agent chat or project orchestrator
+                window.open(`project-orchestrator.html?agent=${agentId}`, '_blank');
+            } catch (error) {
+                alert(`Project limit reached! ${error.message}\n\nUpgrade your plan to start more projects.`);
+            }
+        }
+
+        function showUpgrade(agentId) {
+            const upgradeMsg = accessControl.getUpgradeMessage(agentId);
+            alert(`🔒 ${upgradeMsg.message}\n\nCurrent Plan: ${upgradeMsg.currentTier} ($${upgradeMsg.currentPrice}/month)\nRequired Plan: ${upgradeMsg.requiredTier} ($${upgradeMsg.requiredPrice}/month)\n\nUpgrade to unlock ${AGENT_DETAILS[agentId].name}!`);
+        }
+
+        function showUpgradeOptions(agentId) {
+            const upgradeMsg = accessControl.getUpgradeMessage(agentId);
+            if (confirm(`Upgrade to ${upgradeMsg.requiredTier} for $${upgradeMsg.requiredPrice}/month?\n\nThis will unlock ${AGENT_DETAILS[agentId].name} and other premium features.`)) {
+                // In production, redirect to payment page
+                alert('🚀 Redirecting to upgrade page...\n\nIn production, this would take you to secure payment processing.');
+            }
+        }
+
+        function switchTier(tierName) {
+            accessControl.setUserTier(tierName);
+            updateUI();
+        }
+
+        // Listen for tier updates
+        window.addEventListener('tierUpdated', function(event) {
+            updateUI();
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+
+        console.log('🐼 EgoPanda Creative Tiered Dashboard Loaded');
+        console.log('🔒 Access control system active');
+    </script>
+</body>
+</html>

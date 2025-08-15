@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join EgoPanda Creative - AI Agent Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('treehouseoffice.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(10, 50, 20, 0.7) 0%, 
+                rgba(20, 80, 40, 0.6) 30%,
+                rgba(40, 120, 60, 0.5) 70%,
+                rgba(0, 0, 0, 0.8) 100%);
+            z-index: 1;
+        }
+
+        .signup-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            border: 2px solid rgba(0, 255, 136, 0.2);
+            padding: 50px;
+            width: 100%;
+            max-width: 650px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+            margin: 20px;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .signup-title {
+            text-align: center;
+            font-size: 2.8em;
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .signup-subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 40px;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 20px;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            color: #ffd93d;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .checkbox-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .checkbox-item:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .checkbox-item.selected {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.15);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkbox-item .icon {
+            font-size: 2em;
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-item .title {
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .checkbox-item .description {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .next-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            border: none;
+            border-radius: 15px;
+            color: #000;
+            font-weight: bold;
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        .next-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 255, 136, 0.4);
+            background: linear-gradient(45deg, #4ecdc4, #00ff88);
+        }
+
+        .next-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-to-home {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-to-home a {
+            color: #4ecdc4;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-to-home a:hover {
+            color: #00ff88;
+        }
+
+        .business-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .business-type-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .business-type-item:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .business-type-item.selected {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.15);
+        }
+
+        .business-type-item input[type="radio"] {
+            display: none;
+        }
+
+        .business-type-item .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .business-type-item .title {
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="logo">🐼🎋</div>
+        <h1 class="signup-title">Join EgoPanda Creative</h1>
+        <p class="signup-subtitle">
+            Tell us about your business needs so we can recommend the perfect AI agent team for you
+        </p>
+
+        <div class="step-indicator">
+            <div class="step active">1. Business Info</div>
+            <div class="step">2. Service Needs</div>
+            <div class="step">3. Choose Plan</div>
+        </div>
+
+        <form id="signupForm">
+            <!-- Step 1: Business Information -->
+            <div id="step1" class="step-content">
+                <div class="form-section">
+                    <h3>🏢 Tell us about your business</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Your Name</label>
+                        <input type="text" class="form-input" name="name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" name="email" placeholder="your@business-email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Business Name</label>
+                        <input type="text" class="form-input" name="business" placeholder="Your company or project name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">What type of business are you?</label>
+                        <div class="business-type-grid">
+                            <div class="business-type-item" onclick="selectBusinessType('startup', this)">
+                                <div class="icon">🚀</div>
+                                <div class="title">Startup</div>
+                                <input type="radio" name="businessType" value="startup">
+                            </div>
+                            <div class="business-type-item" onclick="selectBusinessType('small-business', this)">
+                                <div class="icon">🏪</div>
+                                <div class="title">Small Business</div>
+                                <input type="radio" name="businessType" value="small-business">
+                            </div>
+                            <div class="business-type-item" onclick="selectBusinessType('agency', this)">
+                                <div class="icon">🎯</div>
+                                <div class="title">Agency</div>
+                                <input type="radio" name="businessType" value="agency">
+                            </div>
+                            <div class="business-type-item" onclick="selectBusinessType('freelancer', this)">
+                                <div class="icon">💼</div>
+                                <div class="title">Freelancer</div>
+                                <input type="radio" name="businessType" value="freelancer">
+                            </div>
+                            <div class="business-type-item" onclick="selectBusinessType('enterprise', this)">
+                                <div class="icon">🏢</div>
+                                <div class="title">Enterprise</div>
+                                <input type="radio" name="businessType" value="enterprise">
+                            </div>
+                            <div class="business-type-item" onclick="selectBusinessType('other', this)">
+                                <div class="icon">❓</div>
+                                <div class="title">Other</div>
+                                <input type="radio" name="businessType" value="other">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="next-button" onclick="nextStep(2)">
+                    Continue to Service Needs →
+                </button>
+            </div>
+
+            <!-- Step 2: Service Needs -->
+            <div id="step2" class="step-content" style="display: none;">
+                <div class="form-section">
+                    <h3>🛠️ Which services do you need? (Select all that apply)</h3>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item" onclick="toggleService('content', this)">
+                            <div class="icon">✍️</div>
+                            <div class="title">Content Creation</div>
+                            <div class="description">Blog posts, marketing copy, social media content</div>
+                            <input type="checkbox" name="services" value="content">
+                        </div>
+
+                        <div class="checkbox-item" onclick="toggleService('web', this)">
+                            <div class="icon">💻</div>
+                            <div class="title">Web Development</div>
+                            <div class="description">Websites, apps, UX/UI design</div>
+                            <input type="checkbox" name="services" value="web">
+                        </div>
+
+                        <div class="checkbox-item" onclick="toggleService('marketing', this)">
+                            <div class="icon">📈</div>
+                            <div class="title">Marketing & Sales</div>
+                            <div class="description">Campaigns, lead generation, sales funnels</div>
+                            <input type="checkbox" name="services" value="marketing">
+                        </div>
+
+                        <div class="checkbox-item" onclick="toggleService('operations', this)">
+                            <div class="icon">⚙️</div>
+                            <div class="title">Business Operations</div>
+                            <div class="description">Automation, workflows, integrations</div>
+                            <input type="checkbox" name="services" value="operations">
+                        </div>
+
+                        <div class="checkbox-item" onclick="toggleService('research', this)">
+                            <div class="icon">📊</div>
+                            <div class="title">Research & Analysis</div>
+                            <div class="description">Market research, data analytics, insights</div>
+                            <input type="checkbox" name="services" value="research">
+                        </div>
+
+                        <div class="checkbox-item" onclick="toggleService('custom', this)">
+                            <div class="icon">🤖</div>
+                            <div class="title">Custom AI Agent</div>
+                            <div class="description">Specialized agent for your unique needs</div>
+                            <input type="checkbox" name="services" value="custom">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tell us more about your specific needs (optional)</label>
+                    <textarea class="form-input" name="additional_needs" rows="4" placeholder="Describe any specific challenges or goals you have..."></textarea>
+                </div>
+
+                <button type="button" class="next-button" onclick="nextStep(3)" id="continueToPlans">
+                    See Recommended Plans →
+                </button>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="button" style="background: none; border: none; color: #4ecdc4; cursor: pointer;" onclick="nextStep(1)">
+                        ← Back to Business Info
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="back-to-home">
+            <a href="index.html">← Back to Homepage</a>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let selectedServices = [];
+        let businessType = '';
+
+        function nextStep(step) {
+            // Hide current step
+            document.getElementById(`step${currentStep}`).style.display = 'none';
+            
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((stepEl, index) => {
+                stepEl.classList.remove('active');
+                if (index + 1 <= step) {
+                    stepEl.classList.add('active');
+                }
+            });
+
+            currentStep = step;
+
+            if (step === 3) {
+                // Redirect to pricing page with user data
+                const formData = new FormData(document.getElementById('signupForm'));
+                const params = new URLSearchParams();
+                
+                for (let [key, value] of formData.entries()) {
+                    params.append(key, value);
+                }
+                
+                // Add selected services
+                params.append('selectedServices', selectedServices.join(','));
+                params.append('businessType', businessType);
+                
+                // Store in localStorage for pricing page
+                localStorage.setItem('signupData', JSON.stringify({
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    business: formData.get('business'),
+                    businessType: businessType,
+                    services: selectedServices,
+                    additionalNeeds: formData.get('additional_needs')
+                }));
+                
+                window.location.href = 'aurelius-interview-system.html';
+            } else {
+                // Show next step
+                document.getElementById(`step${step}`).style.display = 'block';
+            }
+        }
+
+        function selectBusinessType(type, element) {
+            // Remove selected from all business type items
+            document.querySelectorAll('.business-type-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selected to clicked item
+            element.classList.add('selected');
+            element.querySelector('input[type="radio"]').checked = true;
+            businessType = type;
+        }
+
+        function toggleService(service, element) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            
+            if (selectedServices.includes(service)) {
+                selectedServices = selectedServices.filter(s => s !== service);
+                element.classList.remove('selected');
+                checkbox.checked = false;
+            } else {
+                selectedServices.push(service);
+                element.classList.add('selected');
+                checkbox.checked = true;
+            }
+
+            // Update continue button
+            updateContinueButton();
+        }
+
+        function updateContinueButton() {
+            const button = document.getElementById('continueToPlans');
+            if (selectedServices.length > 0) {
+                button.textContent = `See Plans for ${selectedServices.length} Service${selectedServices.length > 1 ? 's' : ''} →`;
+            } else {
+                button.textContent = 'See All Available Plans →';
+            }
+        }
+
+        // Form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎋 EgoPanda Creative Signup Initialized');
+        });
+    </script>
+</body>
+</html>
