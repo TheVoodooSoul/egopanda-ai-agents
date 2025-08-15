@@ -77,7 +77,7 @@ export const PRODUCTION_CONFIG = {
     // Production Settings
     APP: {
         ENVIRONMENT: 'production',
-        DOMAIN: 'egopandacreative.com',
+        DOMAIN: 'agent.egopandacreative.com',
         SECURE_COOKIES: true,
         SESSION_TIMEOUT: 24 * 60 * 60 * 1000, // 24 hours
         MAX_LOGIN_ATTEMPTS: 5,
