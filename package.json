@@ -6,7 +6,7 @@
   "main": "client.js",
   "scripts": {
     "dev": "node --watch example.js",
-    "build": "supabase functions deploy minmax-agent-auth",
+    "build": "echo 'Static site - no build needed'",
     "test": "node test.js",
     "logs": "supabase functions logs minmax-agent-auth",
     "setup": "npm run install-cli && npm run login",
