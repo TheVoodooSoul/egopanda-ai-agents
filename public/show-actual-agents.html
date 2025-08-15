@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Actual Agents</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>🔍 Discovering Your Actual Agents</h1>
+    <div id="loading">Connecting to your database...</div>
+    <div id="results"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://owalnojeylnucvmkvqvo.supabase.co';
+        const SUPABASE_ANON_KEY = '38687bb428633ab4513d15d3a753a3aa1af86f727f3daa44ba8004f4bb29add4';
+
+        async function discoverAgents() {
+            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const resultsDiv = document.getElementById('results');
+            const loadingDiv = document.getElementById('loading');
+
+            resultsDiv.innerHTML = '<h2>🔍 Found the issue! RLS is blocking access to your agents.</h2>';
+            resultsDiv.innerHTML += '<p><strong>Your agents exist but need authentication to access them.</strong></p>';
+            
+            // Add authentication first
+            resultsDiv.innerHTML += `
+                <div style="background: #e8f4f8; padding: 20px; margin: 20px 0; border-radius: 10px; border-left: 4px solid #007bff;">
+                    <h3>🔐 Sign in to see your actual agents:</h3>
+                    <input type="email" id="admin-email" placeholder="Your email" style="width: 100%; padding: 10px; margin: 5px 0;">
+                    <input type="password" id="admin-password" placeholder="Your password" style="width: 100%; padding: 10px; margin: 5px 0;">
+                    <button onclick="authenticateAndShowAgents()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Show My Agents</button>
+                    <div id="auth-status" style="margin-top: 10px;"></div>
+                </div>
+            `;
+
+            loadingDiv.style.display = 'none';
+        }
+
+        async function authenticateAndShowAgents() {
+            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const authStatus = document.getElementById('auth-status');
+            
+            if (!email || !password) {
+                authStatus.innerHTML = '<p style="color: red;">Please enter email and password</p>';
+                return;
+            }
+
+            try {
+                // Sign in first
+                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                    email, password
+                });
+
+                if (authError) {
+                    authStatus.innerHTML = `<p style="color: red;">Sign in failed: ${authError.message}</p>`;
+                    return;
+                }
+
+                authStatus.innerHTML = '<p style="color: green;">✅ Authenticated! Loading your agents...</p>';
+
+                // Now try to get the agents
+                const { data: agents, error: agentsError } = await supabase
+                    .from('agents')
+                    .select('*')
+                    .order('created_at');
+
+                if (agentsError) {
+                    authStatus.innerHTML += `<p style="color: red;">Error loading agents: ${agentsError.message}</p>`;
+                    return;
+                }
+
+                if (agents && agents.length > 0) {
+                    document.getElementById('results').innerHTML += `
+                        <h2>🎉 SUCCESS! Found ${agents.length} of your actual agents:</h2>
+                        <div style="background: #f0f8f0; padding: 20px; margin: 20px 0; border-radius: 10px;">
+                            ${agents.map((agent, i) => {
+                                const name = agent.name || agent.character_name || `Agent ${i + 1}`;
+                                const job = agent.job_title || agent.job || agent.role || 'No job specified';
+                                const personality = agent.personality_type || agent.personality || 'No personality specified';
+                                
+                                return `
+                                    <div style="border: 2px solid #28a745; margin: 15px 0; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                        <h3 style="color: #28a745; margin: 0 0 10px 0;">🐼 ${name}</h3>
+                                        <p><strong>Job:</strong> ${job}</p>
+                                        <p><strong>Personality:</strong> ${personality}</p>
+                                        ${agent.description ? `<p><strong>Description:</strong> ${agent.description}</p>` : ''}
+                                        ${agent.zodiac_sign ? `<p><strong>Zodiac:</strong> ${agent.zodiac_sign}</p>` : ''}
+                                        <details style="margin-top: 10px;">
+                                            <summary style="cursor: pointer; color: #007bff;">Show full data</summary>
+                                            <pre style="background: #f8f9fa; padding: 10px; margin-top: 10px; border-radius: 5px; font-size: 12px;">${JSON.stringify(agent, null, 2)}</pre>
+                                        </details>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 10px; margin-top: 20px;">
+                            <h3>✅ Mystery Solved!</h3>
+                            <p>Your agents were always there - we just couldn't see them without authentication!</p>
+                            <p><strong>Now I can build the proper app that honors these established identities.</strong></p>
+                        </div>
+                    `;
+                } else {
+                    authStatus.innerHTML += '<p>No agents found in the agents table after authentication.</p>';
+                }
+
+            } catch (error) {
+                authStatus.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        window.addEventListener('load', discoverAgents);
+    </script>
+</body>
+</html>

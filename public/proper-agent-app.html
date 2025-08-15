@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Agency - Your Professional Team</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('C:/Users/adam/Downloads/tower_asset.jfif');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            padding: 40px;
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        
+        .auth-controls {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .auth-controls input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 1rem;
+        }
+        
+        .auth-controls button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+        }
+        
+        .agents-section {
+            padding: 80px 20px;
+            background: rgba(0,0,0,0.8);
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 60px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        .agent-showcase {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .agent-item {
+            display: flex;
+            align-items: center;
+            margin: 60px 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .agent-item:hover {
+            transform: translateX(20px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.1));
+        }
+        
+        .agent-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+        
+        .agent-item:nth-child(even):hover {
+            transform: translateX(-20px);
+        }
+        
+        .agent-avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            margin: 0 40px;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .agent-info {
+            flex: 1;
+            padding: 0 20px;
+        }
+        
+        .agent-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        
+        .agent-job {
+            font-size: 1.5rem;
+            color: #a0c4ff;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .agent-personality {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        
+        .agent-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        .chat-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+        
+        .current-agent {
+            display: flex;
+            align-items: center;
+        }
+        
+        .current-agent-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+        
+        .current-agent-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .current-agent-info p {
+            opacity: 0.7;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+            margin: 20px 0;
+        }
+        
+        .message {
+            margin: 20px 0;
+            padding: 15px 20px;
+            border-radius: 15px;
+            max-width: 70%;
+        }
+        
+        .user-message {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .agent-message {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .message-input {
+            display: flex;
+            gap: 15px;
+            padding: 20px 0;
+        }
+        
+        .message-input textarea {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            resize: none;
+            font-family: inherit;
+        }
+        
+        .message-input textarea::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .send-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .status-message {
+            text-align: center;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-success {
+            background: rgba(40, 167, 69, 0.3);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+            color: #90ee90;
+        }
+        
+        .status-error {
+            background: rgba(220, 53, 69, 0.3);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            color: #ffb3b3;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden { display: none !important; }
+        
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .agent-item { flex-direction: column !important; text-align: center; }
+            .agent-item:nth-child(even) { flex-direction: column !important; }
+            .agent-avatar { margin: 20px 0; }
+            .agent-name { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section" id="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">AI Agent Agency</h1>
+            <p class="hero-subtitle">Your Professional AI Assistant Team</p>
+            
+            <div class="auth-controls" id="auth-controls">
+                <input type="email" id="email" placeholder="Email Address" />
+                <input type="password" id="password" placeholder="Password" />
+                <button onclick="signIn()">Sign In</button>
+                <button onclick="signUp()">Create Account</button>
+                <div id="auth-status"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agents Section -->
+    <div class="agents-section hidden" id="agents-section">
+        <h2 class="section-title">Meet Your AI Team</h2>
+        <div class="agent-showcase" id="agent-showcase">
+            <!-- Real agents from database will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Chat Section -->
+    <div class="chat-section" id="chat-section">
+        <div class="chat-container">
+            <div class="chat-header">
+                <button class="close-chat" onclick="closeChat()">×</button>
+                <div class="current-agent" id="current-agent">
+                    <div class="current-agent-avatar" id="current-agent-avatar">🐼</div>
+                    <div class="current-agent-info">
+                        <h3 id="current-agent-name">Select an Agent</h3>
+                        <p id="current-agent-job">Professional AI Assistant</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <p style="text-align: center; opacity: 0.6; padding: 50px;">
+                    Choose an AI agent from your team to start chatting!
+                </p>
+            </div>
+            
+            <div class="message-input">
+                <textarea id="user-input" placeholder="Type your message here..." rows="3"></textarea>
+                <button class="send-btn" onclick="sendMessage()" id="send-btn" disabled>Send</button>
+            </div>
+            
+            <div id="chat-status"></div>
+        </div>
+    </div>
+
+    <script>
+        // Aurelius database connection
+        const SUPABASE_URL = 'https://owalnojeylnucvmkvqvo.supabase.co';
+        const SUPABASE_ANON_KEY = '38687bb428633ab4513d15d3a753a3aa1af86f727f3daa44ba8004f4bb29add4';
+        
+        let supabase = null;
+        let currentUser = null;
+        let selectedAgent = null;
+        let agents = [];
+
+        // Initialize Supabase connection
+        async function initializeApp() {
+            supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            // Check if user is already logged in
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                currentUser = user;
+                await loadAgents();
+                showAgentsSection();
+            }
+            
+            // Try to load agents even if not logged in (for preview)
+            if (!user) {
+                await loadAgents();
+            }
+        }
+
+        // Load ACTUAL agents from your database
+        async function loadAgents() {
+            try {
+                const { data, error } = await supabase
+                    .from('agents')  // Your actual table name
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('created_at');
+
+                if (error) {
+                    console.log('No agents table found, trying other table names...');
+                    
+                    // Try other possible table names
+                    const tableNames = ['pandas', 'characters', 'ai_agents', 'panda_agents'];
+                    for (const tableName of tableNames) {
+                        try {
+                            const { data: altData, error: altError } = await supabase
+                                .from(tableName)
+                                .select('*');
+                            
+                            if (!altError && altData && altData.length > 0) {
+                                agents = altData;
+                                displayAgents(agents);
+                                return;
+                            }
+                        } catch (e) {
+                            continue;
+                        }
+                    }
+                    
+                    showStatus('auth-status', 'error', 'Could not load agents from database');
+                    return;
+                }
+
+                if (data && data.length > 0) {
+                    agents = data;
+                    displayAgents(agents);
+                } else {
+                    showStatus('auth-status', 'error', 'No agents found in database');
+                }
+            } catch (err) {
+                console.error('Error loading agents:', err);
+                showStatus('auth-status', 'error', 'Error connecting to database');
+            }
+        }
+
+        // Display agents using YOUR actual data
+        function displayAgents(agentData) {
+            const showcase = document.getElementById('agent-showcase');
+            showcase.innerHTML = '';
+
+            agentData.forEach((agent, index) => {
+                const agentElement = document.createElement('div');
+                agentElement.className = 'agent-item';
+                agentElement.onclick = () => selectAgent(agent);
+                
+                // Use your actual data fields (adjust field names as needed)
+                const name = agent.name || agent.character_name || `Agent ${index + 1}`;
+                const job = agent.job_title || agent.job || agent.role || 'AI Assistant';
+                const personality = agent.personality_type || agent.personality || 'Professional Helper';
+                const description = agent.description || agent.bio || `Meet ${name}, your ${job}.`;
+                
+                // Try to get zodiac or other unique identifier for emoji
+                let emoji = '🐼';
+                if (agent.zodiac_sign) {
+                    const zodiacEmojis = {
+                        'aries': '♈', 'taurus': '♉', 'gemini': '♊', 'cancer': '♋',
+                        'leo': '♌', 'virgo': '♍', 'libra': '♎', 'scorpio': '♏',
+                        'sagittarius': '♐', 'capricorn': '♑', 'aquarius': '♒', 'pisces': '♓'
+                    };
+                    emoji = zodiacEmojis[agent.zodiac_sign.toLowerCase()] || '🐼';
+                }
+                
+                agentElement.innerHTML = `
+                    <div class="agent-avatar">${emoji}</div>
+                    <div class="agent-info">
+                        <div class="agent-name">${name}</div>
+                        <div class="agent-job">${job}</div>
+                        <div class="agent-personality">${personality}</div>
+                        <div class="agent-description">${description}</div>
+                    </div>
+                `;
+                
+                showcase.appendChild(agentElement);
+            });
+        }
+
+        // Authentication functions
+        async function signIn() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showStatus('auth-status', 'error', 'Please enter email and password');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email, password
+                });
+
+                if (error) throw error;
+
+                currentUser = data.user;
+                showStatus('auth-status', 'success', `Welcome back, ${data.user.email}!`);
+                await loadAgents();
+                showAgentsSection();
+            } catch (error) {
+                showStatus('auth-status', 'error', error.message);
+            }
+        }
+
+        async function signUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showStatus('auth-status', 'error', 'Please enter email and password');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email, password
+                });
+
+                if (error) throw error;
+
+                showStatus('auth-status', 'success', 'Check your email for confirmation!');
+            } catch (error) {
+                showStatus('auth-status', 'error', error.message);
+            }
+        }
+
+        // Agent selection and chat
+        function selectAgent(agent) {
+            if (!currentUser) {
+                showStatus('auth-status', 'error', 'Please sign in first');
+                return;
+            }
+
+            selectedAgent = agent;
+            
+            // Update chat header with actual agent data
+            const name = agent.name || agent.character_name || 'AI Assistant';
+            const job = agent.job_title || agent.job || agent.role || 'Professional Assistant';
+            
+            document.getElementById('current-agent-name').textContent = name;
+            document.getElementById('current-agent-job').textContent = job;
+            document.getElementById('send-btn').disabled = false;
+            
+            // Clear chat and show welcome message
+            const messagesDiv = document.getElementById('chat-messages');
+            messagesDiv.innerHTML = `
+                <div class="message agent-message">
+                    <strong>${name}</strong><br>
+                    Hello! I'm ${name}, your ${job}. ${agent.description || 'How can I help you today?'}
+                </div>
+            `;
+            
+            // Show chat
+            document.getElementById('chat-section').style.display = 'flex';
+        }
+
+        async function sendMessage() {
+            if (!currentUser || !selectedAgent) return;
+
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show loading
+            const sendBtn = document.getElementById('send-btn');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="loading"></span> Sending...';
+
+            try {
+                const { data, error } = await supabase.functions.invoke('minmax-agent-auth', {
+                    body: {
+                        prompt: message,
+                        agentId: selectedAgent.id,
+                        options: {
+                            model: 'minmax-llama3.1-hybrid',
+                            temperature: 0.7,
+                            max_tokens: 1024
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                if (data.success && data.response?.choices?.[0]) {
+                    const response = data.response.choices[0].message.content;
+                    addMessage(response, 'agent');
+                } else {
+                    throw new Error('Invalid response from AI service');
+                }
+            } catch (error) {
+                addMessage(`Sorry, I encountered an error: ${error.message}`, 'agent');
+                showStatus('chat-status', 'error', error.message);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = 'Send';
+            }
+        }
+
+        function addMessage(text, type) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            if (type === 'user') {
+                messageDiv.innerHTML = `<strong>You:</strong><br>${text}`;
+            } else {
+                const agentName = selectedAgent?.name || selectedAgent?.character_name || 'AI Assistant';
+                messageDiv.innerHTML = `<strong>${agentName}:</strong><br>${text}`;
+            }
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function closeChat() {
+            document.getElementById('chat-section').style.display = 'none';
+            selectedAgent = null;
+            document.getElementById('send-btn').disabled = true;
+        }
+
+        function showAgentsSection() {
+            document.getElementById('hero-section').style.display = 'none';
+            document.getElementById('agents-section').classList.remove('hidden');
+        }
+
+        function showStatus(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status-message status-${type}">${message}</div>`;
+            setTimeout(() => element.innerHTML = '', 5000);
+        }
+
+        // Enter key to send message
+        document.getElementById('user-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Initialize app when page loads
+        window.addEventListener('load', initializeApp);
+    </script>
+</body>
+</html>

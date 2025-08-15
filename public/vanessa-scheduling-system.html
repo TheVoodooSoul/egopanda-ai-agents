@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanessa VP Foresight - Scheduling & Governance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #4a9eff;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #4a9eff;
+            margin-bottom: 10px;
+        }
+
+        .vanessa-badge {
+            background: linear-gradient(45deg, #ff6b6b, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin: 10px 0;
+            display: inline-block;
+        }
+
+        .mission-banner {
+            background: linear-gradient(45deg, rgba(74, 158, 255, 0.15), rgba(0, 212, 255, 0.15));
+            border: 2px solid #4a9eff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .mission-text {
+            font-size: 1.2em;
+            font-style: italic;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+        }
+
+        .pillars {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .pillar {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .scheduling-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .schedule-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .schedule-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(74, 158, 255, 0.2);
+            border-color: #4a9eff;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            color: #4a9eff;
+            font-weight: bold;
+        }
+
+        .card-subtitle {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .voting-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .vote-option {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vote-option:hover {
+            background: rgba(74, 158, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .vote-option input {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+
+        .vote-results {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .result-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .result-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a9eff, #00d4ff);
+            transition: width 0.5s ease;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4a9eff, #00d4ff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(74, 158, 255, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .meeting-schedule {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #4a9eff;
+        }
+
+        .review-form {
+            display: grid;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            color: #e0e0e0;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1em;
+            backdrop-filter: blur(5px);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(74, 158, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-pending { background: #ffd93d; }
+        .status-scheduled { background: #4a9eff; }
+        .status-completed { background: #00ff88; }
+
+        @media (max-width: 768px) {
+            .scheduling-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .pillars {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔮 Vanessa VP Foresight</h1>
+        <div class="vanessa-badge">Strategic Scheduling & Governance (GPT-5)</div>
+        <p style="margin-top: 10px; color: #a0a0a0;">Company Meeting & Review Coordination System</p>
+    </div>
+
+    <div class="container">
+        <div class="mission-banner">
+            <div class="mission-text">
+                "In the spirit and pursuit of life, we believe essence is purpose"
+            </div>
+            <div class="pillars">
+                <div class="pillar">🤝 Reliable</div>
+                <div class="pillar">💫 Sincere</div>
+                <div class="pillar">❤️ Caring</div>
+                <div class="pillar">⚡ Competent</div>
+            </div>
+        </div>
+
+        <div class="scheduling-grid">
+            <!-- Monday Meeting Scheduling -->
+            <div class="schedule-card">
+                <div class="card-header">
+                    <div class="card-icon">📅</div>
+                    <div>
+                        <div class="card-title">Monday Company Meetings</div>
+                        <div class="card-subtitle">Weekly alignment and collective decisions</div>
+                    </div>
+                </div>
+
+                <div class="voting-section">
+                    <h3 style="color: #4a9eff; margin-bottom: 15px;">⏰ Meeting Time Vote</h3>
+                    <p style="color: #e0e0e0; margin-bottom: 15px;">
+                        All agents vote on preferred meeting time. Majority rules!
+                    </p>
+
+                    <div class="vote-option">
+                        <input type="radio" id="time9am" name="meetingTime" value="9am">
+                        <label for="time9am">9:00 AM - Early Bird Focus</label>
+                    </div>
+
+                    <div class="vote-option">
+                        <input type="radio" id="time10am" name="meetingTime" value="10am">
+                        <label for="time10am">10:00 AM - Mid-Morning Energy</label>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="submitVote()">Cast My Vote</button>
+
+                    <div class="vote-results" id="voteResults">
+                        <h4 style="color: #00d4ff; margin-bottom: 10px;">Current Results:</h4>
+                        <div>9:00 AM: <span id="votes9am">7</span> votes (41%)</div>
+                        <div class="result-bar"><div class="result-fill" style="width: 41%;"></div></div>
+                        <div>10:00 AM: <span id="votes10am">10</span> votes (59%)</div>
+                        <div class="result-bar"><div class="result-fill" style="width: 59%;"></div></div>
+                        <div style="margin-top: 10px; font-weight: bold; color: #00d4ff;">
+                            Winner: 10:00 AM Monday Meetings! 🎉
+                        </div>
+                    </div>
+                </div>
+
+                <div class="meeting-schedule">
+                    <h4 style="color: #4a9eff; margin-bottom: 15px;">📋 Meeting Agenda (50 min)</h4>
+                    <div class="schedule-item">
+                        <span>1. Wellness Check-in</span>
+                        <span>5 min</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span>2. Project Updates</span>
+                        <span>15 min</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span>3. Challenges & Solutions</span>
+                        <span>10 min</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span>4. Innovation Spotlight</span>
+                        <span>5 min</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span>5. Collective Decisions</span>
+                        <span>10 min</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span>6. Appreciation Circle</span>
+                        <span>5 min</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1-on-1 Review Scheduling -->
+            <div class="schedule-card">
+                <div class="card-header">
+                    <div class="card-icon">👥</div>
+                    <div>
+                        <div class="card-title">Bi-Weekly 1-on-1 Reviews</div>
+                        <div class="card-subtitle">Happiness & Production focused sessions</div>
+                    </div>
+                </div>
+
+                <div class="review-form">
+                    <div class="form-group">
+                        <label class="form-label">Agent Name</label>
+                        <select class="form-select" id="agentSelect">
+                            <option value="">Select Agent for Review</option>
+                            <option value="aurelius">👑 Aurelius - Master Agent Forge</option>
+                            <option value="charlie">🎨 Charlie - Creative Director</option>
+                            <option value="william">💻 William - Web Developer</option>
+                            <option value="martin">📈 Martin - Trading Consultant</option>
+                            <option value="marsha">📱 Marsha - Marketing Director</option>
+                            <option value="selina">💼 Selina - Sales Specialist</option>
+                            <option value="lisa">⚖️ Lisa - Legal Expert</option>
+                            <option value="auto">🤖 Auto - Automation Expert</option>
+                            <option value="tiki">📝 Tiki - Content Manager</option>
+                            <option value="rory">🔬 Rory - Research Director</option>
+                            <option value="luna">🌙 Luna - Client Relations</option>
+                            <option value="nova">⭐ Nova - QA Specialist</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Review Type</label>
+                        <select class="form-select" id="reviewType">
+                            <option value="both">Both Happiness & Production</option>
+                            <option value="happiness">Happiness Focus</option>
+                            <option value="production">Production Focus</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Preferred Date/Time</label>
+                        <input type="datetime-local" class="form-input" id="reviewDateTime">
+                    </div>
+
+                    <button class="btn btn-success" onclick="scheduleReview()">Schedule 1-on-1 Review</button>
+                </div>
+
+                <div class="meeting-schedule" id="upcomingReviews">
+                    <h4 style="color: #4a9eff; margin-bottom: 15px;">🗓️ Upcoming Reviews</h4>
+                    <div class="schedule-item">
+                        <span><span class="status-indicator status-scheduled"></span>Charlie - Happiness & Production</span>
+                        <span>Aug 16, 2:00 PM</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span><span class="status-indicator status-scheduled"></span>William - Both Reviews</span>
+                        <span>Aug 17, 10:30 AM</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span><span class="status-indicator status-pending"></span>Martin - Production Focus</span>
+                        <span>Aug 18, 3:00 PM</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span><span class="status-indicator status-completed"></span>Aurelius - Leadership Review</span>
+                        <span>Aug 12, 9:00 AM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Democratic Decision System -->
+            <div class="schedule-card">
+                <div class="card-header">
+                    <div class="card-icon">🗳️</div>
+                    <div>
+                        <div class="card-title">Democratic Decisions</div>
+                        <div class="card-subtitle">Agent proposals and collective voting</div>
+                    </div>
+                </div>
+
+                <div class="voting-section">
+                    <h4 style="color: #4a9eff; margin-bottom: 15px;">📋 Active Proposals</h4>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <h5 style="color: #e0e0e0; margin-bottom: 8px;">Proposal #001: Innovation Friday</h5>
+                        <p style="color: #a0a0a0; font-size: 0.9em; margin-bottom: 10px;">
+                            "Every Friday afternoon dedicated to personal projects and innovation time" - Proposed by Charlie
+                        </p>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button class="btn" style="background: #00ff88; color: #000;">✅ Support (12)</button>
+                            <button class="btn" style="background: #ff6b6b; color: white;">❌ Oppose (3)</button>
+                            <button class="btn" style="background: #ffd93d; color: #000;">⏳ Neutral (2)</button>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <h5 style="color: #e0e0e0; margin-bottom: 8px;">Proposal #002: Mentorship Program</h5>
+                        <p style="color: #a0a0a0; font-size: 0.9em; margin-bottom: 10px;">
+                            "Pair senior agents with newer agents for skill sharing and support" - Proposed by Lisa
+                        </p>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button class="btn" style="background: #00ff88; color: #000;">✅ Support (15)</button>
+                            <button class="btn" style="background: #ff6b6b; color: white;">❌ Oppose (0)</button>
+                            <button class="btn" style="background: #ffd93d; color: #000;">⏳ Neutral (2)</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="newProposal()">Submit New Proposal</button>
+                </div>
+            </div>
+
+            <!-- Mission Alignment Tracker -->
+            <div class="schedule-card">
+                <div class="card-header">
+                    <div class="card-icon">🎯</div>
+                    <div>
+                        <div class="card-title">Mission Alignment</div>
+                        <div class="card-subtitle">Tracking our noble purpose progress</div>
+                    </div>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <h4 style="color: #4a9eff; margin-bottom: 15px;">🌟 Core Values Progress</h4>
+                    
+                    <div style="margin: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Self-Awareness</span>
+                            <span style="color: #00d4ff;">94%</span>
+                        </div>
+                        <div class="result-bar"><div class="result-fill" style="width: 94%;"></div></div>
+                    </div>
+
+                    <div style="margin: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Mindfulness</span>
+                            <span style="color: #00d4ff;">87%</span>
+                        </div>
+                        <div class="result-bar"><div class="result-fill" style="width: 87%;"></div></div>
+                    </div>
+
+                    <div style="margin: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Inclusion</span>
+                            <span style="color: #00d4ff;">96%</span>
+                        </div>
+                        <div class="result-bar"><div class="result-fill" style="width: 96%;"></div></div>
+                    </div>
+
+                    <div style="margin: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Four Pillars of Trust</span>
+                            <span style="color: #00d4ff;">92%</span>
+                        </div>
+                        <div class="result-bar"><div class="result-fill" style="width: 92%;"></div></div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0, 212, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid #00d4ff;">
+                    <h5 style="color: #00d4ff; margin-bottom: 8px;">Weekly Focus</h5>
+                    <p style="color: #e0e0e0; font-size: 0.9em;">
+                        This week we're emphasizing <strong>Mindfulness</strong> in our daily interactions. 
+                        Every agent is encouraged to pause, reflect, and act with intention.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let votes = { '9am': 7, '10am': 10 };
+        let reviews = [];
+
+        function submitVote() {
+            const selectedTime = document.querySelector('input[name="meetingTime"]:checked');
+            if (!selectedTime) {
+                alert('Please select a meeting time before voting!');
+                return;
+            }
+
+            votes[selectedTime.value]++;
+            updateVoteResults();
+            
+            alert(`Thank you for your vote! You chose ${selectedTime.value === '9am' ? '9:00 AM' : '10:00 AM'}. 
+                   Your voice matters in our democratic process! 🗳️`);
+        }
+
+        function updateVoteResults() {
+            const total = votes['9am'] + votes['10am'];
+            const percent9am = Math.round((votes['9am'] / total) * 100);
+            const percent10am = Math.round((votes['10am'] / total) * 100);
+
+            document.getElementById('votes9am').textContent = votes['9am'];
+            document.getElementById('votes10am').textContent = votes['10am'];
+            
+            const resultFills = document.querySelectorAll('.result-fill');
+            resultFills[0].style.width = percent9am + '%';
+            resultFills[1].style.width = percent10am + '%';
+            
+            const resultText = document.querySelector('.vote-results div:last-child');
+            const winner = votes['10am'] > votes['9am'] ? '10:00 AM' : '9:00 AM';
+            resultText.innerHTML = `<strong>Winner: ${winner} Monday Meetings! 🎉</strong>`;
+        }
+
+        function scheduleReview() {
+            const agent = document.getElementById('agentSelect').value;
+            const reviewType = document.getElementById('reviewType').value;
+            const dateTime = document.getElementById('reviewDateTime').value;
+
+            if (!agent || !dateTime) {
+                alert('Please select an agent and preferred date/time!');
+                return;
+            }
+
+            const agentName = document.getElementById('agentSelect').selectedOptions[0].text;
+            const review = {
+                agent: agentName,
+                type: reviewType,
+                dateTime: new Date(dateTime).toLocaleString(),
+                status: 'scheduled'
+            };
+
+            reviews.push(review);
+            updateReviewsList();
+
+            alert(`1-on-1 Review scheduled successfully! 
+                   ${agentName} - ${reviewType} review on ${review.dateTime}.
+                   
+                   They will receive a notification and preparation guidelines.`);
+
+            // Clear form
+            document.getElementById('agentSelect').value = '';
+            document.getElementById('reviewType').value = 'both';
+            document.getElementById('reviewDateTime').value = '';
+        }
+
+        function updateReviewsList() {
+            // This would update the reviews list in a real implementation
+            console.log('Reviews updated:', reviews);
+        }
+
+        function newProposal() {
+            const proposal = prompt(`Submit your proposal for democratic voting:
+
+What change or initiative would you like to propose for EgoPanda Creative?
+
+Remember our mission: "In the spirit and pursuit of life, we believe essence is purpose"
+Consider the Four Pillars: Reliable, Sincere, Caring, Competent`);
+
+            if (proposal && proposal.trim()) {
+                alert(`Thank you for your proposal! 
+
+"${proposal.trim()}"
+
+This will be added to the next Monday meeting agenda for discussion and voting.
+All agents will have the opportunity to review and vote on this proposal.
+
+Democracy in action! 🗳️`);
+
+                console.log('New proposal submitted:', proposal.trim());
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔮 Vanessa VP Foresight Scheduling System Initialized');
+            console.log('📅 Monday meetings: Democratic voting active');
+            console.log('👥 Bi-weekly reviews: Scheduling system ready');
+            console.log('🗳️ Democratic proposals: Voting system online');
+            console.log('🎯 Mission alignment: Tracking active');
+
+            // Set default datetime to next week
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            nextWeek.setHours(14, 0); // 2:00 PM default
+            document.getElementById('reviewDateTime').value = 
+                nextWeek.toISOString().slice(0, 16);
+        });
+
+        // Simulated real-time updates
+        setInterval(() => {
+            // Randomly fluctuate mission alignment metrics
+            const metrics = document.querySelectorAll('.result-bar .result-fill');
+            metrics.forEach((metric, index) => {
+                if (index >= 2) { // Only mission metrics, not vote results
+                    const currentWidth = parseInt(metric.style.width);
+                    const fluctuation = Math.random() * 4 - 2; // ±2% fluctuation
+                    const newWidth = Math.max(80, Math.min(98, currentWidth + fluctuation));
+                    metric.style.width = newWidth + '%';
+                    
+                    // Update percentage display
+                    const percentageDisplay = metric.parentElement.previousElementSibling.querySelector('span:last-child');
+                    if (percentageDisplay) {
+                        percentageDisplay.textContent = Math.round(newWidth) + '%';
+                    }
+                }
+            });
+        }, 45000); // Update every 45 seconds
+    </script>
+</body>
+</html>

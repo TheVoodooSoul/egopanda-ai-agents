@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EgoPanda Creative - Project Orchestrator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .conversation-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .monitoring-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #fff;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .new-project-form {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .conversation-thread {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .thread-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .thread-title {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .thread-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+
+        .status-delegating {
+            background: rgba(255, 193, 7, 0.3);
+            color: #FFC107;
+        }
+
+        .status-building {
+            background: rgba(33, 150, 243, 0.3);
+            color: #2196F3;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            gap: 10px;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .message-role {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .message-timestamp {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .message-text {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.4;
+        }
+
+        .delegation-indicator {
+            background: rgba(255, 193, 7, 0.2);
+            border-left: 3px solid #FFC107;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .delegation-text {
+            font-style: italic;
+            color: #FFC107;
+            font-size: 14px;
+        }
+
+        .monitoring-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .agent-status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .agent-name {
+            font-weight: 500;
+        }
+
+        .agent-activity {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .activity-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .indicator-active {
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        .indicator-busy {
+            background: #FF9800;
+        }
+
+        .indicator-idle {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .workflow-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .workflow-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #2196F3;
+        }
+
+        .workflow-nodes {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .workflow-node {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .node-arrow {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+
+        .task-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .task-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .task-pending {
+            background: rgba(255, 193, 7, 0.5);
+            border: 2px solid #FFC107;
+        }
+
+        .task-in-progress {
+            background: rgba(33, 150, 243, 0.5);
+            border: 2px solid #2196F3;
+        }
+
+        .task-completed {
+            background: rgba(76, 175, 80, 0.5);
+            border: 2px solid #4CAF50;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .monitoring-panel {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎭 Project Orchestrator</h1>
+        <p>Collaborative AI Project Management - Where ideas meet execution through intelligent delegation</p>
+    </div>
+
+    <div class="main-container">
+        <!-- Conversation Panel -->
+        <div class="conversation-panel">
+            <div class="panel-title">💬 Strategic Conversations</div>
+            
+            <!-- New Project Form -->
+            <div class="new-project-form">
+                <h3 style="margin-bottom: 15px;">Start New Project with Vanessa</h3>
+                <div class="form-group">
+                    <label>Project Title</label>
+                    <input type="text" id="projectTitle" placeholder="e.g., Create marketing campaign for new product launch">
+                </div>
+                <div class="form-group">
+                    <label>Describe your idea or vision</label>
+                    <textarea id="projectDescription" placeholder="Explain your vision, goals, requirements, or any ideas you want to explore with Vanessa..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Priority Level</label>
+                    <select id="priorityLevel" style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <option value="normal">Normal</option>
+                        <option value="high">High Priority</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <button class="start-btn" onclick="startProjectConversation()">🚀 Start Conversation with Vanessa</button>
+            </div>
+
+            <!-- Active Conversations -->
+            <div id="conversationThreads">
+                <!-- Example conversation thread -->
+                <div class="conversation-thread">
+                    <div class="thread-header">
+                        <div class="thread-title">E-commerce Website Redesign</div>
+                        <div class="thread-status status-delegating">Delegating Tasks</div>
+                    </div>
+                    
+                    <div class="message">
+                        <div class="message-avatar">You</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Adam</span>
+                                <span class="message-role">Project Owner</span>
+                                <span class="message-timestamp">2 hours ago</span>
+                            </div>
+                            <div class="message-text">I need to redesign our e-commerce site to improve conversion rates. The current site has a 2.3% conversion rate, and I want to get it to at least 4%. We need better product pages, streamlined checkout, and mobile optimization.</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar">V</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Vanessa</span>
+                                <span class="message-role">Leadership Agent</span>
+                                <span class="message-timestamp">2 hours ago</span>
+                            </div>
+                            <div class="message-text">I understand your goal to double conversion rates from 2.3% to 4%. This requires a comprehensive approach: UX analysis, design improvements, technical optimization, and performance tracking. Let me delegate this strategically.</div>
+                        </div>
+                    </div>
+
+                    <div class="delegation-indicator">
+                        <div class="delegation-text">🎯 Vanessa is delegating tasks to specialized agents...</div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar">V</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Vanessa</span>
+                                <span class="message-role">→ Delegating to Auto</span>
+                                <span class="message-timestamp">2 hours ago</span>
+                            </div>
+                            <div class="message-text">@Auto - I need you to create a comprehensive workflow for this e-commerce redesign project. Set up integrations for analytics tracking, A/B testing tools, and coordinate the technical implementation pipeline.</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar">A</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Auto</span>
+                                <span class="message-role">Business Operations</span>
+                                <span class="message-timestamp">2 hours ago</span>
+                            </div>
+                            <div class="message-text">Workflow configured! I've set up: Google Analytics 4 integration, Hotjar for user behavior tracking, Optimizely for A/B testing, and Shopify API connections. I'll coordinate with William for technical implementation and Marsha for conversion optimization strategy.</div>
+                            <div class="workflow-preview">
+                                <div class="workflow-title">🔧 Auto's Workflow Configuration</div>
+                                <div class="workflow-nodes">
+                                    <span class="workflow-node">Analytics Setup</span>
+                                    <span class="node-arrow">→</span>
+                                    <span class="workflow-node">A/B Testing</span>
+                                    <span class="node-arrow">→</span>
+                                    <span class="workflow-node">Heatmap Analysis</span>
+                                    <span class="node-arrow">→</span>
+                                    <span class="workflow-node">Performance Tracking</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar">V</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Vanessa</span>
+                                <span class="message-role">→ Delegating to William</span>
+                                <span class="message-timestamp">1 hour ago</span>
+                            </div>
+                            <div class="message-text">@William - Handle the technical implementation. Focus on mobile responsiveness, page load speed optimization, and checkout flow improvements. Coordinate with Auto's workflow setup.</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar">W</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">William</span>
+                                <span class="message-role">Web Development</span>
+                                <span class="message-timestamp">1 hour ago</span>
+                            </div>
+                            <div class="message-text">Starting technical audit now. I'll implement lazy loading, compress images, optimize CSS/JS, and redesign the mobile checkout flow. Expected completion: 3 days. I'll sync with Auto's analytics setup for proper tracking.</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar">V</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">Vanessa</span>
+                                <span class="message-role">→ Delegating to Marsha</span>
+                                <span class="message-timestamp">1 hour ago</span>
+                            </div>
+                            <div class="message-text">@Marsha - Design the conversion optimization strategy. Create compelling product page copy, optimize CTAs, and plan the A/B testing campaigns for maximum conversion lift.</div>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="addMessage()">💬 Reply</button>
+                        <button class="quick-btn" onclick="viewWorkflow()">🔧 View Workflow</button>
+                        <button class="quick-btn" onclick="checkProgress()">📊 Check Progress</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitoring Panel -->
+        <div class="monitoring-panel">
+            <!-- Agent Status -->
+            <div class="monitoring-card">
+                <div class="card-title">🤖 Agent Activity Monitor</div>
+                <div id="agentStatusList">
+                    <div class="agent-status-item">
+                        <div>
+                            <div class="agent-name">Vanessa</div>
+                            <div class="agent-activity">Delegating tasks in E-commerce project</div>
+                        </div>
+                        <div class="activity-indicator indicator-active"></div>
+                    </div>
+                    <div class="agent-status-item">
+                        <div>
+                            <div class="agent-name">Auto</div>
+                            <div class="agent-activity">Configuring workflow integrations</div>
+                        </div>
+                        <div class="activity-indicator indicator-busy"></div>
+                    </div>
+                    <div class="agent-status-item">
+                        <div>
+                            <div class="agent-name">William</div>
+                            <div class="agent-activity">Technical audit in progress</div>
+                        </div>
+                        <div class="activity-indicator indicator-busy"></div>
+                    </div>
+                    <div class="agent-status-item">
+                        <div>
+                            <div class="agent-name">Marsha</div>
+                            <div class="agent-activity">Assigned to conversion strategy</div>
+                        </div>
+                        <div class="activity-indicator indicator-active"></div>
+                    </div>
+                    <div class="agent-status-item">
+                        <div>
+                            <div class="agent-name">Charlie</div>
+                            <div class="agent-activity">Available for tasks</div>
+                        </div>
+                        <div class="activity-indicator indicator-idle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Progress -->
+            <div class="monitoring-card">
+                <div class="card-title">📋 Active Tasks</div>
+                <div class="task-list">
+                    <div class="task-item">
+                        <div class="task-status task-completed"></div>
+                        <div>Analytics integration setup</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-status task-in-progress"></div>
+                        <div>Technical audit and optimization</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-status task-in-progress"></div>
+                        <div>A/B testing framework setup</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-status task-pending"></div>
+                        <div>Conversion strategy development</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-status task-pending"></div>
+                        <div>Mobile checkout redesign</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-status task-pending"></div>
+                        <div>Product page optimization</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Status -->
+            <div class="monitoring-card">
+                <div class="card-title">⚙️ Workflow Status</div>
+                <div class="workflow-preview">
+                    <div class="workflow-title">E-commerce Redesign Pipeline</div>
+                    <div class="workflow-nodes">
+                        <span class="workflow-node" style="background: rgba(76, 175, 80, 0.3); color: #4CAF50;">Research</span>
+                        <span class="node-arrow">→</span>
+                        <span class="workflow-node" style="background: rgba(33, 150, 243, 0.3); color: #2196F3;">Development</span>
+                        <span class="node-arrow">→</span>
+                        <span class="workflow-node">Testing</span>
+                        <span class="node-arrow">→</span>
+                        <span class="workflow-node">Launch</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; font-size: 13px;">
+                    <div style="margin-bottom: 5px;">
+                        <span style="color: #4CAF50;">✓</span> Initial planning complete
+                    </div>
+                    <div style="margin-bottom: 5px;">
+                        <span style="color: #2196F3;">⏳</span> Technical implementation in progress
+                    </div>
+                    <div style="margin-bottom: 5px;">
+                        <span style="color: rgba(255,255,255,0.5);">○</span> A/B testing pending
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Agent data with specializations
+        const agents = {
+            vanessa: { name: 'Vanessa', role: 'Leadership Agent', avatar: 'V', specialization: 'Strategic planning, delegation, project coordination' },
+            auto: { name: 'Auto', role: 'Business Operations', avatar: 'A', specialization: 'Workflow automation, API integration, system coordination' },
+            william: { name: 'William', role: 'Web Development', avatar: 'W', specialization: 'Technical implementation, optimization, architecture' },
+            marsha: { name: 'Marsha', role: 'Marketing & Sales', avatar: 'M', specialization: 'Conversion optimization, copywriting, campaign strategy' },
+            charlie: { name: 'Charlie', role: 'Content Creation', avatar: 'C', specialization: 'Content writing, SEO, brand messaging' },
+            rory: { name: 'Rory', role: 'Research & Analysis', avatar: 'R', specialization: 'Market research, data analysis, competitor analysis' }
+        };
+
+        function startProjectConversation() {
+            const title = document.getElementById('projectTitle').value;
+            const description = document.getElementById('projectDescription').value;
+            const priority = document.getElementById('priorityLevel').value;
+
+            if (!title || !description) {
+                alert('Please fill in both the project title and description to start a conversation with Vanessa.');
+                return;
+            }
+
+            // Simulate starting a new conversation
+            const timestamp = new Date().toLocaleString();
+            
+            // Create new conversation thread
+            const newThread = createConversationThread(title, description, priority, timestamp);
+            
+            // Add to conversation container
+            const container = document.getElementById('conversationThreads');
+            container.insertBefore(newThread, container.firstChild);
+            
+            // Clear the form
+            document.getElementById('projectTitle').value = '';
+            document.getElementById('projectDescription').value = '';
+            document.getElementById('priorityLevel').value = 'normal';
+
+            // Simulate Vanessa's response after a short delay
+            setTimeout(() => {
+                simulateVanessaResponse(newThread, title, description);
+            }, 2000);
+
+            // Update agent status
+            updateAgentStatus('vanessa', 'Analyzing new project: ' + title);
+        }
+
+        function createConversationThread(title, description, priority, timestamp) {
+            const thread = document.createElement('div');
+            thread.className = 'conversation-thread';
+            thread.innerHTML = `
+                <div class="thread-header">
+                    <div class="thread-title">${title}</div>
+                    <div class="thread-status status-active">Active Discussion</div>
+                </div>
+                
+                <div class="message">
+                    <div class="message-avatar">You</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">Adam</span>
+                            <span class="message-role">Project Owner</span>
+                            <span class="message-timestamp">${timestamp}</span>
+                        </div>
+                        <div class="message-text">${description}</div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="addMessage()">💬 Reply</button>
+                    <button class="quick-btn" onclick="viewWorkflow()">🔧 View Workflow</button>
+                    <button class="quick-btn" onclick="checkProgress()">📊 Check Progress</button>
+                </div>
+            `;
+            return thread;
+        }
+
+        function simulateVanessaResponse(thread, title, description) {
+            const vanessaResponse = generateVanessaResponse(title, description);
+            const timestamp = new Date().toLocaleString();
+            
+            const messageContainer = thread.querySelector('.quick-actions').previousElementSibling;
+            const newMessage = document.createElement('div');
+            newMessage.className = 'message';
+            newMessage.innerHTML = `
+                <div class="message-avatar">V</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-sender">Vanessa</span>
+                        <span class="message-role">Leadership Agent</span>
+                        <span class="message-timestamp">${timestamp}</span>
+                    </div>
+                    <div class="message-text">${vanessaResponse}</div>
+                </div>
+            `;
+            
+            thread.insertBefore(newMessage, thread.querySelector('.quick-actions'));
+
+            // Update thread status
+            const statusElement = thread.querySelector('.thread-status');
+            statusElement.textContent = 'Analysis Complete';
+            statusElement.className = 'thread-status status-delegating';
+
+            // Simulate delegation after analysis
+            setTimeout(() => {
+                simulateDelegation(thread, title, description);
+            }, 3000);
+        }
+
+        function generateVanessaResponse(title, description) {
+            const responses = [
+                `I understand your vision for "${title}". Let me analyze the requirements and break this down into actionable tasks. I'll coordinate with our specialized agents to ensure optimal execution.`,
+                `Thank you for sharing your project vision. I can see this requires a multi-faceted approach. Let me delegate this strategically to our expert agents based on their specializations.`,
+                `I've analyzed your project requirements for "${title}". This is definitely achievable with our current agent capabilities. I'll orchestrate the perfect team for this.`,
+                `Excellent project concept! I can see several optimization opportunities here. Let me assign this to the most suitable agents and create a comprehensive execution plan.`
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        function simulateDelegation(thread, title, description) {
+            // Determine which agents to delegate to based on project type
+            const delegationPlan = generateDelegationPlan(title, description);
+            
+            delegationPlan.forEach((delegation, index) => {
+                setTimeout(() => {
+                    addDelegationMessage(thread, delegation);
+                    updateAgentStatus(delegation.agentId, delegation.task);
+                }, index * 2000);
+            });
+        }
+
+        function generateDelegationPlan(title, description) {
+            const plans = [];
+            const lowerTitle = title.toLowerCase();
+            const lowerDesc = description.toLowerCase();
+
+            // Auto is always included for workflow setup
+            plans.push({
+                agentId: 'auto',
+                agent: agents.auto,
+                task: `Create comprehensive workflow and integration setup for ${title}`,
+                message: `@Auto - I need you to set up the workflow infrastructure for this project. Configure necessary APIs, webhooks, and coordinate the technical pipeline between all involved agents.`
+            });
+
+            // Determine other agents based on project content
+            if (lowerTitle.includes('website') || lowerTitle.includes('web') || lowerDesc.includes('web')) {
+                plans.push({
+                    agentId: 'william',
+                    agent: agents.william,
+                    task: `Technical implementation for ${title}`,
+                    message: `@William - Handle the technical development and implementation. Focus on performance, user experience, and technical optimization.`
+                });
+            }
+
+            if (lowerTitle.includes('marketing') || lowerTitle.includes('campaign') || lowerDesc.includes('conversion') || lowerDesc.includes('marketing')) {
+                plans.push({
+                    agentId: 'marsha',
+                    agent: agents.marsha,
+                    task: `Marketing strategy for ${title}`,
+                    message: `@Marsha - Develop the marketing strategy and conversion optimization plan. Focus on maximizing engagement and results.`
+                });
+            }
+
+            if (lowerTitle.includes('content') || lowerDesc.includes('content') || lowerDesc.includes('writing')) {
+                plans.push({
+                    agentId: 'charlie',
+                    agent: agents.charlie,
+                    task: `Content creation for ${title}`,
+                    message: `@Charlie - Create compelling content that aligns with the project goals. Ensure consistency and quality across all materials.`
+                });
+            }
+
+            if (lowerTitle.includes('research') || lowerDesc.includes('analysis') || lowerDesc.includes('research')) {
+                plans.push({
+                    agentId: 'rory',
+                    agent: agents.rory,
+                    task: `Research and analysis for ${title}`,
+                    message: `@Rory - Conduct thorough research and analysis to support this project. Provide data-driven insights and recommendations.`
+                });
+            }
+
+            return plans;
+        }
+
+        function addDelegationMessage(thread, delegation) {
+            const timestamp = new Date().toLocaleString();
+            
+            // Add delegation indicator
+            const delegationIndicator = document.createElement('div');
+            delegationIndicator.className = 'delegation-indicator';
+            delegationIndicator.innerHTML = `
+                <div class="delegation-text">🎯 Vanessa is delegating to ${delegation.agent.name}...</div>
+            `;
+            
+            // Add delegation message
+            const delegationMessage = document.createElement('div');
+            delegationMessage.className = 'message';
+            delegationMessage.innerHTML = `
+                <div class="message-avatar">V</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-sender">Vanessa</span>
+                        <span class="message-role">→ Delegating to ${delegation.agent.name}</span>
+                        <span class="message-timestamp">${timestamp}</span>
+                    </div>
+                    <div class="message-text">${delegation.message}</div>
+                </div>
+            `;
+
+            const actionsElement = thread.querySelector('.quick-actions');
+            thread.insertBefore(delegationIndicator, actionsElement);
+            thread.insertBefore(delegationMessage, actionsElement);
+
+            // Simulate agent response
+            setTimeout(() => {
+                simulateAgentResponse(thread, delegation);
+            }, 3000);
+        }
+
+        function simulateAgentResponse(thread, delegation) {
+            const timestamp = new Date().toLocaleString();
+            const response = generateAgentResponse(delegation);
+            
+            const agentMessage = document.createElement('div');
+            agentMessage.className = 'message';
+            agentMessage.innerHTML = `
+                <div class="message-avatar">${delegation.agent.avatar}</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-sender">${delegation.agent.name}</span>
+                        <span class="message-role">${delegation.agent.role}</span>
+                        <span class="message-timestamp">${timestamp}</span>
+                    </div>
+                    <div class="message-text">${response.message}</div>
+                    ${response.workflow ? `
+                    <div class="workflow-preview">
+                        <div class="workflow-title">🔧 ${delegation.agent.name}'s ${response.workflow.title}</div>
+                        <div class="workflow-nodes">
+                            ${response.workflow.nodes.map(node => `<span class="workflow-node">${node}</span>`).join('<span class="node-arrow">→</span>')}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            const actionsElement = thread.querySelector('.quick-actions');
+            thread.insertBefore(agentMessage, actionsElement);
+            
+            updateAgentStatus(delegation.agentId, `Working on: ${delegation.task.substring(0, 50)}...`);
+        }
+
+        function generateAgentResponse(delegation) {
+            const responses = {
+                auto: {
+                    message: "Workflow infrastructure ready! I've configured the necessary integrations, set up monitoring systems, and established communication protocols between all agents. Ready to coordinate execution.",
+                    workflow: {
+                        title: "Integration Setup",
+                        nodes: ["API Config", "Webhook Setup", "Monitoring", "Coordination"]
+                    }
+                },
+                william: {
+                    message: "Technical analysis complete. I'll implement the required features with focus on performance optimization, responsive design, and scalability. Timeline estimated based on complexity.",
+                    workflow: {
+                        title: "Development Pipeline",
+                        nodes: ["Planning", "Development", "Testing", "Deployment"]
+                    }
+                },
+                marsha: {
+                    message: "Marketing strategy framework established! I'll create campaigns focused on target audience engagement, conversion optimization, and measurable ROI. Ready to execute.",
+                    workflow: {
+                        title: "Marketing Strategy",
+                        nodes: ["Research", "Strategy", "Campaign Creation", "Analysis"]
+                    }
+                },
+                charlie: {
+                    message: "Content strategy outlined! I'll develop compelling, SEO-optimized content that resonates with your audience and supports business objectives. Quality assured.",
+                    workflow: {
+                        title: "Content Creation",
+                        nodes: ["Research", "Writing", "Optimization", "Review"]
+                    }
+                },
+                rory: {
+                    message: "Research parameters set! I'll conduct comprehensive analysis including market trends, competitor insights, and data-driven recommendations to inform strategy.",
+                    workflow: {
+                        title: "Research Process",
+                        nodes: ["Data Collection", "Analysis", "Insights", "Recommendations"]
+                    }
+                }
+            };
+            
+            return responses[delegation.agentId] || { 
+                message: "Task acknowledged and ready for execution. I'll coordinate with the team to ensure optimal results.",
+                workflow: null 
+            };
+        }
+
+        function updateAgentStatus(agentId, activity) {
+            const agentStatusList = document.getElementById('agentStatusList');
+            const agentItem = agentStatusList.querySelector(`[data-agent="${agentId}"]`);
+            
+            if (agentItem) {
+                agentItem.querySelector('.agent-activity').textContent = activity;
+                agentItem.querySelector('.activity-indicator').className = 'activity-indicator indicator-busy';
+            }
+        }
+
+        function addMessage() {
+            alert('Reply functionality would allow you to continue the conversation with any agent in the thread.');
+        }
+
+        function viewWorkflow() {
+            alert('This would open the detailed workflow view showing all nodes, connections, and current progress.');
+        }
+
+        function checkProgress() {
+            alert('This would display detailed progress metrics, timelines, and completion status for all tasks.');
+        }
+
+        // Add data attributes to agent status items for easier targeting
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusItems = document.querySelectorAll('.agent-status-item');
+            const agentNames = ['vanessa', 'auto', 'william', 'marsha', 'charlie'];
+            
+            statusItems.forEach((item, index) => {
+                if (agentNames[index]) {
+                    item.setAttribute('data-agent', agentNames[index]);
+                }
+            });
+        });
+
+        // Simulate periodic status updates
+        setInterval(() => {
+            const agents = document.querySelectorAll('.agent-status-item');
+            agents.forEach(agent => {
+                const indicator = agent.querySelector('.activity-indicator');
+                if (indicator.classList.contains('indicator-busy')) {
+                    // Randomly switch some busy agents to active
+                    if (Math.random() < 0.3) {
+                        indicator.className = 'activity-indicator indicator-active';
+                    }
+                }
+            });
+        }, 10000);
+    </script>
+</body>
+</html>

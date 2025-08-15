@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your AI Agent Dashboard | EgoPanda Creative Agency</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-bottom: 2px solid rgba(0, 255, 136, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .subscription-badge {
+            background: linear-gradient(45deg, #ffd93d, #ff6b35);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00ff88;
+        }
+
+        /* Main Dashboard */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .welcome-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(0, 255, 136, 0.2);
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 2.5em;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(0, 255, 136, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #00ff88;
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            color: #4ecdc4;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1em;
+        }
+
+        /* Main Content Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.5em;
+            color: #00ff88;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Your Agents Panel */
+        .agent-list {
+            display: grid;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .agent-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .agent-item:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .agent-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .agent-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .agent-details h4 {
+            color: white;
+            margin-bottom: 3px;
+        }
+
+        .agent-role {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85em;
+        }
+
+        .agent-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-online {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+
+        .status-busy {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+
+        .chat-btn {
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            border: none;
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        /* Active Projects Panel */
+        .project-list {
+            display: grid;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .project-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .project-title {
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .project-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Action Buttons */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(0, 255, 136, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover {
+            border-color: #00ff88;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+        }
+
+        .action-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .action-title {
+            font-size: 1.3em;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        .action-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo">🐼 EgoPanda AI Agency</div>
+            <div class="user-info">
+                <span>Welcome back, <strong id="customerName">Alex</strong>!</span>
+                <div class="subscription-badge" id="subscriptionTier">Pro Plan</div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard-container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Your AI Command Center</h1>
+            <p class="welcome-text">Manage your AI agents, track projects, and grow your business</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <span class="stat-number" id="activeAgents">6</span>
+                <div class="stat-label">Active Agents</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="activeProjects">3</span>
+                <div class="stat-label">Active Projects</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="completedTasks">24</span>
+                <div class="stat-label">Completed Tasks</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="monthlyRevenue">$2,400</span>
+                <div class="stat-label">Monthly Revenue</div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Your AI Agents -->
+            <div class="panel">
+                <h2 class="panel-title">🤖 Your AI Agent Team</h2>
+                <div class="agent-list">
+                    <div class="agent-item">
+                        <div class="agent-info">
+                            <div class="agent-avatar">C</div>
+                            <div class="agent-details">
+                                <h4>Charlie</h4>
+                                <div class="agent-role">Creative Director</div>
+                            </div>
+                        </div>
+                        <div class="agent-status status-online">Online</div>
+                        <button class="chat-btn" onclick="chatWithAgent('charlie')">Chat</button>
+                    </div>
+                    
+                    <div class="agent-item">
+                        <div class="agent-info">
+                            <div class="agent-avatar">W</div>
+                            <div class="agent-details">
+                                <h4>William</h4>
+                                <div class="agent-role">Web Perfectionist</div>
+                            </div>
+                        </div>
+                        <div class="agent-status status-online">Online</div>
+                        <button class="chat-btn" onclick="chatWithAgent('william')">Chat</button>
+                    </div>
+                    
+                    <div class="agent-item">
+                        <div class="agent-info">
+                            <div class="agent-avatar">M</div>
+                            <div class="agent-details">
+                                <h4>Marsha</h4>
+                                <div class="agent-role">Marketing Communicator</div>
+                            </div>
+                        </div>
+                        <div class="agent-status status-busy">Working</div>
+                        <button class="chat-btn" onclick="chatWithAgent('marsha')">Chat</button>
+                    </div>
+                    
+                    <div class="agent-item">
+                        <div class="agent-info">
+                            <div class="agent-avatar">R</div>
+                            <div class="agent-details">
+                                <h4>Rory</h4>
+                                <div class="agent-role">Research Director</div>
+                            </div>
+                        </div>
+                        <div class="agent-status status-online">Online</div>
+                        <button class="chat-btn" onclick="chatWithAgent('rory')">Chat</button>
+                    </div>
+                    
+                    <div class="agent-item">
+                        <div class="agent-info">
+                            <div class="agent-avatar">A</div>
+                            <div class="agent-details">
+                                <h4>Auto</h4>
+                                <div class="agent-role">Automation Master</div>
+                            </div>
+                        </div>
+                        <div class="agent-status status-online">Online</div>
+                        <button class="chat-btn" onclick="chatWithAgent('auto')">Chat</button>
+                    </div>
+                    
+                    <div class="agent-item">
+                        <div class="agent-info">
+                            <div class="agent-avatar">Z</div>
+                            <div class="agent-details">
+                                <h4>Zen</h4>
+                                <div class="agent-role">UX Designer</div>
+                            </div>
+                        </div>
+                        <div class="agent-status status-online">Online</div>
+                        <button class="chat-btn" onclick="chatWithAgent('zen')">Chat</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Projects -->
+            <div class="panel">
+                <h2 class="panel-title">📊 Active Projects</h2>
+                <div class="project-list">
+                    <div class="project-item">
+                        <div class="project-header">
+                            <div class="project-title">Website Redesign</div>
+                            <div class="project-status">In Progress</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                        <div class="project-meta">
+                            <span>Agent: William</span>
+                            <span>Due: Aug 20</span>
+                        </div>
+                    </div>
+                    
+                    <div class="project-item">
+                        <div class="project-header">
+                            <div class="project-title">Content Strategy</div>
+                            <div class="project-status">In Progress</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%"></div>
+                        </div>
+                        <div class="project-meta">
+                            <span>Agent: Charlie</span>
+                            <span>Due: Aug 25</span>
+                        </div>
+                    </div>
+                    
+                    <div class="project-item">
+                        <div class="project-header">
+                            <div class="project-title">Market Research</div>
+                            <div class="project-status">In Progress</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 90%"></div>
+                        </div>
+                        <div class="project-meta">
+                            <span>Agent: Rory</span>
+                            <span>Due: Aug 18</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Cards -->
+        <div class="action-grid">
+            <div class="action-card" onclick="startNewProject()">
+                <div class="action-icon">🚀</div>
+                <div class="action-title">Start New Project</div>
+                <div class="action-description">Launch a new project with your AI agent team</div>
+            </div>
+            
+            <div class="action-card" onclick="createCustomAgent()">
+                <div class="action-icon">🤖</div>
+                <div class="action-title">Create Custom Agent</div>
+                <div class="action-description">Work with Aurelius to design a specialized AI agent</div>
+            </div>
+            
+            <div class="action-card" onclick="viewAnalytics()">
+                <div class="action-icon">📈</div>
+                <div class="action-title">View Analytics</div>
+                <div class="action-description">Deep dive into your business performance metrics</div>
+            </div>
+            
+            <div class="action-card" onclick="manageBilling()">
+                <div class="action-icon">💳</div>
+                <div class="action-title">Manage Subscription</div>
+                <div class="action-description">Update your plan, billing, and account settings</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Customer data (would come from your backend/authentication system)
+        const customerData = {
+            name: "Alex Johnson",
+            subscription: "Pro Plan",
+            activeAgents: 6,
+            activeProjects: 3,
+            completedTasks: 24,
+            monthlyRevenue: "$2,400"
+        };
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('customerName').textContent = customerData.name;
+            document.getElementById('subscriptionTier').textContent = customerData.subscription;
+            document.getElementById('activeAgents').textContent = customerData.activeAgents;
+            document.getElementById('activeProjects').textContent = customerData.activeProjects;
+            document.getElementById('completedTasks').textContent = customerData.completedTasks;
+            document.getElementById('monthlyRevenue').textContent = customerData.monthlyRevenue;
+        });
+
+        // Chat with agent
+        function chatWithAgent(agentName) {
+            alert(`💬 Opening chat with ${agentName.charAt(0).toUpperCase() + agentName.slice(1)}...\n\nThis would open a dedicated chat interface where you can communicate directly with your AI agent for project updates, new tasks, or general questions.`);
+        }
+
+        // Start new project
+        function startNewProject() {
+            alert(`🚀 New Project Wizard\n\nThis would open a project creation wizard where you can:\n• Select which AI agents to assign\n• Define project scope and timeline\n• Set budget and deliverables\n• Choose project templates`);
+        }
+
+        // Create custom agent
+        function createCustomAgent() {
+            window.open('aurelius-interview-system.html', '_blank');
+        }
+
+        // View analytics
+        function viewAnalytics() {
+            window.open('business-command-center.html', '_blank');
+        }
+
+        // Manage billing
+        function manageBilling() {
+            alert(`💳 Subscription Management\n\nThis would open your account portal where you can:\n• View current subscription details\n• Update payment methods\n• Change subscription tiers\n• View billing history\n• Download invoices\n\nIntegrated with Square for secure payment processing.`);
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                alert('👋 Logging out...\n\nYou would be redirected to the login page.');
+                // In real implementation: window.location.href = '/login';
+            }
+        }
+
+        // Live updates simulation
+        setInterval(() => {
+            // Simulate live data updates
+            const completedTasks = document.getElementById('completedTasks');
+            const currentTasks = parseInt(completedTasks.textContent);
+            if (Math.random() > 0.95) { // 5% chance per interval
+                completedTasks.textContent = currentTasks + 1;
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

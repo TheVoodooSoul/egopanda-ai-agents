@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - EgoPanda Creative AI Agency</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .top-nav {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .nav-logo {
+            color: #00ff88;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 80px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 3.5em;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.4em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 50px;
+            line-height: 1.5;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            padding: 40px 30px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card.popular {
+            border-color: #ffd93d;
+            transform: scale(1.05);
+        }
+
+        .pricing-card.popular::before {
+            content: '🌟 MOST POPULAR';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(45deg, #ffd93d, #ff6b35);
+            color: #000;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+        }
+
+        .popular:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .plan-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .plan-name {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .single-agent .plan-name { color: #ff6b6b; }
+        .executive-trial .plan-name { color: #4ecdc4; }
+        .full-suite .plan-name { color: #00ff88; }
+        .executive-annual .plan-name { color: #ffd93d; }
+        .custom-lifetime .plan-name { color: #9b59b6; }
+
+        .plan-price {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .price-main {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .price-period {
+            font-size: 1em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .price-note {
+            text-align: center;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 25px;
+            height: 20px;
+        }
+
+        .plan-description {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+            line-height: 1.5;
+            font-size: 1.1em;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 30px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .features-list li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+            top: 8px;
+        }
+
+        .purchase-button {
+            width: 100%;
+            padding: 18px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .single-agent .purchase-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .executive-trial .purchase-button {
+            background: linear-gradient(45deg, #4ecdc4, #45b7aa);
+            color: white;
+        }
+
+        .full-suite .purchase-button {
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            color: #000;
+        }
+
+        .executive-annual .purchase-button {
+            background: linear-gradient(45deg, #ffd93d, #f39c12);
+            color: #000;
+        }
+
+        .custom-lifetime .purchase-button {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+
+        .purchase-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .value-section {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            margin: 80px 0;
+        }
+
+        .value-title {
+            font-size: 2.5em;
+            color: #00ff88;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .value-item {
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .value-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .value-item h3 {
+            color: #4ecdc4;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .guarantee-section {
+            background: linear-gradient(45deg, rgba(0, 255, 136, 0.1), rgba(76, 205, 196, 0.1));
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 30px;
+            margin: 50px 20px;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .guarantee-title {
+            font-size: 2.2em;
+            color: #00ff88;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .guarantee-text {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5em;
+            }
+            
+            .pricing-card.popular {
+                transform: none;
+            }
+            
+            .popular:hover {
+                transform: translateY(-10px);
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="top-nav">
+        <a href="index.html" class="nav-logo">🐼 EgoPanda Creative</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="pricing.html" class="nav-link">Pricing</a>
+            <a href="login.html" class="nav-link">Login</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1 class="hero-title">Choose Your AI Team</h1>
+        <p class="hero-subtitle">
+            Select the perfect plan for your business needs. All plans include secure access, 
+            regular updates, and our commitment to helping your business grow with AI.
+        </p>
+    </div>
+
+    <!-- Pricing Grid -->
+    <div class="pricing-grid">
+        <!-- Single Agent Plan -->
+        <div class="pricing-card single-agent">
+            <div class="plan-icon">💫</div>
+            <h2 class="plan-name">Single Agent</h2>
+            <div class="plan-price">
+                <span class="price-main">$50</span>
+                <span class="price-period">/month</span>
+            </div>
+            <div class="price-note">Perfect for getting started</div>
+            <p class="plan-description">
+                Get started with Charlie, your dedicated content creation specialist. 
+                Perfect for small businesses and entrepreneurs.
+            </p>
+            <ul class="features-list">
+                <li>1 specialized AI agent (Charlie)</li>
+                <li>Content creation & writing</li>
+                <li>5 projects per month</li>
+                <li>Basic email support</li>
+                <li>Regular agent updates</li>
+            </ul>
+            <button class="purchase-button" onclick="purchaseSquarePlan('single-agent')">
+                Start with Charlie
+            </button>
+        </div>
+
+        <!-- Executive Trial Plan -->
+        <div class="pricing-card executive-trial popular">
+            <div class="plan-icon">🚀</div>
+            <h2 class="plan-name">Executive Trial</h2>
+            <div class="plan-price">
+                <span class="price-main">$99.99</span>
+                <span class="price-period">first month</span>
+            </div>
+            <div class="price-note">Then $199/month - Cancel anytime</div>
+            <p class="plan-description">
+                Try our full executive experience with 12 core agents at a special trial price. 
+                Perfect for growing businesses.
+            </p>
+            <ul class="features-list">
+                <li>12 core AI agents</li>
+                <li>Content, web, marketing, operations</li>
+                <li>50 projects per month</li>
+                <li>Priority support</li>
+                <li>Advanced workflows</li>
+            </ul>
+            <button class="purchase-button" onclick="purchaseSquarePlan('executive-trial')">
+                Start Trial
+            </button>
+        </div>
+
+        <!-- Full Suite Annual Plan -->
+        <div class="pricing-card full-suite">
+            <div class="plan-icon">🌟</div>
+            <h2 class="plan-name">Full Suite Annual</h2>
+            <div class="plan-price">
+                <span class="price-main">$200</span>
+                <span class="price-period">/year</span>
+            </div>
+            <div class="price-note">Only $16.67/month - Best Value!</div>
+            <p class="plan-description">
+                Complete access to all 18 AI agents with annual billing. 
+                Incredible value for serious businesses.
+            </p>
+            <ul class="features-list">
+                <li>All 18 AI agents</li>
+                <li>Custom agent creation</li>
+                <li>Unlimited projects</li>
+                <li>Premium support</li>
+                <li>Advanced analytics</li>
+            </ul>
+            <button class="purchase-button" onclick="purchaseSquarePlan('full-suite-annual')">
+                Get Full Suite
+            </button>
+        </div>
+
+        <!-- Executive Annual Plan -->
+        <div class="pricing-card executive-annual">
+            <div class="plan-icon">💼</div>
+            <h2 class="plan-name">Executive Annual</h2>
+            <div class="plan-price">
+                <span class="price-main">$1,499</span>
+                <span class="price-period">/year</span>
+            </div>
+            <div class="price-note">Only $125/month - Premium Experience</div>
+            <p class="plan-description">
+                Premium executive package with priority processing, dedicated support, 
+                and exclusive features for enterprise clients.
+            </p>
+            <ul class="features-list">
+                <li>All 18 premium AI agents</li>
+                <li>24/7 executive support</li>
+                <li>Priority processing</li>
+                <li>Custom workflows</li>
+                <li>Unlimited everything</li>
+            </ul>
+            <button class="purchase-button" onclick="purchaseSquarePlan('executive-annual')">
+                Go Executive
+            </button>
+        </div>
+
+        <!-- Custom Lifetime Plan -->
+        <div class="pricing-card custom-lifetime">
+            <div class="plan-icon">🤖</div>
+            <h2 class="plan-name">Custom Lifetime</h2>
+            <div class="plan-price">
+                <span class="price-main">$1,999</span>
+                <span class="price-period">one-time</span>
+            </div>
+            <div class="price-note">Lifetime access - Never pay again</div>
+            <p class="plan-description">
+                Create your own custom AI agent with Aurelius, our Master Agent Forge. 
+                Lifetime access with no recurring fees.
+            </p>
+            <ul class="features-list">
+                <li>Custom AI agent creation</li>
+                <li>Aurelius Master Agent Forge</li>
+                <li>Lifetime access</li>
+                <li>Premium support</li>
+                <li>Unlimited projects</li>
+            </ul>
+            <button class="purchase-button" onclick="purchaseSquarePlan('custom-lifetime')">
+                Create Custom Agent
+            </button>
+        </div>
+    </div>
+
+    <!-- Value Proposition -->
+    <div class="value-section">
+        <h2 class="value-title">Why Choose EgoPanda Creative?</h2>
+        <div class="value-grid">
+            <div class="value-item">
+                <div class="value-icon">⚡</div>
+                <h3>Instant Setup</h3>
+                <p>Your AI agents are ready to work immediately after purchase. No complex setup or training required.</p>
+            </div>
+            <div class="value-item">
+                <div class="value-icon">🔒</div>
+                <h3>Secure & Private</h3>
+                <p>All your data is encrypted and secure. Your business information never leaves our protected systems.</p>
+            </div>
+            <div class="value-item">
+                <div class="value-icon">🎯</div>
+                <h3>Specialized Agents</h3>
+                <p>Each agent is designed for specific business functions - content, web development, marketing, and more.</p>
+            </div>
+            <div class="value-item">
+                <div class="value-icon">📈</div>
+                <h3>Proven Results</h3>
+                <p>Our AI agents are built on cutting-edge technology and continuously updated for optimal performance.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guarantee -->
+    <div class="guarantee-section">
+        <h2 class="guarantee-title">30-Day Money-Back Guarantee</h2>
+        <p class="guarantee-text">
+            Try EgoPanda Creative risk-free. If you're not completely satisfied with your AI agents 
+            within the first 30 days, we'll refund your purchase - no questions asked.
+        </p>
+    </div>
+
+    <script>
+        function purchaseSquarePlan(planType) {
+            // Your actual Square payment links
+            const squareLinks = {
+                'single-agent': 'https://square.link/u/4XDDOghE',
+                'executive-trial': 'https://square.link/u/iORIO9s',
+                'full-suite-annual': 'https://square.link/u/swAJ1grE',
+                'executive-annual': 'https://square.link/u/MHuKoxUP',
+                'custom-lifetime': 'https://square.link/u/aocGgYQs'
+            };
+            
+            const planNames = {
+                'single-agent': 'Single Agent ($50/month)',
+                'executive-trial': 'Executive Trial ($99.99 first month, then $199/month)',
+                'full-suite-annual': 'Full Suite Annual ($200/year)',
+                'executive-annual': 'Executive Annual ($1,499.99/year)',
+                'custom-lifetime': 'Custom Agent Lifetime ($1,999 one-time)'
+            };
+            
+            // Show confirmation and redirect
+            if (confirm(`🛒 Purchase ${planNames[planType]}\n\nYou'll be redirected to secure Square checkout. After payment, you'll receive login credentials to access your AI dashboard.\n\nContinue to checkout?`)) {
+                // Redirect to Square payment
+                window.location.href = squareLinks[planType];
+            }
+        }
+
+        // Add smooth scrolling and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate pricing cards on scroll
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.pricing-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease';
+                observer.observe(card);
+            });
+
+            console.log('🐼 EgoPanda Creative Pricing Page Loaded');
+            console.log('💳 Square payment integration active');
+        });
+    </script>
+</body>
+</html>

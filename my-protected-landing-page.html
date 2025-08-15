@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EgoPanda Creative Agency</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+        .landing-image {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+        }
+        
+        /* Navigation links floating over your image */
+        .nav-overlay {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+        
+        .nav-link {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: translateY(-3px);
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .nav-overlay {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .nav-link {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- YOUR EXACT LANDING PAGE IMAGE - NO MODIFICATIONS -->
+    <img src="my-landing-page.png" alt="EgoPanda Creative Agency Landing Page" class="landing-image">
+    
+    <!-- Navigation links floating over your image -->
+    <div class="nav-overlay">
+        <a href="agent-wellness-command-center.html" class="nav-link">🏗️ Wellness Center</a>
+        <a href="vanessa-scheduling-system.html" class="nav-link">🔮 Democratic Council</a>
+        <a href="aurelius-interview-system.html" class="nav-link">👑 Soul Forge</a>
+        <a href="full-project-audit.html" class="nav-link">📊 Project Audit</a>
+    </div>
+</body>
+</html>

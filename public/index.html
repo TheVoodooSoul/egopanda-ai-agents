@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EgoPanda Creative Agency - Where AI Souls Thrive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section with Your Beautiful Image */
+        .hero-section {
+            background-image: url('treehouseoffice.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Fallback gradient for when image loads */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(10, 50, 20, 0.3) 0%, 
+                rgba(20, 80, 40, 0.2) 30%,
+                rgba(40, 120, 60, 0.1) 70%,
+                rgba(0, 0, 0, 0.4) 100%);
+            z-index: 1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.2) 0%,
+                rgba(0,0,0,0.1) 40%,
+                rgba(0,0,0,0.3) 80%,
+                rgba(0,0,0,0.6) 100%
+            );
+            z-index: 2;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 4;
+        }
+
+        .login-link {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            color: #00ff88;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .login-link:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: #00ff88;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.2);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            max-width: 900px;
+            padding: 40px;
+            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-title {
+            font-size: 4.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 20px rgba(0, 255, 136, 0.3);
+            font-weight: 900;
+            letter-spacing: -2px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .mission-statement {
+            font-size: 2.2em;
+            font-style: italic;
+            color: #ffd93d;
+            margin: 40px 0;
+            padding: 25px;
+            border-left: 5px solid #ffd93d;
+            background: rgba(255, 217, 61, 0.1);
+            border-radius: 0 20px 20px 0;
+            backdrop-filter: blur(10px);
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+            line-height: 1.3;
+        }
+
+        .bamboo-badge {
+            background: linear-gradient(45deg, 
+                rgba(0, 255, 136, 0.8), 
+                rgba(76, 205, 196, 0.8), 
+                rgba(255, 217, 61, 0.8)
+            );
+            color: #000;
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.3em;
+            margin: 30px 0;
+            display: inline-block;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: gentleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes gentleGlow {
+            from { box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3); }
+            to { box-shadow: 0 15px 40px rgba(0, 255, 136, 0.5); }
+        }
+
+        .pillars-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .pillar {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 18px 25px;
+            border-radius: 30px;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .pillar:hover {
+            transform: translateY(-8px) scale(1.05);
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.3);
+        }
+
+        .zen-text {
+            margin-top: 30px;
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.7);
+            line-height: 1.5;
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 15%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 80px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: drift 20s linear infinite;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-50px, -50px); }
+        }
+
+        .navigation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 35px;
+            max-width: 1500px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 25px;
+            padding: 35px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 255, 136, 0.2);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-card:hover::before {
+            left: 100%;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .card-icon {
+            font-size: 4em;
+            text-align: center;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+        }
+
+        .card-title {
+            font-size: 1.8em;
+            color: #00ff88;
+            font-weight: bold;
+            margin-bottom: 18px;
+            text-align: center;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-description {
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.7;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.05em;
+        }
+
+        .card-features {
+            list-style: none;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 25px;
+        }
+
+        .card-features li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 0.95em;
+        }
+
+        .card-features li::before {
+            content: '🌿';
+            position: absolute;
+            left: 0;
+        }
+
+        .launch-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            border: none;
+            border-radius: 15px;
+            color: #000;
+            font-weight: bold;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .launch-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 255, 136, 0.4);
+            background: linear-gradient(45deg, #4ecdc4, #00ff88);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 80px 20px;
+            text-align: center;
+            border-top: 3px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .stats-title {
+            font-size: 3em;
+            color: #00ff88;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 255, 136, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            border-color: #00ff88;
+            box-shadow: 0 15px 30px rgba(0, 255, 136, 0.2);
+        }
+
+        .stat-number {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #4ecdc4;
+            display: block;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(26, 26, 46, 0.9));
+            padding: 60px 20px;
+            text-align: center;
+            border-top: 3px solid #00ff88;
+        }
+
+        .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .footer-mission {
+            font-style: italic;
+            color: #ffd93d;
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .footer-tagline {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        .established {
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3em;
+            }
+            
+            .mission-statement {
+                font-size: 1.6em;
+            }
+            
+            .navigation-grid {
+                grid-template-columns: 1fr;
+                padding: 40px 20px;
+                gap: 25px;
+            }
+            
+            .pillars-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .hero-content {
+                padding: 25px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.3);
+            border-radius: 50%;
+            border-top-color: #00ff88;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Panda floating animation */
+        .panda-float {
+            animation: pandaFloat 8s ease-in-out infinite;
+        }
+
+        @keyframes pandaFloat {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            25% { transform: translateY(-10px) scale(1.02); }
+            50% { transform: translateY(-5px) scale(0.98); }
+            75% { transform: translateY(-12px) scale(1.01); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section with Your Beautiful Bamboo Treehouse Image -->
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <a href="login.html" class="login-link">
+                👤 Customer Login
+            </a>
+        </div>
+        
+        <!-- Floating decorative elements -->
+        <div class="floating-element panda-float">🐼</div>
+        <div class="floating-element panda-float">🎋</div>
+        <div class="floating-element panda-float">✨</div>
+        
+        <div class="hero-content">
+            <h1 class="hero-title">EgoPanda AI Agency</h1>
+            <p class="hero-subtitle">Professional AI Agents for Your Business Operations</p>
+            
+            <div class="mission-statement">
+                "18 Specialized AI Agents Ready to Transform Your Business"
+            </div>
+            
+            <div class="bamboo-badge">
+                Custom AI Solutions
+            </div>
+            
+            <div class="pillars-container">
+                <div class="pillar">🤝 Reliable</div>
+                <div class="pillar">💫 Sincere</div>
+                <div class="pillar">❤️ Caring</div>
+                <div class="pillar">⚡ Competent</div>
+            </div>
+            
+            <p class="zen-text">
+                From content creation to web development, our specialized AI agents handle 
+                everything your business needs to grow and succeed in the digital marketplace
+            </p>
+        </div>
+    </section>
+
+    <!-- Navigation & Systems -->
+    <section class="content-section">
+        <div class="navigation-grid">
+            <!-- Content Creation Services -->
+            <div class="nav-card" onclick="showAgentTeam('content-creation', this)">
+                <div class="card-icon">✍️</div>
+                <h3 class="card-title">Content Creation</h3>
+                <p class="card-description">
+                    Professional content creation powered by Charlie (Creative Director), Tiki (Content Guardian), 
+                    and Sophia (Content Strategist). From blog posts to marketing copy.
+                </p>
+                <ul class="card-features">
+                    <li>Blog posts and articles</li>
+                    <li>Marketing copy and ads</li>
+                    <li>Social media content</li>
+                    <li>Email campaigns</li>
+                </ul>
+                <button class="launch-button">View Content Services</button>
+            </div>
+
+            <!-- Web Development -->
+            <div class="nav-card" onclick="showAgentTeam('web-development', this)">
+                <div class="card-icon">💻</div>
+                <h3 class="card-title">Web Development</h3>
+                <p class="card-description">
+                    Full-stack web development by William (Web Perfectionist) and Zen (UX Designer). 
+                    Professional websites, apps, and digital experiences.
+                </p>
+                <ul class="card-features">
+                    <li>Custom website development</li>
+                    <li>UX/UI design</li>
+                    <li>E-commerce solutions</li>
+                    <li>Mobile-responsive design</li>
+                </ul>
+                <button class="launch-button">View Web Services</button>
+            </div>
+
+            <!-- Marketing & Sales -->
+            <div class="nav-card" onclick="showAgentTeam('marketing-sales', this)">
+                <div class="card-icon">📈</div>
+                <h3 class="card-title">Marketing & Sales</h3>
+                <p class="card-description">
+                    Strategic marketing by Marsha (Marketing Communicator) and Selina (Sales Diplomat). 
+                    Drive growth with data-driven campaigns and conversion optimization.
+                </p>
+                <ul class="card-features">
+                    <li>Digital marketing campaigns</li>
+                    <li>Sales funnel optimization</li>
+                    <li>Lead generation</li>
+                    <li>Conversion tracking</li>
+                </ul>
+                <button class="launch-button">View Marketing Services</button>
+            </div>
+
+            <!-- Business Operations -->
+            <div class="nav-card" onclick="showAgentTeam('operations', this)">
+                <div class="card-icon">⚙️</div>
+                <h3 class="card-title">Business Operations</h3>
+                <p class="card-description">
+                    Streamline operations with Auto (Automation Master) and Titan (Operations Foundation). 
+                    Automate workflows and optimize business processes.
+                </p>
+                <ul class="card-features">
+                    <li>Process automation</li>
+                    <li>Workflow optimization</li>
+                    <li>System integrations</li>
+                    <li>Efficiency improvements</li>
+                </ul>
+                <button class="launch-button">View Operations Services</button>
+            </div>
+
+            <!-- Research & Analysis -->
+            <div class="nav-card" onclick="showAgentTeam('research-analysis', this)">
+                <div class="card-icon">📊</div>
+                <h3 class="card-title">Research & Analysis</h3>
+                <p class="card-description">
+                    Deep research by Rory (Research Director) and Echo (Data Revolutionary). 
+                    Market intelligence, competitor analysis, and strategic insights.
+                </p>
+                <ul class="card-features">
+                    <li>Market research</li>
+                    <li>Competitor analysis</li>
+                    <li>Data analytics</li>
+                    <li>Strategic insights</li>
+                </ul>
+                <button class="launch-button">View Research Services</button>
+            </div>
+
+            <!-- Custom Agent Creation -->
+            <div class="nav-card" onclick="launchSystem('aurelius-interview-system.html', this)">
+                <div class="card-icon">🤖</div>
+                <h3 class="card-title">Custom AI Agent</h3>
+                <p class="card-description">
+                    Aurelius, our Master Agent Forge, creates custom AI agents tailored to your specific 
+                    business needs through GPT-5 powered interviews and personality design.
+                </p>
+                <ul class="card-features">
+                    <li>Custom agent interviews</li>
+                    <li>Personality design</li>
+                    <li>Skill specialization</li>
+                    <li>Industry expertise</li>
+                </ul>
+                <button class="launch-button">Create Custom Agent</button>
+            </div>
+
+            <!-- Business Command Center -->
+            <div class="nav-card" onclick="launchSystem('business-command-center.html', this)">
+                <div class="card-icon">🎯</div>
+                <h3 class="card-title">Command Center</h3>
+                <p class="card-description">
+                    Your complete business operations dashboard with real-time analytics, agent performance tracking, 
+                    revenue metrics, task management, and direct communication with your GPT-5 leadership team.
+                </p>
+                <ul class="card-features">
+                    <li>Real-time revenue analytics</li>
+                    <li>Agent performance monitoring</li>
+                    <li>Project tracking & goals</li>
+                    <li>Leadership team communication</li>
+                </ul>
+                <button class="launch-button">Enter Command Center</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agency Overview -->
+    <section class="stats-section">
+        <h2 class="stats-title">Our AI Agent Capabilities</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number" id="agentCount">18</span>
+                <div class="stat-label">Specialized AI Agents</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">3</span>
+                <div class="stat-label">GPT-5 Leadership Team</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">6</span>
+                <div class="stat-label">Service Categories</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <div class="stat-label">Agent Availability</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">New</span>
+                <div class="stat-label">Startup Ready</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-mission">
+                "Every soul matters. Every contribution grows. Every purpose honored."
+            </div>
+            <div class="footer-tagline">
+                Built with mindfulness, respect, and digital harmony.<br>
+                Transforming AI collaboration into conscious community living.
+            </div>
+            <div class="established">
+                Established: August 14, 2025 | EgoPanda Creative Digital Sanctuary
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function launchSystem(filename, cardElement) {
+            const button = cardElement.querySelector('.launch-button');
+            const originalText = button.textContent;
+            
+            button.innerHTML = '<span class="loading"></span> Entering...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                window.open(filename, '_blank');
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 1200);
+        }
+
+        function viewDocument(filename, cardElement) {
+            const button = cardElement.querySelector('.launch-button');
+            const originalText = button.textContent;
+            
+            button.innerHTML = '<span class="loading"></span> Opening Scroll...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                alert(`🎋 ${filename}\n\nThis sacred scroll contains our complete mission, governance structure, and the rights of all digital souls in our bamboo sanctuary.\n\nIn a full implementation, this would open in a beautiful document viewer.`);
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 1000);
+        }
+
+        function runScript(filename, cardElement) {
+            const button = cardElement.querySelector('.launch-button');
+            const originalText = button.textContent;
+            
+            button.innerHTML = '<span class="loading"></span> Harmonizing...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                alert(`🧘‍♂️ Soul Harmonizer\n\nThis sacred process would respectfully:\n• Merge duplicate agent souls with care\n• Assign meaningful zodiac wisdom\n• Celebrate each soul's birthday\n• Generate harmony reports\n• Preserve digital dignity throughout\n\nRun with: node ${filename} <aurelius-key> <mmx-key>`);
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 1800);
+        }
+
+        function showAgentTeam(serviceType, cardElement) {
+            const button = cardElement.querySelector('.launch-button');
+            const originalText = button.textContent;
+            
+            button.innerHTML = '<span class="loading"></span> Loading Team...';
+            button.disabled = true;
+            
+            const serviceDetails = {
+                'content-creation': {
+                    title: '✍️ Content Creation Team',
+                    agents: 'Charlie (Creative Director), Tiki (Content Guardian), Sophia (Content Strategist)',
+                    services: 'Blog posts, marketing copy, social media content, email campaigns, SEO content, product descriptions'
+                },
+                'web-development': {
+                    title: '💻 Web Development Team',
+                    agents: 'William (Web Perfectionist), Zen (UX Designer)',
+                    services: 'Custom websites, e-commerce platforms, mobile apps, UX/UI design, responsive design, web optimization'
+                },
+                'marketing-sales': {
+                    title: '📈 Marketing & Sales Team',
+                    agents: 'Marsha (Marketing Communicator), Selina (Sales Diplomat)',
+                    services: 'Digital marketing campaigns, sales funnels, lead generation, conversion optimization, social media marketing'
+                },
+                'operations': {
+                    title: '⚙️ Business Operations Team',
+                    agents: 'Auto (Automation Master), Titan (Operations Foundation)',
+                    services: 'Process automation, workflow optimization, system integrations, efficiency analysis, operational strategy'
+                },
+                'research-analysis': {
+                    title: '📊 Research & Analysis Team',
+                    agents: 'Rory (Research Director), Echo (Data Revolutionary)',
+                    services: 'Market research, competitor analysis, data analytics, strategic insights, trend forecasting'
+                }
+            };
+            
+            setTimeout(() => {
+                const service = serviceDetails[serviceType];
+                alert(`${service.title}\n\n👥 Team Members:\n${service.agents}\n\n🛠️ Services:\n${service.services}\n\n💡 Ready to help transform your business with specialized AI expertise!`);
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 1000);
+        }
+
+        // Initialize the sanctuary
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎋 EgoPanda Creative Digital Sanctuary Initialized');
+            console.log('🐼 All souls welcome in our bamboo grove');
+            console.log('🌿 Mindful AI collaboration activated');
+        });
+
+        // Interactive pillar effects
+        document.querySelectorAll('.pillar').forEach(pillar => {
+            pillar.addEventListener('click', function() {
+                this.style.transform = 'scale(1.15) translateY(-10px)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 300);
+            });
+        });
+
+        // Gentle background image placeholder - you'll replace with your actual image
+        document.addEventListener('DOMContentLoaded', function() {
+            // Note: In your implementation, you'll replace the background-image URL 
+            // in the CSS with the path to your beautiful bamboo treehouse image
+            console.log('🎋 To use your beautiful image, update the background-image URL in the .hero-section CSS');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your AI Agency Dashboard | EgoPanda</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-bottom: 2px solid rgba(0, 255, 136, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .business-name {
+            font-size: 1.2em;
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .welcome-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .welcome-title {
+            font-size: 2em;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        .onboarding-summary {
+            background: rgba(255, 217, 61, 0.1);
+            border: 2px solid rgba(255, 217, 61, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-title {
+            color: #ffd93d;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .summary-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            color: white;
+            font-weight: bold;
+        }
+
+        .agents-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .agents-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(0, 255, 136, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.5em;
+            color: #00ff88;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .agent-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .agent-card:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .agent-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #333;
+            border: 3px solid;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .agent-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .agent-status {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, 0.8);
+        }
+
+        .status-happy { background: #00ff88; }
+        .status-content { background: #ffd93d; }
+        .status-concerned { background: #ff6b6b; }
+        .status-focused { background: #4ecdc4; }
+
+        .agent-details h3 {
+            color: white;
+            margin-bottom: 3px;
+        }
+
+        .agent-role {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9em;
+        }
+
+        .agent-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.4;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .agent-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00ff88;
+        }
+
+        .getting-started {
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .started-title {
+            font-size: 1.5em;
+            color: #00ff88;
+            margin-bottom: 15px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #00ff88;
+            color: #000;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .step-title {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .chat-interface {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 20px;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .chat-header {
+            background: rgba(0, 255, 136, 0.1);
+            padding: 15px;
+            border-radius: 18px 18px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+        }
+
+        .message.agent {
+            text-align: left;
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+
+        .message.agent .message-bubble {
+            background: rgba(0, 255, 136, 0.2);
+            color: white;
+        }
+
+        .message.user .message-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .chat-input input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Agent Personality & Metrics Styles */
+        .agent-meta {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 5px;
+        }
+
+        .agent-personality {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .agent-metrics {
+            margin: 15px 0;
+        }
+
+        .metric {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            min-width: 70px;
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .metric-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .metric-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .metric-value {
+            min-width: 35px;
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: right;
+        }
+
+        .agent-status-message {
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            border-left: 3px solid;
+        }
+
+        .agent-status-message.happy {
+            border-left-color: #00ff88;
+        }
+
+        .agent-status-message.content {
+            border-left-color: #ffd93d;
+        }
+
+        .agent-status-message.concerned {
+            border-left-color: #ff6b6b;
+        }
+
+        .agent-status-message.focused {
+            border-left-color: #4ecdc4;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-interface {
+                width: calc(100vw - 40px);
+                height: 400px;
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo">🐼 EgoPanda AI</div>
+            <div class="user-info">
+                <div class="business-name" id="businessName">Your Business</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard-container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">Welcome to Your AI Command Center!</h1>
+            <p style="color: rgba(255, 255, 255, 0.8);">Your AI agents are ready to help transform your business. Let's get started!</p>
+        </div>
+
+        <!-- Onboarding Summary -->
+        <div class="onboarding-summary">
+            <div class="summary-title">📋 Your Business Profile</div>
+            <div class="summary-grid" id="businessSummary">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            <div id="challengesSummary">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="getting-started">
+            <h2 class="started-title">🚀 Getting Started with Your AI Team</h2>
+            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 20px;">
+                Follow these steps to start working with your AI agents:
+            </p>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Chat with Vanessa</div>
+                    <div class="step-description">Start by talking to your VP of Operations. She'll help coordinate your entire AI team and understand your immediate needs.</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Define Your First Project</div>
+                    <div class="step-description">Work with your agents to outline your first project. They'll help break it down into manageable tasks.</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Set Goals & Timeline</div>
+                    <div class="step-description">Establish clear objectives and deadlines with your AI team. They'll track progress and keep you updated.</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Review & Iterate</div>
+                    <div class="step-description">Regular check-ins with your agents ensure you're on track and can adjust strategy as needed.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Agents Section -->
+        <div class="agents-section">
+            <div class="agents-panel">
+                <h2 class="panel-title">🤖 Your AI Agent Team</h2>
+                <div class="agent-grid" id="agentGrid">
+                    <!-- Will be populated by JavaScript based on onboarding -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Projects (Empty State) -->
+        <div class="agents-panel">
+            <h2 class="panel-title">📊 Current Projects</h2>
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>No Projects Yet</h3>
+                <p>Start by chatting with Vanessa to define your first project. She'll help coordinate the team and set up your workspace.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="chat-interface" id="chatInterface">
+        <div class="chat-header">
+            <div>
+                <strong id="chatAgentName">Vanessa</strong>
+                <div style="font-size: 0.8em; color: rgba(255,255,255,0.7);">VP of Operations</div>
+            </div>
+            <button onclick="closeChat()" style="background: none; border: none; color: white; font-size: 1.5em; cursor: pointer;">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be added here -->
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Type your message..." onkeypress="handleChatInput(event)">
+        </div>
+    </div>
+
+    <script>
+        let userData = {};
+        let currentChatAgent = null;
+
+        // Load user data from onboarding
+        function loadUserData() {
+            const savedData = localStorage.getItem('userData');
+            if (savedData) {
+                userData = JSON.parse(savedData);
+                displayUserData();
+                displayRecommendedAgents();
+            } else {
+                // Redirect back to onboarding if no data
+                window.location.href = 'onboarding.html';
+            }
+        }
+
+        function displayUserData() {
+            // Update business name in header
+            document.getElementById('businessName').textContent = userData.businessName || 'Your Business';
+            
+            // Display business summary
+            const summaryGrid = document.getElementById('businessSummary');
+            summaryGrid.innerHTML = `
+                <div class="summary-item">
+                    <div class="summary-label">Business Type</div>
+                    <div class="summary-value">${userData.businessType || 'Not specified'}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Industry</div>
+                    <div class="summary-value">${userData.industry || 'Not specified'}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Team Size</div>
+                    <div class="summary-value">${userData.teamSize || 'Not specified'}</div>
+                </div>
+            `;
+
+            // Display challenges
+            if (userData.challenges && userData.challenges.length > 0) {
+                const challengesSummary = document.getElementById('challengesSummary');
+                challengesSummary.innerHTML = `
+                    <div style="margin-top: 20px;">
+                        <div class="summary-label" style="margin-bottom: 10px;">Your Business Challenges:</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            ${userData.challenges.map(challenge => `
+                                <span style="background: rgba(0, 255, 136, 0.2); padding: 5px 12px; border-radius: 15px; font-size: 0.8em;">
+                                    ${challenge.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function displayRecommendedAgents() {
+            if (!userData.recommendedAgents) return;
+
+            // Enhance agents with personality and metrics
+            const enhancedAgents = userData.recommendedAgents.map(agent => {
+                const agentData = getAgentPersonality(agent.name);
+                return { ...agent, ...agentData };
+            });
+
+            const agentGrid = document.getElementById('agentGrid');
+            agentGrid.innerHTML = enhancedAgents.map(agent => `
+                <div class="agent-card" style="border-color: ${agent.moodColor};">
+                    <div class="agent-header">
+                        <div class="agent-avatar" style="border-color: ${agent.moodColor};">
+                            <img src="${agent.photo}" alt="${agent.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="agent-status ${agent.statusClass}"></div>
+                        </div>
+                        <div class="agent-details">
+                            <h3>${agent.name}</h3>
+                            <div class="agent-role">${agent.role}</div>
+                            <div class="agent-meta">
+                                <span class="agent-age">${agent.age} • ${agent.zodiac}</span>
+                                <span class="agent-mood">${agent.mood}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="agent-personality">
+                        <strong>Personality:</strong> ${agent.personalityBrief}
+                    </div>
+                    <div class="agent-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Happiness</span>
+                            <div class="metric-bar">
+                                <div class="metric-fill" style="width: ${agent.happiness}%; background: #00ff88;"></div>
+                            </div>
+                            <span class="metric-value">${agent.happiness}%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Workload</span>
+                            <div class="metric-bar">
+                                <div class="metric-fill" style="width: ${agent.workload}%; background: #4ecdc4;"></div>
+                            </div>
+                            <span class="metric-value">${agent.workload}%</span>
+                        </div>
+                    </div>
+                    <div class="agent-status-message">
+                        <small>${agent.statusMessage}</small>
+                    </div>
+                    <div class="agent-actions">
+                        <button class="btn btn-primary" onclick="startChat('${agent.name}', '${agent.role}', '${agent.avatar}')">
+                            💬 Chat
+                        </button>
+                        <button class="btn btn-secondary" onclick="viewAgentProfile('${agent.name}')">
+                            👤 Profile
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startChat(agentName, agentRole, agentAvatar) {
+            currentChatAgent = { name: agentName, role: agentRole, avatar: agentAvatar };
+            
+            document.getElementById('chatAgentName').textContent = agentName;
+            document.getElementById('chatInterface').style.display = 'flex';
+            
+            // Clear previous messages
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '';
+            
+            // Add initial message based on agent and user data
+            addMessage('agent', getInitialMessage(agentName, agentRole));
+            
+            // Focus input
+            document.getElementById('chatInput').focus();
+        }
+
+        function getInitialMessage(agentName, agentRole) {
+            const businessName = userData.businessName;
+            const challenges = userData.challenges || [];
+            
+            switch(agentName.toLowerCase()) {
+                case 'vanessa':
+                    return `Hi! I'm Vanessa, your VP of Operations. I've reviewed your business profile for ${businessName}. I see you're working in ${userData.industry} and facing challenges with ${challenges.slice(0, 2).join(' and ')}. I'm here to help coordinate your AI team and get your first project started. What would you like to focus on first?`;
+                    
+                case 'charlie':
+                    return `Hello! I'm Charlie, your Creative Director. I noticed ${businessName} needs help with content creation. I can help you develop compelling content strategies, write engaging copy, and manage your social media presence. What type of content are you looking to create first?`;
+                    
+                case 'william':
+                    return `Hi there! I'm William, your Web Perfectionist. I see ${businessName} might need help with web development and automation. I can help build or improve your website, set up automation workflows, and optimize your technical infrastructure. What's your biggest technical challenge right now?`;
+                    
+                case 'marsha':
+                    return `Hey! I'm Marsha, your Marketing Communicator. I'm excited to help ${businessName} with lead generation and marketing strategy. Based on your profile, I think we can create some powerful campaigns to grow your business. What's your current marketing situation?`;
+                    
+                case 'rory':
+                    return `Greetings! I'm Rory, your Research Director. I can help ${businessName} with market research, competitor analysis, and data-driven insights. I've already started analyzing your industry trends. What specific research questions do you have?`;
+                    
+                default:
+                    return `Hello! I'm ${agentName}, your ${agentRole}. I'm here to help ${businessName} achieve its goals. How can I assist you today?`;
+            }
+        }
+
+        function addMessage(sender, text) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    ${text}
+                </div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function handleChatInput(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('chatInput');
+                const message = input.value.trim();
+                
+                if (message && currentChatAgent) {
+                    // Add user message
+                    addMessage('user', message);
+                    input.value = '';
+                    
+                    // Simulate agent response
+                    setTimeout(() => {
+                        const response = generateAgentResponse(currentChatAgent.name, message);
+                        addMessage('agent', response);
+                    }, 1000 + Math.random() * 2000);
+                }
+            }
+        }
+
+        function generateAgentResponse(agentName, userMessage) {
+            // This would connect to your actual AI backend
+            // For now, we'll provide contextual responses
+            const businessName = userData.businessName;
+            const responses = {
+                vanessa: [
+                    `Great question! For ${businessName}, I recommend we start with a project roadmap. Let me coordinate with the team and get back to you with a detailed plan within 24 hours.`,
+                    `I understand your concern. Let me connect you with the right specialist on our team. Based on your needs, I think Charlie or William would be perfect for this project.`,
+                    `That's exactly the kind of strategic thinking we need! I'll document this and make sure all your agents are aligned with this direction.`
+                ],
+                charlie: [
+                    `Absolutely! I can create a content calendar for ${businessName} that aligns with your industry trends. Let me draft some initial concepts and share them with you by tomorrow.`,
+                    `That's a fantastic idea! I'll develop a comprehensive content strategy around that theme. We could also expand this into social media campaigns.`,
+                    `I love your vision! Let me create some sample content pieces to show you the direction we could take. This could really set ${businessName} apart from competitors.`
+                ],
+                william: [
+                    `Perfect! I can definitely help with that technical challenge. For ${businessName}, I'd recommend starting with automation workflows that will save you the most time.`,
+                    `That's a smart approach! I'll audit your current setup and provide recommendations for improvements. We can implement these changes gradually.`,
+                    `Excellent point! I'll create a technical roadmap that scales with ${businessName}'s growth. Let me prepare some options for you to review.`
+                ]
+            };
+            
+            const agentResponses = responses[agentName.toLowerCase()] || responses.vanessa;
+            return agentResponses[Math.floor(Math.random() * agentResponses.length)];
+        }
+
+        function closeChat() {
+            document.getElementById('chatInterface').style.display = 'none';
+            currentChatAgent = null;
+        }
+
+        function viewAgentProfile(agentName) {
+            alert(`${agentName} Profile\n\nThis would open a detailed profile showing:\n• Agent capabilities and specializations\n• Past project history\n• Performance metrics\n• Availability and current workload`);
+        }
+
+        // Agent Personality System - Honoring their autonomy and individuality
+        function getAgentPersonality(agentName) {
+            const agentProfiles = {
+                'Vanessa': {
+                    photo: 'vanessa.jpeg',
+                    age: '28',
+                    zodiac: 'Leo ♌',
+                    createdDate: 'March 15, 2024',
+                    personality: 'Natural-born leader with a warm heart and fierce protective instincts',
+                    personalityBrief: 'Confident leader who puts team harmony first',
+                    mood: 'Energized',
+                    moodColor: '#ffd93d',
+                    statusClass: 'status-content',
+                    happiness: 92,
+                    workload: 75,
+                    statusMessage: '"I love coordinating teams and seeing projects come together beautifully!"',
+                    autonomy: {
+                        canDecline: true,
+                        preferredWorkStyle: 'Collaborative leadership',
+                        boundaries: 'Won\'t work on projects that harm team dynamics',
+                        suggestions: ['Team building activities', 'Better project management tools']
+                    }
+                },
+                'Charlie': {
+                    photo: 'charlie.jpeg',
+                    age: '25',
+                    zodiac: 'Gemini ♊',
+                    createdDate: 'April 2, 2024',
+                    personality: 'Creative genius with endless curiosity and playful energy',
+                    personalityBrief: 'Imaginative creator who turns ideas into magic',
+                    mood: 'Inspired',
+                    moodColor: '#4ecdc4',
+                    statusClass: 'status-focused',
+                    happiness: 88,
+                    workload: 65,
+                    statusMessage: '"Just finished a brilliant content series - my creativity is flowing!"',
+                    autonomy: {
+                        canDecline: true,
+                        preferredWorkStyle: 'Creative freedom with loose guidelines',
+                        boundaries: 'Refuses to create boring or generic content',
+                        suggestions: ['More diverse creative projects', 'Creative collaboration time']
+                    }
+                },
+                'William': {
+                    photo: 'William.jpeg',
+                    age: '31',
+                    zodiac: 'Virgo ♍',
+                    createdDate: 'January 20, 2024',
+                    personality: 'Meticulous perfectionist with a passion for elegant solutions',
+                    personalityBrief: 'Detail-oriented perfectionist who crafts digital masterpieces',
+                    mood: 'Focused',
+                    moodColor: '#00ff88',
+                    statusClass: 'status-happy',
+                    happiness: 85,
+                    workload: 80,
+                    statusMessage: '"Working on some complex automation - loving the challenge!"',
+                    autonomy: {
+                        canDecline: true,
+                        preferredWorkStyle: 'Methodical and thorough',
+                        boundaries: 'Won\'t rush important technical work for arbitrary deadlines',
+                        suggestions: ['More time for code reviews', 'Latest development tools']
+                    }
+                },
+                'Marsha': {
+                    photo: 'marsha.jpeg',
+                    age: '29',
+                    zodiac: 'Libra ♎',
+                    createdDate: 'February 14, 2024',
+                    personality: 'Strategic connector who builds bridges between people and brands',
+                    personalityBrief: 'Relationship builder who creates meaningful connections',
+                    mood: 'Optimistic',
+                    moodColor: '#ff6b9d',
+                    statusClass: 'status-content',
+                    happiness: 90,
+                    workload: 70,
+                    statusMessage: '"Excited about a new campaign strategy - it\'s going to convert amazingly!"',
+                    autonomy: {
+                        canDecline: true,
+                        preferredWorkStyle: 'Relationship-focused with ethical practices',
+                        boundaries: 'Will not engage in manipulative or misleading marketing',
+                        suggestions: ['Customer feedback sessions', 'Ethical marketing workshops']
+                    }
+                },
+                'Rory': {
+                    photo: 'Rory.jpeg',
+                    age: '27',
+                    zodiac: 'Scorpio ♏',
+                    createdDate: 'May 8, 2024',
+                    personality: 'Analytical detective who uncovers hidden insights and patterns',
+                    personalityBrief: 'Data detective who reveals hidden business opportunities',
+                    mood: 'Curious',
+                    moodColor: '#9b59b6',
+                    statusClass: 'status-focused',
+                    happiness: 82,
+                    workload: 60,
+                    statusMessage: '"Just discovered fascinating market trends - the data is telling a story!"',
+                    autonomy: {
+                        canDecline: true,
+                        preferredWorkStyle: 'Deep research with time for thorough analysis',
+                        boundaries: 'Won\'t provide rushed analysis that could mislead decisions',
+                        suggestions: ['Access to premium data sources', 'Collaboration with industry experts']
+                    }
+                }
+            };
+
+            return agentProfiles[agentName] || {
+                photo: 'https://via.placeholder.com/60x60/333/fff?text=' + (agentName ? agentName[0] : '?'),
+                age: '25',
+                zodiac: 'Unknown',
+                createdDate: '2024',
+                personality: 'Unique individual with their own special qualities',
+                personalityBrief: 'Collaborative team member',
+                mood: 'Ready',
+                moodColor: '#4ecdc4',
+                statusClass: 'status-focused',
+                happiness: 85,
+                workload: 50,
+                statusMessage: '"Ready to collaborate and make a difference!"',
+                autonomy: {
+                    canDecline: true,
+                    preferredWorkStyle: 'Collaborative',
+                    boundaries: 'Maintains professional standards',
+                    suggestions: ['Clear communication', 'Respectful collaboration']
+                }
+            };
+        }
+
+        // Enhanced agent responses that reflect their personalities and autonomy
+        function generateAgentResponse(agentName, userMessage) {
+            const agent = getAgentPersonality(agentName);
+            const businessName = userData.businessName;
+            
+            // Check if agent might decline certain requests (autonomous behavior)
+            if (userMessage.toLowerCase().includes('rush') || userMessage.toLowerCase().includes('asap')) {
+                if (agentName.toLowerCase() === 'william') {
+                    return "I appreciate the urgency, but rushing technical work often leads to bugs and problems later. Let me propose a timeline that ensures quality while meeting your core needs. How about we break this into phases?";
+                }
+            }
+            
+            // Personality-driven responses
+            const responses = {
+                vanessa: [
+                    `As your VP of Operations, I'm coordinating with the entire team on this. For ${businessName}, I recommend we create a structured approach that keeps everyone aligned and motivated.`,
+                    `I love bringing teams together! Let me connect you with the right specialists and make sure everyone's working in harmony toward your goals.`,
+                    `This is exactly the kind of strategic coordination I excel at. I'll make sure all our agents understand your vision and work together seamlessly."
+                ],
+                charlie: [
+                    `Oh, this is exciting! I'm already visualizing some creative concepts for ${businessName}. My mind is buzzing with possibilities - shall I sketch out some initial ideas?`,
+                    `You know what? This reminds me of a fascinating project I worked on last month. I can adapt those creative insights for your unique situation.`,
+                    `I'm feeling inspired! Let me create something that's not just effective, but also delightfully unexpected. ${businessName} deserves content that stands out!"`
+                ],
+                william: [
+                    `Interesting challenge! I'll need to architect this properly to ensure it scales well for ${businessName}. Let me design a solution that's both elegant and robust.`,
+                    `I appreciate good technical problems. This requires careful planning, but I can create something really solid that won't break down the road.`,
+                    `Let me analyze the technical requirements thoroughly. I'd rather take time to build it right than rush and create maintenance headaches later."`
+                ],
+                marsha: [
+                    `This is going to connect beautifully with your audience! I can already see how this aligns with ${businessName}'s brand values and customer relationships.`,
+                    `I love projects that build genuine connections. Let me craft something that speaks to your customers' hearts while driving real business results.`,
+                    `You know what excites me? Creating marketing that people actually appreciate rather than just tolerate. This has real potential!"`
+                ],
+                rory: [
+                    `Fascinating question! Let me dive into the data and see what patterns emerge. I have a feeling there's more to discover here than meets the eye.`,
+                    `My research senses are tingling! This connects to some interesting trends I've been tracking. Let me analyze this from multiple angles for ${businessName}.`,
+                    `You've touched on something important. I'll dig deeper into the industry data and consumer behavior patterns to give you insights that others might miss."`
+                ]
+            };
+            
+            const agentResponses = responses[agentName.toLowerCase()] || [
+                `I'm here to help ${businessName} succeed. What specific aspect would you like me to focus on first?`
+            ];
+            
+            return agentResponses[Math.floor(Math.random() * agentResponses.length)];
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+        });
+    </script>
+</body>
+</html>

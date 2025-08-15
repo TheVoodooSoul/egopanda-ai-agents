@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Project Audit & Consolidation Plan</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .project-section { margin: 30px 0; padding: 20px; border: 2px solid #ddd; border-radius: 10px; }
+        .aurelius { border-color: #007bff; background: #f8f9ff; }
+        .mmx { border-color: #28a745; background: #f8fff8; }
+        .comparison { background: #fff3cd; border: 2px solid #ffc107; padding: 20px; border-radius: 10px; margin: 30px 0; }
+        button { padding: 10px 20px; margin: 10px 5px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .agent-card { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; background: white; }
+        .duplicate { background: #ffebee !important; border-color: #f44336 !important; }
+        .unique { background: #e8f5e8 !important; border-color: #4caf50 !important; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Complete Project Audit & Consolidation</h1>
+        <p><strong>Goal:</strong> Find all your agents, eliminate duplicates, and create one clean project.</p>
+
+        <!-- Aurelius Project -->
+        <div class="project-section aurelius">
+            <h2>🏛️ Aurelius Project (Primary)</h2>
+            <p><strong>URL:</strong> https://owalnojeylnucvmkvqvo.supabase.co</p>
+            
+            <h3>🔐 Authentication Required</h3>
+            <input type="email" id="aurelius-email" placeholder="Your email">
+            <input type="password" id="aurelius-password" placeholder="Your password">
+            <button class="btn-primary" onclick="auditAurelius()">Audit Aurelius Project</button>
+            
+            <div id="aurelius-results"></div>
+        </div>
+
+        <!-- MMX Project -->
+        <div class="project-section mmx">
+            <h2>⚙️ MMX Project (Secondary)</h2>
+            <p><strong>URL:</strong> https://wnacylxdwzoiygadarsd.supabase.co</p>
+            
+            <h3>🔐 Authentication Required</h3>
+            <input type="email" id="mmx-email" placeholder="Your email">
+            <input type="password" id="mmx-password" placeholder="Your password">
+            <button class="btn-success" onclick="auditMMX()">Audit MMX Project</button>
+            
+            <div id="mmx-results"></div>
+        </div>
+
+        <!-- Comparison Results -->
+        <div class="comparison" id="comparison-section" style="display: none;">
+            <h2>📊 Consolidation Analysis</h2>
+            <div id="comparison-results"></div>
+            
+            <h3>🎯 Recommended Actions</h3>
+            <div id="recommendations"></div>
+            
+            <h3>⚡ Execute Consolidation</h3>
+            <button class="btn-danger" onclick="createConsolidationPlan()">Create Clean Master Project</button>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const AURELIUS_URL = 'https://owalnojeylnucvmkvqvo.supabase.co';
+        const AURELIUS_KEY = '38687bb428633ab4513d15d3a753a3aa1af86f727f3daa44ba8004f4bb29add4';
+        
+        const MMX_URL = 'https://wnacylxdwzoiygadarsd.supabase.co';
+        const MMX_KEY = '49a537fd69de53c9c84dce922ead2fc414a5e3ef4829b689e0d2a2b885f15132';
+
+        let aureliusData = { agents: [], tables: [], storage: [] };
+        let mmxData = { agents: [], tables: [], storage: [] };
+
+        async function auditProject(projectName, url, key, email, password, resultsId) {
+            const resultsDiv = document.getElementById(resultsId);
+            resultsDiv.innerHTML = '<p>🔍 Auditing project...</p>';
+
+            try {
+                const supabase = supabase.createClient(url, key);
+                
+                // Authenticate
+                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                    email, password
+                });
+
+                if (authError) {
+                    resultsDiv.innerHTML = `<div class="status error">❌ Auth failed: ${authError.message}</div>`;
+                    return null;
+                }
+
+                const projectData = { agents: [], tables: [], storage: [], functions: [] };
+
+                // Check all possible agent tables
+                const tablesToCheck = ['agents', 'pandas', 'characters', 'ai_agents', 'panda_agents', 'profiles'];
+                
+                for (const tableName of tablesToCheck) {
+                    try {
+                        const { data, error } = await supabase.from(tableName).select('*');
+                        
+                        if (!error && data && data.length > 0) {
+                            projectData.tables.push({ name: tableName, count: data.length });
+                            
+                            // If this looks like agents, store them
+                            if (tableName.includes('agent') || tableName.includes('panda') || tableName.includes('character')) {
+                                projectData.agents = projectData.agents.concat(data.map(agent => ({
+                                    ...agent,
+                                    source_table: tableName,
+                                    source_project: projectName
+                                })));
+                            }
+                        }
+                    } catch (e) {
+                        // Table doesn't exist
+                    }
+                }
+
+                // Check storage
+                try {
+                    const { data: buckets } = await supabase.storage.listBuckets();
+                    if (buckets) {
+                        for (const bucket of buckets) {
+                            const { data: files } = await supabase.storage.from(bucket.name).list('', { limit: 100 });
+                            projectData.storage.push({
+                                bucket: bucket.name,
+                                files: files || [],
+                                count: (files || []).length
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.log('Storage access limited');
+                }
+
+                // Display results
+                resultsDiv.innerHTML = `
+                    <div class="status success">✅ Found ${projectData.agents.length} agents in ${projectData.tables.length} tables</div>
+                    
+                    <h4>📊 Project Summary:</h4>
+                    <ul>
+                        <li><strong>Agents:</strong> ${projectData.agents.length}</li>
+                        <li><strong>Tables:</strong> ${projectData.tables.map(t => `${t.name} (${t.count})`).join(', ')}</li>
+                        <li><strong>Storage:</strong> ${projectData.storage.length} buckets</li>
+                    </ul>
+
+                    <h4>🐼 Agent Preview:</h4>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        ${projectData.agents.slice(0, 10).map(agent => {
+                            const name = agent.name || agent.character_name || 'Unknown';
+                            const job = agent.job_title || agent.job || agent.role || 'No job';
+                            return `
+                                <div class="agent-card">
+                                    <strong>${name}</strong> - ${job}
+                                    <br><small>From table: ${agent.source_table}</small>
+                                </div>
+                            `;
+                        }).join('')}
+                        ${projectData.agents.length > 10 ? `<p><em>... and ${projectData.agents.length - 10} more</em></p>` : ''}
+                    </div>
+                `;
+
+                return projectData;
+
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="status error">❌ Error: ${error.message}</div>`;
+                return null;
+            }
+        }
+
+        async function auditAurelius() {
+            const email = document.getElementById('aurelius-email').value;
+            const password = document.getElementById('aurelius-password').value;
+            
+            if (!email || !password) {
+                document.getElementById('aurelius-results').innerHTML = '<div class="status error">Please enter credentials</div>';
+                return;
+            }
+
+            aureliusData = await auditProject('Aurelius', AURELIUS_URL, AURELIUS_KEY, email, password, 'aurelius-results');
+            checkForComparison();
+        }
+
+        async function auditMMX() {
+            const email = document.getElementById('mmx-email').value;
+            const password = document.getElementById('mmx-password').value;
+            
+            if (!email || !password) {
+                document.getElementById('mmx-results').innerHTML = '<div class="status error">Please enter credentials</div>';
+                return;
+            }
+
+            mmxData = await auditProject('MMX', MMX_URL, MMX_KEY, email, password, 'mmx-results');
+            checkForComparison();
+        }
+
+        function checkForComparison() {
+            if (aureliusData && aureliusData.agents && mmxData && mmxData.agents) {
+                document.getElementById('comparison-section').style.display = 'block';
+                compareProjects();
+            }
+        }
+
+        function compareProjects() {
+            const comparisonDiv = document.getElementById('comparison-results');
+            const recommendationsDiv = document.getElementById('recommendations');
+
+            // Find duplicates and unique agents
+            const aureliusNames = aureliusData.agents.map(a => (a.name || a.character_name || '').toLowerCase().trim());
+            const mmxNames = mmxData.agents.map(a => (a.name || a.character_name || '').toLowerCase().trim());
+
+            const duplicates = [];
+            const aureliusUnique = [];
+            const mmxUnique = [];
+
+            // Check for duplicates
+            aureliusData.agents.forEach(agent => {
+                const name = (agent.name || agent.character_name || '').toLowerCase().trim();
+                const mmxMatch = mmxData.agents.find(m => 
+                    (m.name || m.character_name || '').toLowerCase().trim() === name
+                );
+                
+                if (mmxMatch) {
+                    duplicates.push({ aurelius: agent, mmx: mmxMatch });
+                } else {
+                    aureliusUnique.push(agent);
+                }
+            });
+
+            // Find MMX-only agents
+            mmxData.agents.forEach(agent => {
+                const name = (agent.name || agent.character_name || '').toLowerCase().trim();
+                if (!aureliusNames.includes(name)) {
+                    mmxUnique.push(agent);
+                }
+            });
+
+            comparisonDiv.innerHTML = `
+                <h4>🔄 Duplicate Agents (${duplicates.length}):</h4>
+                ${duplicates.map(dup => `
+                    <div class="agent-card duplicate">
+                        <strong>${dup.aurelius.name || dup.aurelius.character_name}</strong>
+                        <br>Aurelius: ${dup.aurelius.job_title || dup.aurelius.job || 'No job'}
+                        <br>MMX: ${dup.mmx.job_title || dup.mmx.job || 'No job'}
+                    </div>
+                `).join('')}
+
+                <h4>🏛️ Aurelius-Only Agents (${aureliusUnique.length}):</h4>
+                ${aureliusUnique.slice(0, 5).map(agent => `
+                    <div class="agent-card unique">
+                        <strong>${agent.name || agent.character_name}</strong> - ${agent.job_title || agent.job || 'No job'}
+                    </div>
+                `).join('')}
+
+                <h4>⚙️ MMX-Only Agents (${mmxUnique.length}):</h4>
+                ${mmxUnique.slice(0, 5).map(agent => `
+                    <div class="agent-card unique">
+                        <strong>${agent.name || agent.character_name}</strong> - ${agent.job_title || agent.job || 'No job'}
+                    </div>
+                `).join('')}
+            `;
+
+            // Generate recommendations
+            let recommendations = '<ul>';
+            
+            if (aureliusData.agents.length > mmxData.agents.length) {
+                recommendations += '<li><strong>✅ Use Aurelius as master project</strong> (has more agents)</li>';
+            } else if (mmxData.agents.length > aureliusData.agents.length) {
+                recommendations += '<li><strong>✅ Use MMX as master project</strong> (has more agents)</li>';
+            } else {
+                recommendations += '<li><strong>⚖️ Projects have similar agent counts</strong> - choose based on data quality</li>';
+            }
+
+            recommendations += `<li><strong>🔄 Merge ${duplicates.length} duplicate agents</strong> (keep best version)</li>`;
+            recommendations += `<li><strong>📦 Import ${aureliusUnique.length + mmxUnique.length} unique agents</strong></li>`;
+            recommendations += '<li><strong>🗑️ Delete redundant project</strong> after migration</li>';
+            recommendations += '</ul>';
+
+            recommendationsDiv.innerHTML = recommendations;
+        }
+
+        function createConsolidationPlan() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `
+                <div class="status warning">
+                    <h3>🎯 Consolidation Plan Ready</h3>
+                    <p><strong>Total Agents Found:</strong></p>
+                    <ul>
+                        <li>Aurelius: ${aureliusData.agents.length} agents</li>
+                        <li>MMX: ${mmxData.agents.length} agents</li>
+                        <li>Unique agents to preserve: ${aureliusData.agents.length + mmxData.agents.length}</li>
+                    </ul>
+                    
+                    <p><strong>Next Steps:</strong></p>
+                    <ol>
+                        <li>I'll create a clean database schema</li>
+                        <li>Import all unique agents (deduplicated)</li>
+                        <li>Build the tower background app with YOUR agents</li>
+                        <li>Delete redundant project and files</li>
+                    </ol>
+                    
+                    <p><strong>🛡️ Your agent identities will be preserved!</strong></p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

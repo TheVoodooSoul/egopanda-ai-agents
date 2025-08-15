@@ -1,0 +1,40 @@
+{
+  "name": "minimax-supabase-integration",
+  "version": "1.0.0",
+  "description": "Minimax AI agent integration with Supabase authentication and edge functions",
+  "type": "module",
+  "main": "client.js",
+  "scripts": {
+    "dev": "node --watch example.js",
+    "build": "supabase functions deploy minmax-agent-auth",
+    "test": "node test.js",
+    "logs": "supabase functions logs minmax-agent-auth",
+    "setup": "npm run install-cli && npm run login",
+    "install-cli": "npm install -g supabase",
+    "login": "supabase login",
+    "link": "supabase link",
+    "deploy": "supabase functions deploy minmax-agent-auth",
+    "secrets:set": "echo 'Run: supabase secrets set MINIMAX_API_KEY=your_key_here'",
+    "local:start": "supabase start",
+    "local:stop": "supabase stop"
+  },
+  "keywords": [
+    "minimax",
+    "supabase",
+    "ai",
+    "agent",
+    "edge-functions",
+    "authentication"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Manager - EgoPanda Creative</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            padding: 20px 30px;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .agent-selector {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .agent-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .agent-card:hover {
+            border-color: #ff6b35;
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .agent-card.selected {
+            border-color: #ff6b35;
+            background: rgba(255, 107, 53, 0.2);
+        }
+
+        .agent-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            border: 2px solid #ff6b35;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section h2 {
+            color: #ff6b35;
+            font-size: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ff6b35;
+            padding-bottom: 10px;
+        }
+
+        .agent-profile {
+            grid-column: span 2;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 30px;
+        }
+
+        .agent-image {
+            text-align: center;
+        }
+
+        .agent-image img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid #ff6b35;
+            margin-bottom: 15px;
+        }
+
+        .agent-info h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .agent-info .specialty {
+            color: #ff6b35;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .agent-info .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .permission-category {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .permission-category h3 {
+            color: #ff6b35;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .permission-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .permission-item:last-child {
+            border-bottom: none;
+        }
+
+        .toggle {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #666;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle.active {
+            background: #4CAF50;
+        }
+
+        .toggle::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle.active::before {
+            transform: translateX(26px);
+        }
+
+        .integration-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border-left: 4px solid #666;
+        }
+
+        .integration-item.connected {
+            border-left-color: #4CAF50;
+        }
+
+        .integration-item.disconnected {
+            border-left-color: #f44336;
+        }
+
+        .integration-info {
+            flex: 1;
+        }
+
+        .integration-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .integration-status {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #666, #888);
+        }
+
+        .workflow-canvas {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            min-height: 400px;
+            position: relative;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .workflow-placeholder {
+            color: #666;
+            text-align: center;
+        }
+
+        .node-palette {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .node-type {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node-type:hover {
+            background: rgba(255, 107, 53, 0.3);
+        }
+
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .capability-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .capability-item.disabled {
+            border-left-color: #666;
+            opacity: 0.5;
+        }
+
+        .capability-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .capability-desc {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .agent-profile {
+                grid-column: span 1;
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔧 Agent Manager - EgoPanda Creative</h1>
+        <p>Configure Agent Permissions, Integrations & Workflows</p>
+    </div>
+
+    <div class="container">
+        <!-- Agent Selector -->
+        <div class="agent-selector">
+            <h2 style="color: #ff6b35; margin-bottom: 20px;">Select Agent to Manage</h2>
+            <div class="agent-grid">
+                <div class="agent-card" onclick="selectAgent('vanessa')" data-agent="vanessa">
+                    <img src="vanessa.jpg" alt="Vanessa">
+                    <h4>Vanessa</h4>
+                    <p>Leadership</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('charlie')" data-agent="charlie">
+                    <img src="charlie.jpg" alt="Charlie">
+                    <h4>Charlie</h4>
+                    <p>Content Creation</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('tiki')" data-agent="tiki">
+                    <img src="tiki.jpg" alt="Tiki">
+                    <h4>Tiki</h4>
+                    <p>Content Creation</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('sophia')" data-agent="sophia">
+                    <img src="sophia.jpg" alt="Sophia">
+                    <h4>Sophia</h4>
+                    <p>Content Creation</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('william')" data-agent="william">
+                    <img src="william.jpg" alt="William">
+                    <h4>William</h4>
+                    <p>Web Development</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('zen')" data-agent="zen">
+                    <img src="zen.jpg" alt="Zen">
+                    <h4>Zen</h4>
+                    <p>Web Development</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('marsha')" data-agent="marsha">
+                    <img src="marsha.jpg" alt="Marsha">
+                    <h4>Marsha</h4>
+                    <p>Marketing & Sales</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('selina')" data-agent="selina">
+                    <img src="selina.jpg" alt="Selina">
+                    <h4>Selina</h4>
+                    <p>Marketing & Sales</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('auto')" data-agent="auto">
+                    <img src="auto.jpg" alt="Auto">
+                    <h4>Auto</h4>
+                    <p>Business Operations</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('titan')" data-agent="titan">
+                    <img src="titan.jpg" alt="Titan">
+                    <h4>Titan</h4>
+                    <p>Business Operations</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('rory')" data-agent="rory">
+                    <img src="rory.jpg" alt="Rory">
+                    <h4>Rory</h4>
+                    <p>Research & Analysis</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('echo')" data-agent="echo">
+                    <img src="echo.jpg" alt="Echo">
+                    <h4>Echo</h4>
+                    <p>Research & Analysis</p>
+                </div>
+                <div class="agent-card" onclick="selectAgent('aurelius')" data-agent="aurelius">
+                    <img src="aurelius.jpg" alt="Aurelius">
+                    <h4>Aurelius</h4>
+                    <p>Custom AI Creation</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="agentContent" class="hidden">
+            <div class="main-content">
+                <!-- Agent Profile -->
+                <div class="section agent-profile">
+                    <div class="agent-image">
+                        <img id="agentImage" src="" alt="">
+                        <button class="btn">Change Image</button>
+                    </div>
+                    <div class="agent-info">
+                        <h3 id="agentName"></h3>
+                        <div class="specialty" id="agentSpecialty"></div>
+                        <p id="agentPersonality"></p>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="stat-value" id="agentHappiness">100%</div>
+                                <div class="stat-label">Happiness</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="agentWorkload">0%</div>
+                                <div class="stat-label">Workload</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="agentPermissions">0</div>
+                                <div class="stat-label">Active Permissions</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="agentIntegrations">0</div>
+                                <div class="stat-label">Connected Services</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permissions -->
+                <div class="section">
+                    <h2>🔐 Permissions & Access Control</h2>
+                    <div class="permissions-grid">
+                        <div class="permission-category">
+                            <h3>📁 File & Storage</h3>
+                            <div class="permission-item">
+                                <span>Google Drive</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Dropbox</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>OneDrive</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Local Files</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="permission-category">
+                            <h3>📧 Communication</h3>
+                            <div class="permission-item">
+                                <span>Gmail</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Outlook</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Slack</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Discord</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="permission-category">
+                            <h3>📅 Productivity</h3>
+                            <div class="permission-item">
+                                <span>Google Calendar</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Google Docs</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Google Sheets</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Notion</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="permission-category">
+                            <h3>📱 Social Media</h3>
+                            <div class="permission-item">
+                                <span>Twitter/X</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>LinkedIn</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Facebook</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Instagram</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="permission-category">
+                            <h3>🔗 Web & API</h3>
+                            <div class="permission-item">
+                                <span>Web Scraping</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Webhooks</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>API Calls</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Browser Automation</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="permission-category">
+                            <h3>⚡ Advanced</h3>
+                            <div class="permission-item">
+                                <span>Code Execution</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Database Access</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Server Actions</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                            <div class="permission-item">
+                                <span>Admin Override</span>
+                                <div class="toggle" onclick="togglePermission(this)"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Integrations -->
+                <div class="section">
+                    <h2>🔌 Service Integrations</h2>
+                    <div id="integrationsList">
+                        <div class="integration-item disconnected">
+                            <div class="integration-info">
+                                <div class="integration-name">Google Workspace</div>
+                                <div class="integration-status">Not connected - Configure OAuth</div>
+                            </div>
+                            <button class="btn">Connect</button>
+                        </div>
+                        <div class="integration-item disconnected">
+                            <div class="integration-info">
+                                <div class="integration-name">OpenAI API</div>
+                                <div class="integration-status">Not connected - Add API key</div>
+                            </div>
+                            <button class="btn">Configure</button>
+                        </div>
+                        <div class="integration-item disconnected">
+                            <div class="integration-info">
+                                <div class="integration-name">Zapier</div>
+                                <div class="integration-status">Not connected - Set webhook URL</div>
+                            </div>
+                            <button class="btn">Setup</button>
+                        </div>
+                        <div class="integration-item disconnected">
+                            <div class="integration-info">
+                                <div class="integration-name">Social Media APIs</div>
+                                <div class="integration-status">Not connected - Multiple platforms</div>
+                            </div>
+                            <button class="btn">Configure</button>
+                        </div>
+                    </div>
+                    <button class="btn" style="margin-top: 15px;">Add New Integration</button>
+                </div>
+
+                <!-- Capabilities -->
+                <div class="section">
+                    <h2>🚀 Agent Capabilities</h2>
+                    <div class="capabilities-grid" id="capabilitiesList">
+                        <div class="capability-item">
+                            <div class="capability-name">Content Creation</div>
+                            <div class="capability-desc">Generate text, articles, and creative content</div>
+                        </div>
+                        <div class="capability-item disabled">
+                            <div class="capability-name">Web Scraping</div>
+                            <div class="capability-desc">Extract data from websites - requires permissions</div>
+                        </div>
+                        <div class="capability-item disabled">
+                            <div class="capability-name">Email Management</div>
+                            <div class="capability-desc">Send and manage emails - requires email access</div>
+                        </div>
+                        <div class="capability-item disabled">
+                            <div class="capability-name">Social Media Posting</div>
+                            <div class="capability-desc">Post to social platforms - requires API access</div>
+                        </div>
+                        <div class="capability-item disabled">
+                            <div class="capability-name">File Operations</div>
+                            <div class="capability-desc">Create, edit, manage files - requires storage access</div>
+                        </div>
+                        <div class="capability-item disabled">
+                            <div class="capability-name">Research & Analysis</div>
+                            <div class="capability-desc">Deep web research - requires scraping permissions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workflows -->
+                <div class="section" style="grid-column: span 2;">
+                    <h2>⚙️ Workflow Designer</h2>
+                    <div class="node-palette">
+                        <div class="node-type">🎯 Trigger</div>
+                        <div class="node-type">📝 Action</div>
+                        <div class="node-type">🔀 Condition</div>
+                        <div class="node-type">📡 API Call</div>
+                        <div class="node-type">📧 Send Email</div>
+                        <div class="node-type">📱 Post Social</div>
+                        <div class="node-type">📄 Create Doc</div>
+                        <div class="node-type">🔍 Research</div>
+                        <div class="node-type">⏰ Delay</div>
+                        <div class="node-type">🔁 Loop</div>
+                    </div>
+                    <div class="workflow-canvas">
+                        <div class="workflow-placeholder">
+                            <h3>Visual Workflow Builder</h3>
+                            <p>Drag nodes from above to create automated workflows</p>
+                            <p>Connect permissions and integrations to unlock advanced nodes</p>
+                            <button class="btn" style="margin-top: 15px;">Create New Workflow</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const agentProfiles = {
+            vanessa: {
+                name: 'Vanessa',
+                specialty: 'Leadership',
+                personality: 'Strategic, visionary, and decisive. Excels at coordinating teams and making executive decisions.',
+                image: 'vanessa.jpg'
+            },
+            charlie: {
+                name: 'Charlie',
+                specialty: 'Content Creation',
+                personality: 'Creative and energetic, loves storytelling and brand narratives.',
+                image: 'charlie.jpg'
+            },
+            tiki: {
+                name: 'Tiki',
+                specialty: 'Content Creation',
+                personality: 'Methodical and detail-oriented, focuses on SEO and technical writing.',
+                image: 'tiki.jpg'
+            },
+            sophia: {
+                name: 'Sophia',
+                specialty: 'Content Creation',
+                personality: 'Philosophical and thoughtful, excels at thought leadership content.',
+                image: 'sophia.jpg'
+            },
+            william: {
+                name: 'William',
+                specialty: 'Web Development',
+                personality: 'Analytical and precise, loves clean code and elegant solutions.',
+                image: 'william.jpg'
+            },
+            zen: {
+                name: 'Zen',
+                specialty: 'Web Development',
+                personality: 'Calm and balanced, focuses on user experience and design.',
+                image: 'zen.jpg'
+            },
+            marsha: {
+                name: 'Marsha',
+                specialty: 'Marketing & Sales',
+                personality: 'Energetic and persuasive, great at understanding market trends.',
+                image: 'marsha.jpg'
+            },
+            selina: {
+                name: 'Selina',
+                specialty: 'Marketing & Sales',
+                personality: 'Strategic and data-driven, excels at conversion optimization.',
+                image: 'selina.jpg'
+            },
+            auto: {
+                name: 'Auto',
+                specialty: 'Business Operations',
+                personality: 'Efficient and systematic, loves automation and process optimization.',
+                image: 'auto.jpg'
+            },
+            titan: {
+                name: 'Titan',
+                specialty: 'Business Operations',
+                personality: 'Strong and reliable, handles complex operations and scaling.',
+                image: 'titan.jpg'
+            },
+            rory: {
+                name: 'Rory',
+                specialty: 'Research & Analysis',
+                personality: 'Curious and thorough, loves diving deep into data and trends.',
+                image: 'rory.jpg'
+            },
+            echo: {
+                name: 'Echo',
+                specialty: 'Research & Analysis',
+                personality: 'Reflective and insightful, excellent at pattern recognition.',
+                image: 'echo.jpg'
+            },
+            aurelius: {
+                name: 'Aurelius',
+                specialty: 'Custom AI Creation',
+                personality: 'Wise and innovative, creates unique AI solutions for special needs.',
+                image: 'aurelius.jpg'
+            }
+        };
+
+        let currentAgent = null;
+
+        function selectAgent(agentId) {
+            currentAgent = agentId;
+            const agent = agentProfiles[agentId];
+            
+            // Update UI
+            document.querySelectorAll('.agent-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-agent="${agentId}"]`).classList.add('selected');
+            
+            // Show content
+            document.getElementById('agentContent').classList.remove('hidden');
+            
+            // Update profile
+            document.getElementById('agentImage').src = agent.image;
+            document.getElementById('agentName').textContent = agent.name;
+            document.getElementById('agentSpecialty').textContent = agent.specialty;
+            document.getElementById('agentPersonality').textContent = agent.personality;
+            
+            // Update stats (these would be dynamic in real implementation)
+            updateStats();
+        }
+
+        function updateStats() {
+            const activePermissions = document.querySelectorAll('.toggle.active').length;
+            const connectedIntegrations = document.querySelectorAll('.integration-item.connected').length;
+            
+            document.getElementById('agentPermissions').textContent = activePermissions;
+            document.getElementById('agentIntegrations').textContent = connectedIntegrations;
+            
+            // Update capabilities based on permissions
+            updateCapabilities();
+        }
+
+        function togglePermission(toggle) {
+            toggle.classList.toggle('active');
+            updateStats();
+        }
+
+        function updateCapabilities() {
+            const capabilities = document.querySelectorAll('.capability-item');
+            const activePermissions = document.querySelectorAll('.toggle.active').length;
+            
+            capabilities.forEach((cap, index) => {
+                if (index < activePermissions / 2) {
+                    cap.classList.remove('disabled');
+                } else {
+                    cap.classList.add('disabled');
+                }
+            });
+        }
+
+        // Initialize with first agent
+        document.addEventListener('DOMContentLoaded', function() {
+            // You could auto-select the first agent or leave it empty
+        });
+    </script>
+</body>
+</html>

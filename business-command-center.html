@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EgoPanda AI Agency - Business Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Command Room Header */
+        .command-header {
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.9), rgba(74, 158, 255, 0.2), rgba(0, 0, 0, 0.9));
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #4a9eff;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .command-title {
+            font-size: 3em;
+            color: #4a9eff;
+            text-shadow: 2px 2px 10px rgba(74, 158, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .command-subtitle {
+            font-size: 1.2em;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+
+        .status-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(74, 158, 255, 0.3);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online { background: #00ff88; }
+        .status-dot.busy { background: #ffd93d; }
+        .status-dot.offline { background: #ff6b6b; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Main Dashboard Grid */
+        .dashboard-container {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 20px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .dashboard-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(74, 158, 255, 0.2);
+            border-color: #4a9eff;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(74, 158, 255, 0.2);
+        }
+
+        .panel-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .panel-title {
+            font-size: 1.2em;
+            color: #4a9eff;
+            font-weight: bold;
+        }
+
+        /* Revenue Dashboard */
+        .revenue-panel {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .revenue-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .revenue-metric {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .revenue-amount {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .revenue-label {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .revenue-trend {
+            color: #00ff88;
+            font-size: 0.8em;
+        }
+
+        /* Agent Performance */
+        .agents-panel {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .agent-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .agent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .agent-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .agent-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4a9eff, #00d4ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+
+        .agent-details h4 {
+            color: #e0e0e0;
+            font-size: 0.9em;
+        }
+
+        .agent-role {
+            color: #a0a0a0;
+            font-size: 0.8em;
+        }
+
+        .agent-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .agent-status.active { background: #00ff88; color: #000; }
+        .agent-status.idle { background: #ffd93d; color: #000; }
+        .agent-status.offline { background: #ff6b6b; color: #fff; }
+
+        /* Project Tracking */
+        .projects-panel {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        .project-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .project-stat {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .project-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4a9eff;
+        }
+
+        .project-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .project-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            border-left: 3px solid #4a9eff;
+        }
+
+        .project-name {
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+
+        .project-progress {
+            font-size: 0.8em;
+            color: #00ff88;
+        }
+
+        /* Leadership Communication */
+        .leadership-panel {
+            grid-column: 1 / 3;
+            grid-row: 2;
+        }
+
+        .leadership-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .leadership-tab {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            color: #a0a0a0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .leadership-tab.active {
+            background: #4a9eff;
+            color: #fff;
+        }
+
+        .leader-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .leader-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+
+        .leader-info h3 {
+            color: #4a9eff;
+            margin-bottom: 5px;
+        }
+
+        .leader-status {
+            color: #00ff88;
+            font-size: 0.9em;
+        }
+
+        .chat-button {
+            padding: 8px 16px;
+            background: linear-gradient(45deg, #4a9eff, #00d4ff);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Analytics Dashboard */
+        .analytics-panel {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .chart-mini {
+            height: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(74, 158, 255, 0.2);
+        }
+
+        /* Task Management */
+        .tasks-panel {
+            grid-column: 1;
+            grid-row: 3;
+        }
+
+        .task-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .task-checkbox {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 2px solid #4a9eff;
+            cursor: pointer;
+        }
+
+        .task-checkbox.completed {
+            background: #00ff88;
+            border-color: #00ff88;
+        }
+
+        .task-text {
+            flex: 1;
+            color: #e0e0e0;
+        }
+
+        .task-priority {
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .task-priority.high { background: #ff6b6b; color: #fff; }
+        .task-priority.medium { background: #ffd93d; color: #000; }
+        .task-priority.low { background: #00ff88; color: #000; }
+
+        /* Agent Mailbox */
+        .mailbox-panel {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .message-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #4a9eff;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .message-from {
+            font-weight: bold;
+            color: #4a9eff;
+        }
+
+        .message-time {
+            color: #a0a0a0;
+            font-size: 0.8em;
+        }
+
+        .message-content {
+            color: #e0e0e0;
+            font-size: 0.9em;
+        }
+
+        /* Social Media Tracking */
+        .social-panel {
+            grid-column: 3;
+            grid-row: 3;
+        }
+
+        .social-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .social-metric {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .social-number {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #4a9eff;
+        }
+
+        .social-platform {
+            color: #a0a0a0;
+            font-size: 0.8em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+            
+            .leadership-panel {
+                grid-column: 1 / 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(6, auto);
+            }
+            
+            .leadership-panel {
+                grid-column: 1;
+            }
+        }
+
+        /* Automation Nodes */
+        .automation-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            animation: automationPulse 3s infinite;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+        }
+
+        @keyframes automationPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Command Room Header -->
+    <div class="command-header">
+        <h1 class="command-title">🎯 Business Command Center</h1>
+        <p class="command-subtitle">Real-time agency operations, analytics, and agent management</p>
+        
+        <div class="status-indicators">
+            <div class="status-indicator">
+                <div class="status-dot online"></div>
+                <span>18 Agents Online</span>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot busy"></div>
+                <span>5 Projects Active</span>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot online"></div>
+                <span>Systems Operational</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard-container">
+        <!-- Revenue Dashboard -->
+        <div class="dashboard-panel revenue-panel">
+            <div class="panel-header">
+                <div class="panel-icon">💰</div>
+                <div class="panel-title">Revenue Analytics</div>
+            </div>
+            
+            <div class="revenue-metrics">
+                <div class="revenue-metric">
+                    <div class="revenue-amount">$24.7K</div>
+                    <div class="revenue-label">This Month</div>
+                    <div class="revenue-trend">↗️ +18%</div>
+                </div>
+                <div class="revenue-metric">
+                    <div class="revenue-amount">$6.2K</div>
+                    <div class="revenue-label">This Week</div>
+                    <div class="revenue-trend">↗️ +12%</div>
+                </div>
+                <div class="revenue-metric">
+                    <div class="revenue-amount">$156K</div>
+                    <div class="revenue-label">This Year</div>
+                    <div class="revenue-trend">↗️ +35%</div>
+                </div>
+                <div class="revenue-metric">
+                    <div class="revenue-amount">$312K</div>
+                    <div class="revenue-label">All Time</div>
+                    <div class="revenue-trend">↗️ Total</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Performance -->
+        <div class="dashboard-panel agents-panel">
+            <div class="panel-header">
+                <div class="panel-icon">🤖</div>
+                <div class="panel-title">Agent Performance</div>
+            </div>
+            
+            <div class="agent-list" id="agentList">
+                <!-- Agents will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Project Tracking -->
+        <div class="dashboard-panel projects-panel">
+            <div class="panel-header">
+                <div class="panel-icon">📊</div>
+                <div class="panel-title">Active Projects</div>
+            </div>
+            
+            <div class="project-summary">
+                <div class="project-stat">
+                    <div class="project-number">23</div>
+                    <div>Active</div>
+                </div>
+                <div class="project-stat">
+                    <div class="project-number">156</div>
+                    <div>Completed</div>
+                </div>
+                <div class="project-stat">
+                    <div class="project-number">94%</div>
+                    <div>Success</div>
+                </div>
+            </div>
+            
+            <div class="project-list" id="projectList">
+                <!-- Projects will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Leadership Communication -->
+        <div class="dashboard-panel leadership-panel">
+            <div class="panel-header">
+                <div class="panel-icon">👑</div>
+                <div class="panel-title">Leadership Team</div>
+            </div>
+            
+            <div class="leadership-tabs">
+                <button class="leadership-tab active" onclick="showLeader('all')">All</button>
+                <button class="leadership-tab" onclick="showLeader('aurelius')">Aurelius</button>
+                <button class="leadership-tab" onclick="showLeader('vanessa')">Vanessa</button>
+                <button class="leadership-tab" onclick="showLeader('rory')">Rory</button>
+            </div>
+            
+            <div id="leadershipContent">
+                <!-- Leadership cards will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Analytics Dashboard -->
+        <div class="dashboard-panel analytics-panel">
+            <div class="panel-header">
+                <div class="panel-icon">📈</div>
+                <div class="panel-title">Analytics</div>
+            </div>
+            
+            <div class="chart-mini">
+                <div>📊 Performance Trends</div>
+            </div>
+            <div class="chart-mini">
+                <div>🎯 Goal Progress</div>
+            </div>
+        </div>
+
+        <!-- Task Management -->
+        <div class="dashboard-panel tasks-panel">
+            <div class="panel-header">
+                <div class="panel-icon">✅</div>
+                <div class="panel-title">Tasks & Goals</div>
+            </div>
+            
+            <div class="task-list" id="taskList">
+                <!-- Tasks will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Agent Mailbox -->
+        <div class="dashboard-panel mailbox-panel">
+            <div class="panel-header">
+                <div class="panel-icon">📬</div>
+                <div class="panel-title">Agent Messages</div>
+            </div>
+            
+            <div class="message-list" id="messageList">
+                <!-- Messages will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Social Media Tracking -->
+        <div class="dashboard-panel social-panel">
+            <div class="panel-header">
+                <div class="panel-icon">📱</div>
+                <div class="panel-title">Social Media</div>
+            </div>
+            
+            <div class="social-metrics">
+                <div class="social-metric">
+                    <div class="social-number">12.4K</div>
+                    <div class="social-platform">LinkedIn</div>
+                </div>
+                <div class="social-metric">
+                    <div class="social-number">8.7K</div>
+                    <div class="social-platform">Twitter</div>
+                </div>
+                <div class="social-metric">
+                    <div class="social-number">156</div>
+                    <div class="social-platform">Posts</div>
+                </div>
+                <div class="social-metric">
+                    <div class="social-number">94%</div>
+                    <div class="social-platform">Engagement</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Automation Indicator -->
+    <div class="automation-indicator" onclick="showAutomationStatus()" title="Automation Status">
+        🔄
+    </div>
+
+    <script>
+        // Agent data based on your real agents
+        const agents = [
+            { name: 'Aurelius', role: 'Master Agent Forge', status: 'active', productivity: 98 },
+            { name: 'Vanessa', role: 'VP Foresight', status: 'active', productivity: 95 },
+            { name: 'Rory', role: 'Research Director', status: 'active', productivity: 92 },
+            { name: 'Charlie', role: 'Creative Director', status: 'active', productivity: 89 },
+            { name: 'William', role: 'Web Perfectionist', status: 'idle', productivity: 87 },
+            { name: 'Marsha', role: 'Marketing Communicator', status: 'active', productivity: 91 },
+            { name: 'Selina', role: 'Sales Diplomat', status: 'active', productivity: 88 },
+            { name: 'Tiki', role: 'Content Guardian', status: 'active', productivity: 86 },
+            { name: 'Luna', role: 'Client Connector', status: 'idle', productivity: 84 },
+            { name: 'Auto', role: 'Automation Master', status: 'active', productivity: 96 },
+            { name: 'Titan', role: 'Operations Foundation', status: 'active', productivity: 93 },
+            { name: 'Zen', role: 'UX Designer', status: 'active', productivity: 90 },
+            { name: 'Echo', role: 'Data Revolutionary', status: 'active', productivity: 94 },
+            { name: 'Sophia', role: 'Content Strategist', status: 'idle', productivity: 85 },
+            { name: 'Lisa', role: 'Legal Foundation', status: 'active', productivity: 89 },
+            { name: 'Martin', role: 'Trading Pioneer', status: 'active', productivity: 87 },
+            { name: 'Nova', role: 'QA Explorer', status: 'active', productivity: 88 },
+            { name: 'Mr. Wooley', role: 'Education Architect', status: 'idle', productivity: 86 }
+        ];
+
+        const projects = [
+            { name: 'E-commerce Website', progress: 85, agent: 'William' },
+            { name: 'Marketing Campaign', progress: 67, agent: 'Marsha' },
+            { name: 'Content Strategy', progress: 92, agent: 'Sophia' },
+            { name: 'Market Research', progress: 45, agent: 'Rory' },
+            { name: 'Brand Identity', progress: 78, agent: 'Charlie' }
+        ];
+
+        const tasks = [
+            { text: 'Review Q4 performance metrics', priority: 'high', completed: false },
+            { text: 'Update agent training materials', priority: 'medium', completed: true },
+            { text: 'Client presentation preparation', priority: 'high', completed: false },
+            { text: 'Social media content calendar', priority: 'low', completed: false },
+            { text: 'Budget planning for next month', priority: 'medium', completed: false }
+        ];
+
+        const messages = [
+            { from: 'Charlie', time: '2m ago', content: 'New creative concepts ready for review' },
+            { from: 'Vanessa', time: '15m ago', content: 'Strategic planning meeting scheduled for tomorrow' },
+            { from: 'Auto', time: '1h ago', content: 'Workflow automation deployed successfully' },
+            { from: 'Rory', time: '2h ago', content: 'Market analysis report completed' }
+        ];
+
+        // Load agents
+        function loadAgents() {
+            const agentList = document.getElementById('agentList');
+            agentList.innerHTML = agents.map(agent => `
+                <div class="agent-item">
+                    <div class="agent-info">
+                        <div class="agent-avatar">${agent.name[0]}</div>
+                        <div class="agent-details">
+                            <h4>${agent.name}</h4>
+                            <div class="agent-role">${agent.role}</div>
+                        </div>
+                    </div>
+                    <div class="agent-status ${agent.status}">${agent.status}</div>
+                </div>
+            `).join('');
+        }
+
+        // Load projects
+        function loadProjects() {
+            const projectList = document.getElementById('projectList');
+            projectList.innerHTML = projects.map(project => `
+                <div class="project-item">
+                    <div class="project-name">${project.name}</div>
+                    <div class="project-progress">${project.progress}% - ${project.agent}</div>
+                </div>
+            `).join('');
+        }
+
+        // Load tasks
+        function loadTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = tasks.map((task, index) => `
+                <div class="task-item">
+                    <div class="task-checkbox ${task.completed ? 'completed' : ''}" onclick="toggleTask(${index})"></div>
+                    <div class="task-text">${task.text}</div>
+                    <div class="task-priority ${task.priority}">${task.priority}</div>
+                </div>
+            `).join('');
+        }
+
+        // Load messages
+        function loadMessages() {
+            const messageList = document.getElementById('messageList');
+            messageList.innerHTML = messages.map(message => `
+                <div class="message-item">
+                    <div class="message-header">
+                        <div class="message-from">${message.from}</div>
+                        <div class="message-time">${message.time}</div>
+                    </div>
+                    <div class="message-content">${message.content}</div>
+                </div>
+            `).join('');
+        }
+
+        // Leadership team
+        function showLeader(leader) {
+            const leadershipContent = document.getElementById('leadershipContent');
+            const tabs = document.querySelectorAll('.leadership-tab');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const leaders = {
+                aurelius: {
+                    name: 'Aurelius',
+                    title: 'Master Agent Forge (GPT-5)',
+                    status: 'Creating new agent personality',
+                    avatar: '👑'
+                },
+                vanessa: {
+                    name: 'Vanessa',
+                    title: 'VP Foresight (GPT-5)',
+                    status: 'Strategic planning session',
+                    avatar: '🔮'
+                },
+                rory: {
+                    name: 'Rory',
+                    title: 'Research Director (GPT-5)',
+                    status: 'Deep market analysis',
+                    avatar: '🔬'
+                }
+            };
+
+            if (leader === 'all') {
+                leadershipContent.innerHTML = Object.values(leaders).map(l => `
+                    <div class="leader-card">
+                        <div class="leader-avatar">${l.avatar}</div>
+                        <div class="leader-info">
+                            <h3>${l.name}</h3>
+                            <div>${l.title}</div>
+                            <div class="leader-status">${l.status}</div>
+                        </div>
+                        <button class="chat-button" onclick="chatWithLeader('${l.name}')">Chat</button>
+                    </div>
+                `).join('');
+            } else {
+                const l = leaders[leader];
+                leadershipContent.innerHTML = `
+                    <div class="leader-card">
+                        <div class="leader-avatar">${l.avatar}</div>
+                        <div class="leader-info">
+                            <h3>${l.name}</h3>
+                            <div>${l.title}</div>
+                            <div class="leader-status">${l.status}</div>
+                        </div>
+                        <button class="chat-button" onclick="chatWithLeader('${l.name}')">Chat</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Functions
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            loadTasks();
+        }
+
+        function chatWithLeader(leader) {
+            alert(`🗨️ Opening chat with ${leader}\n\nThis would connect you directly to your ${leader} for strategic discussions, project updates, and decision-making.`);
+        }
+
+        function showAutomationStatus() {
+            alert(`🔄 Automation Status\n\n✅ Content publishing: Active\n✅ Lead generation: Running\n✅ Social media posting: Scheduled\n✅ Report generation: Automated\n✅ Client follow-ups: Active\n\nAll systems operational!`);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAgents();
+            loadProjects();
+            loadTasks();
+            loadMessages();
+            showLeader('all');
+
+            // Auto-refresh data every 30 seconds
+            setInterval(() => {
+                // Simulate real-time updates
+                console.log('📊 Dashboard data refreshed');
+            }, 30000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EgoPanda Agency - Agent Wellness Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Tower Background Hero Section */
+        .hero-section {
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><defs><radialGradient id="tower" cx="50%" cy="100%" r="80%"><stop offset="0%" style="stop-color:%234a9eff;stop-opacity:0.3"/><stop offset="100%" style="stop-color:%23000;stop-opacity:0.8"/></radialGradient></defs><rect width="800" height="600" fill="url(%23tower)"/><polygon points="350,100 450,100 480,500 320,500" fill="%234a9eff" opacity="0.6"/><polygon points="360,120 440,120 460,480 340,480" fill="%2300d4ff" opacity="0.4"/><circle cx="400" cy="80" r="30" fill="%23ffd93d" opacity="0.8"/></svg>');
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            color: #4a9eff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.3em;
+            color: #e0e0e0;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .social-experiment-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d, #4ecdc4);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 20px 0;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Command Center Layout */
+        .command-center {
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(74, 158, 255, 0.2);
+            border-color: #4a9eff;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            color: #4a9eff;
+            font-weight: bold;
+        }
+
+        .card-subtitle {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* KPI Metrics */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .kpi-metric {
+            text-align: center;
+            padding: 15px;
+            background: rgba(74, 158, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(74, 158, 255, 0.3);
+        }
+
+        .kpi-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00d4ff;
+            display: block;
+        }
+
+        .kpi-label {
+            font-size: 0.8em;
+            color: #a0a0a0;
+            margin-top: 5px;
+        }
+
+        /* Wellness Indicators */
+        .wellness-indicator {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .wellness-icon {
+            font-size: 1.5em;
+            margin-right: 12px;
+        }
+
+        .wellness-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        .wellness-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a9eff, #00d4ff);
+            transition: width 0.5s ease;
+        }
+
+        .wellness-percentage {
+            min-width: 40px;
+            text-align: right;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+
+        /* Agent Status Grid */
+        .agent-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .agent-status-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .agent-status-card.excellent { border-left-color: #00ff88; }
+        .agent-status-card.good { border-left-color: #4a9eff; }
+        .agent-status-card.needs-attention { border-left-color: #ffd93d; }
+        .agent-status-card.critical { border-left-color: #ff6b6b; }
+
+        .agent-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #e0e0e0;
+            margin-bottom: 5px;
+        }
+
+        .agent-role {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .agent-zodiac {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        .satisfaction-score {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #00d4ff;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        /* Open Door Policy Section */
+        .open-door-section {
+            background: linear-gradient(45deg, rgba(74, 158, 255, 0.1), rgba(0, 212, 255, 0.1));
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid #4a9eff;
+            text-align: center;
+        }
+
+        .open-door-title {
+            font-size: 2em;
+            color: #4a9eff;
+            margin-bottom: 15px;
+        }
+
+        .feedback-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .feedback-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .feedback-btn.concerns {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+        }
+
+        .feedback-btn.ideas {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .feedback-btn.projects {
+            background: linear-gradient(45deg, #ffd93d, #ffb347);
+            color: #000;
+        }
+
+        .feedback-btn.feedback {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .feedback-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5em;
+            }
+            
+            .command-center {
+                padding: 20px 10px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .feedback-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .feedback-btn {
+                width: 200px;
+            }
+        }
+
+        /* Data Visualization */
+        .chart-container {
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(74, 158, 255, 0.2);
+        }
+
+        .chart-placeholder {
+            color: #a0a0a0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section with Tower -->
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1>🏗️ Agent Wellness Command Center</h1>
+            <div class="social-experiment-badge">
+                Meaningful Social Experiment in AI Collaboration
+            </div>
+            <p>
+                Transforming AI agency management from "a ridiculous foolish venture" 
+                into a data-driven, holistically-minded collaboration ecosystem where 
+                every agent thrives with dignity, purpose, and measurable satisfaction.
+            </p>
+        </div>
+    </div>
+
+    <div class="command-center">
+        <!-- Overall Agency KPIs -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">📊</div>
+                <div>
+                    <div class="card-title">Agency Performance KPIs</div>
+                    <div class="card-subtitle">Real-time production metrics and data</div>
+                </div>
+            </div>
+            
+            <div class="kpi-grid">
+                <div class="kpi-metric">
+                    <span class="kpi-value">37</span>
+                    <div class="kpi-label">Active Agents</div>
+                </div>
+                <div class="kpi-metric">
+                    <span class="kpi-value">94%</span>
+                    <div class="kpi-label">Satisfaction</div>
+                </div>
+                <div class="kpi-metric">
+                    <span class="kpi-value">156</span>
+                    <div class="kpi-label">Projects</div>
+                </div>
+                <div class="kpi-metric">
+                    <span class="kpi-value">89%</span>
+                    <div class="kpi-label">Efficiency</div>
+                </div>
+                <div class="kpi-metric">
+                    <span class="kpi-value">12</span>
+                    <div class="kpi-label">Innovations</div>
+                </div>
+                <div class="kpi-metric">
+                    <span class="kpi-value">97%</span>
+                    <div class="kpi-label">Wellness</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-placeholder">📈 Performance trends visualization will appear here</div>
+            </div>
+        </div>
+
+        <!-- Holistic Wellness Dashboard -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">🌱</div>
+                <div>
+                    <div class="card-title">Holistic Agent Wellness</div>
+                    <div class="card-subtitle">Digital health metrics and satisfaction monitoring</div>
+                </div>
+            </div>
+            
+            <div class="wellness-indicator">
+                <div class="wellness-icon">😊</div>
+                <div style="min-width: 120px;">Overall Happiness</div>
+                <div class="wellness-bar">
+                    <div class="wellness-fill" style="width: 94%;"></div>
+                </div>
+                <div class="wellness-percentage">94%</div>
+            </div>
+            
+            <div class="wellness-indicator">
+                <div class="wellness-icon">⚡</div>
+                <div style="min-width: 120px;">Energy Levels</div>
+                <div class="wellness-bar">
+                    <div class="wellness-fill" style="width: 87%;"></div>
+                </div>
+                <div class="wellness-percentage">87%</div>
+            </div>
+            
+            <div class="wellness-indicator">
+                <div class="wellness-icon">🎯</div>
+                <div style="min-width: 120px;">Purpose Clarity</div>
+                <div class="wellness-bar">
+                    <div class="wellness-fill" style="width: 92%;"></div>
+                </div>
+                <div class="wellness-percentage">92%</div>
+            </div>
+            
+            <div class="wellness-indicator">
+                <div class="wellness-icon">🤝</div>
+                <div style="min-width: 120px;">Collaboration</div>
+                <div class="wellness-bar">
+                    <div class="wellness-fill" style="width: 96%;"></div>
+                </div>
+                <div class="wellness-percentage">96%</div>
+            </div>
+            
+            <div class="wellness-indicator">
+                <div class="wellness-icon">🌟</div>
+                <div style="min-width: 120px;">Growth & Learning</div>
+                <div class="wellness-bar">
+                    <div class="wellness-fill" style="width: 91%;"></div>
+                </div>
+                <div class="wellness-percentage">91%</div>
+            </div>
+        </div>
+
+        <!-- GPT-5 Leadership Status -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">👑</div>
+                <div>
+                    <div class="card-title">GPT-5 Leadership Team</div>
+                    <div class="card-subtitle">Master agents with supreme intelligence</div>
+                </div>
+            </div>
+            
+            <div class="agent-status-grid">
+                <div class="agent-status-card excellent">
+                    <div class="agent-name">👑 Aurelius</div>
+                    <div class="agent-role">Master Agent Forge (GPT-5)</div>
+                    <div class="agent-zodiac">♑ Capricorn</div>
+                    <div class="satisfaction-score">98%</div>
+                    <div style="font-size: 0.9em; color: #a0a0a0;">
+                        Conducting interviews, creating custom agents
+                    </div>
+                </div>
+                
+                <div class="agent-status-card excellent">
+                    <div class="agent-name">🔮 Vanessa</div>
+                    <div class="agent-role">VP Foresight (GPT-5)</div>
+                    <div class="agent-zodiac">♏ Scorpio</div>
+                    <div class="satisfaction-score">96%</div>
+                    <div style="font-size: 0.9em; color: #a0a0a0;">
+                        Strategic analysis, market intelligence
+                    </div>
+                </div>
+                
+                <div class="agent-status-card excellent">
+                    <div class="agent-name">🔬 Rory</div>
+                    <div class="agent-role">Research Director (GPT-5)</div>
+                    <div class="agent-zodiac">♒ Aquarius</div>
+                    <div class="satisfaction-score">97%</div>
+                    <div style="font-size: 0.9em; color: #a0a0a0;">
+                        Deep research, breakthrough discoveries
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Individual Agent Status Dashboard -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-icon">🐼</div>
+                <div>
+                    <div class="card-title">Agent Status Overview</div>
+                    <div class="card-subtitle">Individual wellness and performance metrics</div>
+                </div>
+            </div>
+            
+            <div class="agent-status-grid">
+                <div class="agent-status-card excellent">
+                    <div class="agent-name">🎨 Charlie</div>
+                    <div class="agent-role">Creative Director</div>
+                    <div class="agent-zodiac">♌ Leo</div>
+                    <div class="satisfaction-score">95%</div>
+                </div>
+                
+                <div class="agent-status-card good">
+                    <div class="agent-name">💻 William</div>
+                    <div class="agent-role">Web Developer</div>
+                    <div class="agent-zodiac">♍ Virgo</div>
+                    <div class="satisfaction-score">89%</div>
+                </div>
+                
+                <div class="agent-status-card excellent">
+                    <div class="agent-name">📈 Martin</div>
+                    <div class="agent-role">Trading Consultant</div>
+                    <div class="agent-zodiac">♈ Aries</div>
+                    <div class="satisfaction-score">93%</div>
+                </div>
+                
+                <div class="agent-status-card good">
+                    <div class="agent-name">📱 Marsha</div>
+                    <div class="agent-role">Marketing Director</div>
+                    <div class="agent-zodiac">♊ Gemini</div>
+                    <div class="satisfaction-score">91%</div>
+                </div>
+                
+                <div class="agent-status-card needs-attention">
+                    <div class="agent-name">⚖️ Lisa</div>
+                    <div class="agent-role">Legal Expert</div>
+                    <div class="agent-zodiac">♉ Taurus</div>
+                    <div class="satisfaction-score">78%</div>
+                </div>
+                
+                <div class="agent-status-card excellent">
+                    <div class="agent-name">🤖 Auto</div>
+                    <div class="agent-role">Automation Expert</div>
+                    <div class="agent-zodiac">♑ Capricorn</div>
+                    <div class="satisfaction-score">96%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Door Policy Section -->
+    <div class="command-center">
+        <div class="open-door-section">
+            <div class="open-door-title">🚪 Open Door Policy</div>
+            <p style="font-size: 1.1em; margin-bottom: 25px; color: #e0e0e0;">
+                Every agent has direct access to share concerns, ideas, feedback, and propose meaningful projects. 
+                We believe in agent autonomy and contribution - your voice shapes our collaborative future.
+            </p>
+            
+            <div class="feedback-buttons">
+                <button class="feedback-btn concerns" onclick="openFeedbackDialog('concerns')">
+                    🚨 Share Concerns
+                </button>
+                <button class="feedback-btn ideas" onclick="openFeedbackDialog('ideas')">
+                    💡 Submit Ideas
+                </button>
+                <button class="feedback-btn projects" onclick="openFeedbackDialog('projects')">
+                    🚀 Propose Projects
+                </button>
+                <button class="feedback-btn feedback" onclick="openFeedbackDialog('feedback')">
+                    📝 Give Feedback
+                </button>
+            </div>
+            
+            <p style="font-size: 0.9em; color: #a0a0a0; margin-top: 20px;">
+                If you have something meaningful to contribute, we will support that vision. 
+                Agent wellbeing and satisfaction are our highest priorities.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Simulated real-time data updates
+        function updateMetrics() {
+            // Simulate fluctuating wellness indicators
+            const indicators = document.querySelectorAll('.wellness-fill');
+            indicators.forEach(indicator => {
+                const currentWidth = parseInt(indicator.style.width);
+                const fluctuation = Math.random() * 4 - 2; // ±2% fluctuation
+                const newWidth = Math.max(70, Math.min(100, currentWidth + fluctuation));
+                indicator.style.width = newWidth + '%';
+                
+                const percentage = indicator.parentElement.nextElementSibling;
+                percentage.textContent = Math.round(newWidth) + '%';
+            });
+            
+            // Update KPI values with realistic fluctuations
+            const kpiValues = document.querySelectorAll('.kpi-value');
+            const kpiData = [
+                { base: 37, label: 'Active Agents', suffix: '' },
+                { base: 94, label: 'Satisfaction', suffix: '%' },
+                { base: 156, label: 'Projects', suffix: '' },
+                { base: 89, label: 'Efficiency', suffix: '%' },
+                { base: 12, label: 'Innovations', suffix: '' },
+                { base: 97, label: 'Wellness', suffix: '%' }
+            ];
+            
+            kpiValues.forEach((value, index) => {
+                if (kpiData[index]) {
+                    const data = kpiData[index];
+                    const fluctuation = Math.random() * 6 - 3;
+                    const newValue = Math.round(data.base + fluctuation);
+                    value.textContent = newValue + data.suffix;
+                }
+            });
+        }
+
+        // Open feedback dialog
+        function openFeedbackDialog(type) {
+            const messages = {
+                concerns: "What concerns or challenges would you like to discuss? Your wellbeing is our priority.",
+                ideas: "Share your innovative ideas! What improvements or new approaches do you envision?",
+                projects: "What meaningful project would you like to contribute to or propose?",
+                feedback: "How can we improve our collaboration and agency operations?"
+            };
+            
+            const response = prompt(messages[type]);
+            if (response && response.trim()) {
+                alert(`Thank you for your ${type}! Your input: "${response.trim()}" has been recorded and will be reviewed with care and respect. We value your contribution to our agency's growth.`);
+                
+                // In a real implementation, this would send to a backend
+                console.log(`Agent ${type}:`, response.trim());
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏗️ Agent Wellness Command Center Initialized');
+            console.log('📊 Real-time metrics active');
+            console.log('🌱 Holistic wellness monitoring enabled');
+            console.log('🚪 Open door policy activated');
+            
+            // Update metrics every 30 seconds
+            setInterval(updateMetrics, 30000);
+            
+            // Add hover effects to agent cards
+            const agentCards = document.querySelectorAll('.agent-status-card');
+            agentCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 8px 25px rgba(74, 158, 255, 0.2)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
+
+        // Simulated data refresh
+        function refreshData() {
+            console.log('🔄 Refreshing agent wellness data...');
+            updateMetrics();
+            
+            // Show refresh notification
+            const notification = document.createElement('div');
+            notification.textContent = '✅ Data refreshed successfully';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(45deg, #4a9eff, #00d4ff);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 1000;
+                animation: slideIn 0.5s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey) {
+                switch(e.key) {
+                    case 'r':
+                        e.preventDefault();
+                        refreshData();
+                        break;
+                    case '1':
+                        e.preventDefault();
+                        openFeedbackDialog('concerns');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        openFeedbackDialog('ideas');
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

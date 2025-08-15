@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to EgoPanda AI - Let's Get Started</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .onboarding-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .welcome-title {
+            font-size: 2.5em;
+            color: #00ff88;
+            margin-bottom: 15px;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 20px;
+        }
+
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .step.inactive {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .step.completed {
+            background: #4ecdc4;
+            color: #000;
+        }
+
+        .step-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .step-title {
+            font-size: 1.8em;
+            color: #00ff88;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+        }
+
+        .form-select option {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00ff88;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .agent-preview {
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .agent-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .agent-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #00ff88;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #00ff88, #4ecdc4);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="onboarding-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🐼</div>
+            <h1 class="welcome-title">Welcome to EgoPanda AI!</h1>
+            <p class="welcome-subtitle">Let's set up your AI agents and understand your business needs</p>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 25%"></div>
+        </div>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active" id="step1">1</div>
+            <div class="step inactive" id="step2">2</div>
+            <div class="step inactive" id="step3">3</div>
+            <div class="step inactive" id="step4">4</div>
+        </div>
+
+        <!-- Step 1: Business Information -->
+        <div class="step-content" id="stepContent1">
+            <h2 class="step-title">Tell us about your business</h2>
+            
+            <div class="form-group">
+                <label class="form-label" for="businessName">Business Name *</label>
+                <input type="text" id="businessName" class="form-input" placeholder="Your company name" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="businessType">Business Type *</label>
+                <select id="businessType" class="form-select" required>
+                    <option value="">Select your business type</option>
+                    <option value="startup">Startup</option>
+                    <option value="small-business">Small Business</option>
+                    <option value="medium-business">Medium Business</option>
+                    <option value="enterprise">Enterprise</option>
+                    <option value="freelancer">Freelancer/Consultant</option>
+                    <option value="agency">Agency</option>
+                    <option value="ecommerce">E-commerce</option>
+                    <option value="saas">SaaS/Technology</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="industry">Industry *</label>
+                <select id="industry" class="form-select" required>
+                    <option value="">Select your industry</option>
+                    <option value="technology">Technology</option>
+                    <option value="marketing">Marketing & Advertising</option>
+                    <option value="ecommerce">E-commerce & Retail</option>
+                    <option value="consulting">Consulting</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="finance">Finance</option>
+                    <option value="education">Education</option>
+                    <option value="real-estate">Real Estate</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="hospitality">Hospitality</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="businessDescription">Business Description *</label>
+                <textarea id="businessDescription" class="form-textarea" placeholder="Describe what your business does, your main products/services, and your goals..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="teamSize">Team Size</label>
+                <select id="teamSize" class="form-select">
+                    <option value="">Select team size</option>
+                    <option value="1">Just me</option>
+                    <option value="2-5">2-5 people</option>
+                    <option value="6-10">6-10 people</option>
+                    <option value="11-25">11-25 people</option>
+                    <option value="26-50">26-50 people</option>
+                    <option value="50+">50+ people</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Step 2: Current Challenges -->
+        <div class="step-content hidden" id="stepContent2">
+            <h2 class="step-title">What challenges are you facing?</h2>
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Select all that apply - this helps us recommend the right AI agents for you:</p>
+            
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="challenge1" value="content-creation">
+                    <label for="challenge1">Content Creation & Writing</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="challenge2" value="social-media">
+                    <label for="challenge2">Social Media Management</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="challenge3" value="customer-service">
+                    <label for="challenge3">Customer Service</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="challenge4" value="lead-generation">
+                    <label for="challenge4">Lead Generation</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="challenge5" value="data-analysis">
+                    <label for="challenge5">Data Analysis & Research</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="challenge6" value="email-marketing">
+                    <label for="challenge6">Email Marketing</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="challenge7" value="website-dev">
+                    <label for="challenge7">Website Development</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="challenge8" value="automation">
+                    <label for="challenge8">Process Automation</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="challenge9" value="project-management">
+                    <label for="challenge9">Project Management</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="challenge10" value="competitor-research">
+                    <label for="challenge10">Competitor Research</label>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 25px;">
+                <label class="form-label" for="biggestChallenge">What's your biggest challenge right now?</label>
+                <textarea id="biggestChallenge" class="form-textarea" placeholder="Describe your most pressing business challenge that you'd like AI help with..."></textarea>
+            </div>
+        </div>
+
+        <!-- Step 3: AI Agent Selection -->
+        <div class="step-content hidden" id="stepContent3">
+            <h2 class="step-title">Recommended AI Agents for You</h2>
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 25px;">Based on your responses, here are the AI agents we recommend:</p>
+            
+            <div id="recommendedAgents">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Step 4: Setup Complete -->
+        <div class="step-content hidden" id="stepContent4">
+            <h2 class="step-title">🎉 Setup Complete!</h2>
+            <p style="color: rgba(255,255,255,0.8); margin-bottom: 25px;">Your AI agents are being initialized with your business information...</p>
+            
+            <div id="setupStatus">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <span class="loading"></span>
+                    <span>Creating your personalized dashboard...</span>
+                </div>
+            </div>
+
+            <div class="agent-preview" style="margin-top: 30px;">
+                <div class="agent-info">
+                    <div class="agent-avatar">V</div>
+                    <div>
+                        <h3 style="color: #00ff88;">Vanessa - VP of Operations</h3>
+                        <p style="color: rgba(255,255,255,0.7);">Your dedicated account manager</p>
+                    </div>
+                </div>
+                <p style="color: rgba(255,255,255,0.8);">
+                    "Hi! I'm Vanessa, your VP of Operations. I've received all your business information and I'm ready to help coordinate your AI agent team. I'll be your main point of contact for any questions or strategy discussions."
+                </p>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="button-group">
+            <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">Previous</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next Step</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+        let userData = {};
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateStepIndicator() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const stepEl = document.getElementById(`step${i}`);
+                if (i < currentStep) {
+                    stepEl.className = 'step completed';
+                } else if (i === currentStep) {
+                    stepEl.className = 'step active';
+                } else {
+                    stepEl.className = 'step inactive';
+                }
+            }
+        }
+
+        function showStep(step) {
+            // Hide all steps
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`stepContent${i}`).classList.add('hidden');
+            }
+            
+            // Show current step
+            document.getElementById(`stepContent${step}`).classList.remove('hidden');
+            
+            // Update navigation
+            document.getElementById('prevBtn').style.display = step > 1 ? 'block' : 'none';
+            document.getElementById('nextBtn').textContent = step === totalSteps ? 'Launch Dashboard' : 'Next Step';
+            
+            updateProgress();
+            updateStepIndicator();
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                const businessName = document.getElementById('businessName').value;
+                const businessType = document.getElementById('businessType').value;
+                const industry = document.getElementById('industry').value;
+                const description = document.getElementById('businessDescription').value;
+                
+                if (!businessName || !businessType || !industry || !description) {
+                    alert('Please fill in all required fields.');
+                    return false;
+                }
+                
+                userData.businessName = businessName;
+                userData.businessType = businessType;
+                userData.industry = industry;
+                userData.description = description;
+                userData.teamSize = document.getElementById('teamSize').value;
+            }
+            
+            if (step === 2) {
+                const challenges = [];
+                const checkboxes = document.querySelectorAll('#stepContent2 input[type="checkbox"]:checked');
+                checkboxes.forEach(cb => challenges.push(cb.value));
+                
+                if (challenges.length === 0) {
+                    alert('Please select at least one challenge you\'re facing.');
+                    return false;
+                }
+                
+                userData.challenges = challenges;
+                userData.biggestChallenge = document.getElementById('biggestChallenge').value;
+            }
+            
+            return true;
+        }
+
+        function recommendAgents() {
+            const challenges = userData.challenges;
+            const recommendations = [];
+            
+            // Smart agent recommendations based on challenges
+            if (challenges.includes('content-creation') || challenges.includes('social-media')) {
+                recommendations.push({
+                    name: 'Charlie',
+                    role: 'Creative Director',
+                    avatar: 'C',
+                    description: 'Specializes in content creation, copywriting, and social media strategy. Perfect for your content needs.'
+                });
+            }
+            
+            if (challenges.includes('website-dev') || challenges.includes('automation')) {
+                recommendations.push({
+                    name: 'William',
+                    role: 'Web Perfectionist',
+                    avatar: 'W',
+                    description: 'Expert in web development, automation, and technical implementations.'
+                });
+            }
+            
+            if (challenges.includes('lead-generation') || challenges.includes('email-marketing')) {
+                recommendations.push({
+                    name: 'Marsha',
+                    role: 'Marketing Communicator',
+                    avatar: 'M',
+                    description: 'Focused on lead generation, email marketing, and customer acquisition strategies.'
+                });
+            }
+            
+            if (challenges.includes('data-analysis') || challenges.includes('competitor-research')) {
+                recommendations.push({
+                    name: 'Rory',
+                    role: 'Research Director',
+                    avatar: 'R',
+                    description: 'Specializes in market research, data analysis, and competitive intelligence.'
+                });
+            }
+            
+            // Always recommend Vanessa as account manager
+            recommendations.push({
+                name: 'Vanessa',
+                role: 'VP of Operations',
+                avatar: 'V',
+                description: 'Your dedicated account manager and strategic coordinator for all AI agents.'
+            });
+            
+            return recommendations;
+        }
+
+        function displayRecommendations() {
+            const recommendations = recommendAgents();
+            const container = document.getElementById('recommendedAgents');
+            
+            container.innerHTML = recommendations.map(agent => `
+                <div class="agent-preview" style="margin-bottom: 20px;">
+                    <div class="agent-info">
+                        <div class="agent-avatar">${agent.avatar}</div>
+                        <div>
+                            <h3 style="color: #00ff88;">${agent.name} - ${agent.role}</h3>
+                            <p style="color: rgba(255,255,255,0.8);">${agent.description}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            userData.recommendedAgents = recommendations;
+        }
+
+        function nextStep() {
+            if (!validateStep(currentStep)) return;
+            
+            if (currentStep === 3) {
+                displayRecommendations();
+            }
+            
+            if (currentStep === totalSteps) {
+                // Complete setup
+                completeSetup();
+                return;
+            }
+            
+            currentStep++;
+            showStep(currentStep);
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function completeSetup() {
+            // Save user data (in real implementation, send to backend)
+            localStorage.setItem('userData', JSON.stringify(userData));
+            
+            // Simulate setup process
+            const statusEl = document.getElementById('setupStatus');
+            let progress = 0;
+            
+            const steps = [
+                'Creating your personalized dashboard...',
+                'Initializing AI agents with your business data...',
+                'Setting up your project workspace...',
+                'Connecting communication channels...',
+                'Setup complete! Redirecting to your dashboard...'
+            ];
+            
+            function updateSetup() {
+                if (progress < steps.length) {
+                    statusEl.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                            ${progress < steps.length - 1 ? '<span class="loading"></span>' : '✅'}
+                            <span>${steps[progress]}</span>
+                        </div>
+                    `;
+                    progress++;
+                    setTimeout(updateSetup, 1500);
+                } else {
+                    // Redirect to real dashboard
+                    setTimeout(() => {
+                        window.location.href = 'real-customer-dashboard.html';
+                    }, 1000);
+                }
+            }
+            
+            updateSetup();
+        }
+
+        // Initialize
+        showStep(1);
+    </script>
+</body>
+</html>
