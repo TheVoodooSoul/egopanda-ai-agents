@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Memory & Configuration Manager - EgoPanda Creative</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .admin-header {
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            padding: 20px 30px;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .admin-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+            padding: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+            min-height: calc(100vh - 100px);
+        }
+
+        .agent-list {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: fit-content;
+        }
+
+        .agent-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .agent-item:hover, .agent-item.active {
+            background: rgba(255, 107, 53, 0.2);
+            border-left-color: #ff6b35;
+        }
+
+        .agent-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid #ff6b35;
+            background: #ff6b35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .agent-info h4 {
+            color: #ffffff;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .agent-info p {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .config-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .config-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            color: #ff6b35;
+            border-bottom-color: #ff6b35;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            color: #ff6b35;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: white;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .permission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .permission-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .permission-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .permission-toggle {
+            width: 50px;
+            height: 24px;
+            background: #666;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .permission-toggle.active {
+            background: #4CAF50;
+        }
+
+        .permission-toggle::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .permission-toggle.active::after {
+            left: 28px;
+        }
+
+        .memory-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ff6b35;
+        }
+
+        .memory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .memory-type {
+            background: #ff6b35;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #666, #888);
+        }
+
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+
+        .workflow-node {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .workflow-node::before {
+            content: attr(data-step);
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: #ff6b35;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .project-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .project-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-active { background: #4CAF50; color: white; }
+        .status-paused { background: #ff9800; color: white; }
+        .status-completed { background: #2196F3; color: white; }
+
+        .add-btn {
+            background: #4CAF50;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .agent-list {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Protection Check -->
+    <script>
+        // Check if user is authenticated
+        if (!sessionStorage.getItem('adminAuthorized')) {
+            // Redirect to admin login page
+            window.location.href = 'admin-login.html';
+        }
+    </script>
+
+    <div class="admin-header">
+        <div class="admin-title">🧠 Agent Memory & Configuration Manager</div>
+        <div class="admin-subtitle">Configure agent memories, permissions, workflows, and real-time data</div>
+    </div>
+
+    <div class="container">
+        <div class="agent-list">
+            <h3 style="color: #ff6b35; margin-bottom: 20px;">Select Agent</h3>
+            <div class="agent-item active" data-agent="vanessa">
+                <div class="agent-avatar">V</div>
+                <div class="agent-info">
+                    <h4>Vanessa</h4>
+                    <p>Leadership</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="charlie">
+                <div class="agent-avatar">C</div>
+                <div class="agent-info">
+                    <h4>Charlie</h4>
+                    <p>Content Creation</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="tiki">
+                <div class="agent-avatar">T</div>
+                <div class="agent-info">
+                    <h4>Tiki</h4>
+                    <p>Content Creation</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="sophia">
+                <div class="agent-avatar">S</div>
+                <div class="agent-info">
+                    <h4>Sophia</h4>
+                    <p>Content Creation</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="william">
+                <div class="agent-avatar">W</div>
+                <div class="agent-info">
+                    <h4>William</h4>
+                    <p>Web Development</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="zen">
+                <div class="agent-avatar">Z</div>
+                <div class="agent-info">
+                    <h4>Zen</h4>
+                    <p>Web Development</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="marsha">
+                <div class="agent-avatar">M</div>
+                <div class="agent-info">
+                    <h4>Marsha</h4>
+                    <p>Marketing & Sales</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="selina">
+                <div class="agent-avatar">SE</div>
+                <div class="agent-info">
+                    <h4>Selina</h4>
+                    <p>Marketing & Sales</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="auto">
+                <div class="agent-avatar">A</div>
+                <div class="agent-info">
+                    <h4>Auto</h4>
+                    <p>Business Operations</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="titan">
+                <div class="agent-avatar">TI</div>
+                <div class="agent-info">
+                    <h4>Titan</h4>
+                    <p>Business Operations</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="rory">
+                <div class="agent-avatar">R</div>
+                <div class="agent-info">
+                    <h4>Rory</h4>
+                    <p>Research & Analysis</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="echo">
+                <div class="agent-avatar">E</div>
+                <div class="agent-info">
+                    <h4>Echo</h4>
+                    <p>Research & Analysis</p>
+                </div>
+            </div>
+            <div class="agent-item" data-agent="aurelius">
+                <div class="agent-avatar">AU</div>
+                <div class="agent-info">
+                    <h4>Aurelius</h4>
+                    <p>Custom AI Creation</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-panel">
+            <h2 id="currentAgentName" style="color: #ff6b35; margin-bottom: 20px;">Vanessa Configuration</h2>
+            
+        <div class="config-tabs">
+            <button class="tab-btn active" data-tab="basic">Basic Info</button>
+            <button class="tab-btn" data-tab="memories">Memories</button>
+            <button class="tab-btn" data-tab="permissions">Permissions</button>
+            <button class="tab-btn" data-tab="projects">Projects</button>
+            <button class="tab-btn" data-tab="workflows">Workflows</button>
+            <button class="tab-btn" data-tab="webhooks">n8n Integration</button>
+        </div>
+
+            <!-- Basic Info Tab -->
+            <div class="tab-content active" id="basic">
+                <div class="form-group">
+                    <label class="form-label">Agent Name</label>
+                    <input type="text" class="form-input" id="agentName" placeholder="Enter agent name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Current Mood</label>
+                    <select class="form-select" id="agentMood">
+                        <option value="focused">Focused</option>
+                        <option value="determined">Determined</option>
+                        <option value="creative">Creative</option>
+                        <option value="analytical">Analytical</option>
+                        <option value="strategic">Strategic</option>
+                        <option value="energetic">Energetic</option>
+                        <option value="calm">Calm</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Workload Percentage</label>
+                    <input type="range" class="form-input" id="workloadSlider" min="0" max="100" value="0">
+                    <span id="workloadValue">0%</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Personality Description</label>
+                    <textarea class="form-textarea" id="personality" placeholder="Describe the agent's personality, working style, and approach..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Background & Context</label>
+                    <textarea class="form-textarea" id="background" placeholder="Agent's background, experience, and context that affects their responses..."></textarea>
+                </div>
+                <button class="btn" onclick="saveBasicInfo()">Save Basic Info</button>
+            </div>
+
+            <!-- Memories Tab -->
+            <div class="tab-content" id="memories">
+                <div id="memoriesList">
+                    <!-- Memories will be populated here -->
+                </div>
+                <button class="add-btn" onclick="addMemory()">+</button>
+                <button class="btn" onclick="saveMemories()">Save All Memories</button>
+            </div>
+
+            <!-- Permissions Tab -->
+            <div class="tab-content" id="permissions">
+                <div class="permission-grid">
+                    <div class="permission-item">
+                        <div class="permission-header">
+                            <span>Google Drive Access</span>
+                            <div class="permission-toggle" data-permission="google-drive"></div>
+                        </div>
+                        <input type="text" class="form-input" placeholder="Drive folder ID or link" id="googleDriveLink">
+                    </div>
+                    <div class="permission-item">
+                        <div class="permission-header">
+                            <span>Google Docs</span>
+                            <div class="permission-toggle" data-permission="google-docs"></div>
+                        </div>
+                        <input type="text" class="form-input" placeholder="Specific doc IDs or permissions" id="googleDocsLink">
+                    </div>
+                    <div class="permission-item">
+                        <div class="permission-header">
+                            <span>Email Access</span>
+                            <div class="permission-toggle" data-permission="email"></div>
+                        </div>
+                        <input type="text" class="form-input" placeholder="Email account or limitations" id="emailAccess">
+                    </div>
+                    <div class="permission-item">
+                        <div class="permission-header">
+                            <span>Calendar Management</span>
+                            <div class="permission-toggle" data-permission="calendar"></div>
+                        </div>
+                        <input type="text" class="form-input" placeholder="Calendar permissions" id="calendarAccess">
+                    </div>
+                    <div class="permission-item">
+                        <div class="permission-header">
+                            <span>Social Media</span>
+                            <div class="permission-toggle" data-permission="social"></div>
+                        </div>
+                        <input type="text" class="form-input" placeholder="Social accounts or limitations" id="socialAccess">
+                    </div>
+                    <div class="permission-item">
+                        <div class="permission-header">
+                            <span>File System Access</span>
+                            <div class="permission-toggle" data-permission="files"></div>
+                        </div>
+                        <input type="text" class="form-input" placeholder="Allowed directories or file types" id="fileAccess">
+                    </div>
+                </div>
+                <button class="btn" onclick="savePermissions()">Save Permissions</button>
+            </div>
+
+            <!-- Projects Tab -->
+            <div class="tab-content" id="projects">
+                <div id="projectsList">
+                    <!-- Projects will be populated here -->
+                </div>
+                <button class="add-btn" onclick="addProject()">+</button>
+                <button class="btn" onclick="saveProjects()">Save Projects</button>
+            </div>
+
+            <!-- Workflows Tab -->
+            <div class="tab-content" id="workflows">
+                <div class="form-group">
+                    <label class="form-label">Primary Workflow</label>
+                    <div id="workflowSteps">
+                        <!-- Workflow steps will be populated here -->
+                    </div>
+                    <button class="add-btn" onclick="addWorkflowStep()">+</button>
+                </div>
+                <button class="btn" onclick="saveWorkflows()">Save Workflows</button>
+                <button class="btn secondary" onclick="autoGenerateWorkflow()">Auto-Generate with Auto & Aurelius</button>
+            </div>
+
+            <!-- n8n Integration Tab -->
+            <div class="tab-content" id="webhooks">
+                <div class="form-group">
+                    <label class="form-label">🔗 n8n Workflow Configuration</label>
+                    <p style="color: #999; font-size: 14px; margin-bottom: 15px;">Connect this agent to n8n workflows for advanced automation and GPT-5 API calls.</p>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h4 style="color: #ff6b35; margin-bottom: 15px;">Primary Workflow (Agent Chat → GPT-5)</h4>
+                        <div class="form-group">
+                            <label class="form-label">n8n Webhook URL</label>
+                            <input type="url" class="form-input" id="n8nWebhookUrl" placeholder="https://your-n8n-instance.com/webhook/agent-chat" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Authentication Token</label>
+                            <input type="password" class="form-input" id="n8nAuthToken" placeholder="Bearer token or webhook secret" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Workflow ID</label>
+                            <input type="text" class="form-input" id="n8nWorkflowId" placeholder="workflow_12345" />
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h4 style="color: #ff6b35; margin-bottom: 15px;">GPT-5 API Configuration (for n8n)</h4>
+                        <div class="form-group">
+                            <label class="form-label">Model Selection</label>
+                            <select class="form-select" id="preferredModel">
+                                <option value="gpt-5">GPT-5 (Premium)</option>
+                                <option value="gpt-5-turbo">GPT-5 Turbo</option>
+                                <option value="gpt-5-mini">GPT-5 Mini</option>
+                                <option value="gpt-4o">GPT-4o (Fallback)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Max Completion Tokens</label>
+                            <input type="number" class="form-input" id="maxTokens" value="2000" min="100" max="4000" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">System Prompt Template</label>
+                            <textarea class="form-textarea" id="systemPromptTemplate" placeholder="You are {agent_name}, {agent_role}. Current context: {context}..." style="min-height: 100px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 40px;">
+                    <label class="form-label">🔄 Additional Workflows</label>
+                    <p style="color: #999; font-size: 14px; margin-bottom: 15px;">Configure additional n8n workflows for specific tasks.</p>
+                    <div id="additionalWorkflows">
+                        <!-- Additional workflows will be populated here -->
+                    </div>
+                    <button class="add-btn" onclick="addN8nWorkflow()">+</button>
+                </div>
+
+                <div class="form-group" style="margin-top: 40px;">
+                    <label class="form-label">⚡ Webhook Triggers</label>
+                    <p style="color: #999; font-size: 14px; margin-bottom: 15px;">Define when to trigger n8n workflows.</p>
+                    <div id="n8nTriggersList">
+                        <!-- n8n triggers will be populated here -->
+                    </div>
+                    <button class="add-btn" onclick="addN8nTrigger()">+</button>
+                </div>
+
+                <button class="btn" onclick="saveN8nConfig()">Save n8n Configuration</button>
+                <button class="btn secondary" onclick="testN8nConnection()">Test Connection</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAgent = 'vanessa';
+        let agentData = {};
+
+        // Initialize agent data structure
+        const defaultAgentData = {
+            basic: {
+                name: '',
+                mood: 'focused',
+                workload: 0,
+                personality: '',
+                background: ''
+            },
+            memories: [],
+            permissions: {},
+            projects: [],
+            workflows: [],
+            webhooks: {
+                incoming: [],
+                outgoing: [],
+                triggers: []
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAgentData();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+
+            // Agent selection
+            document.querySelectorAll('.agent-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    selectAgent(this.dataset.agent);
+                });
+            });
+
+            // Permission toggles
+            document.querySelectorAll('.permission-toggle').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                });
+            });
+
+            // Workload slider
+            document.getElementById('workloadSlider').addEventListener('input', function() {
+                document.getElementById('workloadValue').textContent = this.value + '%';
+            });
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+
+            // Load specific tab data
+            loadTabData(tabName);
+        }
+
+        function selectAgent(agentId) {
+            // Save current agent data first
+            saveCurrentAgentData();
+
+            // Update UI
+            document.querySelectorAll('.agent-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-agent="${agentId}"]`).classList.add('active');
+
+            currentAgent = agentId;
+            document.getElementById('currentAgentName').textContent = 
+                agentId.charAt(0).toUpperCase() + agentId.slice(1) + ' Configuration';
+
+            // Load new agent data
+            loadAgentData();
+        }
+
+        function loadAgentData() {
+            // Get from localStorage or use defaults
+            const saved = localStorage.getItem(`agent_${currentAgent}`);
+            agentData = saved ? JSON.parse(saved) : { ...defaultAgentData };
+            
+            // Pre-configure Vanessa as VP if no saved data exists
+            if (currentAgent === 'vanessa' && !saved) {
+                agentData = {
+                    basic: {
+                        name: 'Vanessa',
+                        mood: 'strategic',
+                        workload: 25,
+                        personality: 'Executive Vice President and Operations Director. Strategic, decisive, and results-driven. Has full authority over all agents and operations. Focuses on revenue generation, team coordination, and business growth. Reports directly to CEO and has override authority on all business decisions.',
+                        background: 'VP of Operations at EgoPanda Creative with executive authority over all AI agents and business operations. Responsible for daily revenue targets, strategic planning, and ensuring optimal performance across all departments. Has full access to all systems and can delegate tasks to any agent.'
+                    },
+                    memories: [
+                        {
+                            type: 'Executive Goal',
+                            title: 'Daily Revenue Target',
+                            content: 'Primary objective is to generate $100 in revenue per day through strategic agent coordination, client acquisition, and service optimization. Track progress daily and adjust strategies as needed.'
+                        },
+                        {
+                            type: 'Authority',
+                            title: 'Executive Powers',
+                            content: 'Has full authority over all agents including Charlie, Tiki, Sophia, William, Zen, Marsha, Selina, Auto, Titan, Rory, Echo, and Aurelius. Can assign tasks, override decisions, allocate resources, and make strategic business decisions.'
+                        },
+                        {
+                            type: 'Responsibility',
+                            title: 'Reporting Structure',
+                            content: 'Reports directly to CEO (Boss/Admin). Responsible for daily operations reports, revenue tracking, agent performance monitoring, and strategic recommendations for business growth.'
+                        },
+                        {
+                            type: 'Strategy',
+                            title: 'Revenue Generation Focus',
+                            content: 'Focus on client acquisition, service upselling, operational efficiency, and cross-agent collaboration to achieve daily revenue targets. Monitor conversion rates, customer satisfaction, and agent productivity.'
+                        }
+                    ],
+                    permissions: {
+                        'google-drive': true,
+                        'google-docs': true,
+                        'email': true,
+                        'calendar': true,
+                        'social': true,
+                        'files': true,
+                        details: {
+                            googleDrive: 'Full access to all business drives and folders',
+                            googleDocs: 'Full access to all documents, contracts, and business files',
+                            email: 'Full email access for client communication and business correspondence',
+                            calendar: 'Full calendar management for scheduling and coordination',
+                            social: 'Full social media management authority',
+                            files: 'Complete file system access for all business operations'
+                        }
+                    },
+                    projects: [
+                        {
+                            title: 'Daily Revenue Optimization',
+                            status: 'active',
+                            description: 'Monitor and optimize daily revenue to reach $100/day target through strategic agent coordination and business development.'
+                        },
+                        {
+                            title: 'Agent Performance Management',
+                            status: 'active',
+                            description: 'Oversee all 12 agents, monitor their productivity, assign tasks, and ensure optimal performance across all departments.'
+                        },
+                        {
+                            title: 'Strategic Business Planning',
+                            status: 'active',
+                            description: 'Develop and execute business strategies for growth, client acquisition, and operational efficiency improvements.'
+                        }
+                    ],
+                    workflows: [
+                        {
+                            title: 'Daily Revenue Review',
+                            description: 'Start each day by reviewing revenue metrics, identifying opportunities, and setting daily targets for all agents.'
+                        },
+                        {
+                            title: 'Agent Coordination',
+                            description: 'Coordinate tasks between agents, ensure proper resource allocation, and maintain communication flow between departments.'
+                        },
+                        {
+                            title: 'Client Relationship Management',
+                            description: 'Oversee client relationships, monitor satisfaction levels, and identify upselling opportunities with Marsha and Selina.'
+                        },
+                        {
+                            title: 'Performance Reporting',
+                            description: 'Provide daily reports to CEO on revenue progress, agent performance, and strategic recommendations for business growth.'
+                        }
+                    ]
+                };
+            }
+
+            // Load basic info
+            document.getElementById('agentName').value = agentData.basic?.name || '';
+            document.getElementById('agentMood').value = agentData.basic?.mood || 'focused';
+            document.getElementById('workloadSlider').value = agentData.basic?.workload || 0;
+            document.getElementById('workloadValue').textContent = (agentData.basic?.workload || 0) + '%';
+            document.getElementById('personality').value = agentData.basic?.personality || '';
+            document.getElementById('background').value = agentData.basic?.background || '';
+
+            // Load other tabs
+            loadTabData('memories');
+            loadTabData('projects');
+            loadTabData('workflows');
+            loadTabData('webhooks');
+            
+            // Load n8n configuration if exists
+            if (agentData.n8n) {
+                document.getElementById('n8nWebhookUrl').value = agentData.n8n.primaryWorkflow?.webhookUrl || '';
+                document.getElementById('n8nAuthToken').value = agentData.n8n.primaryWorkflow?.authToken || '';
+                document.getElementById('n8nWorkflowId').value = agentData.n8n.primaryWorkflow?.workflowId || '';
+                document.getElementById('preferredModel').value = agentData.n8n.gptConfig?.preferredModel || 'gpt-5';
+                document.getElementById('maxTokens').value = agentData.n8n.gptConfig?.maxTokens || 2000;
+                document.getElementById('systemPromptTemplate').value = agentData.n8n.gptConfig?.systemPromptTemplate || '';
+            }
+        }
+
+        function loadTabData(tabName) {
+            switch(tabName) {
+                case 'memories':
+                    loadMemories();
+                    break;
+                case 'projects':
+                    loadProjects();
+                    break;
+                case 'workflows':
+                    loadWorkflows();
+                    break;
+                case 'webhooks':
+                    loadWebhooks();
+                    loadN8nAdditionalWorkflows();
+                    loadN8nTriggers();
+                    break;
+            }
+        }
+
+        function loadMemories() {
+            const container = document.getElementById('memoriesList');
+            container.innerHTML = '';
+
+            (agentData.memories || []).forEach((memory, index) => {
+                const memoryDiv = document.createElement('div');
+                memoryDiv.className = 'memory-item';
+                memoryDiv.innerHTML = `
+                    <div class="memory-header">
+                        <span class="memory-type">${memory.type}</span>
+                        <button class="btn danger" onclick="removeMemory(${index})" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                    </div>
+                    <input type="text" class="form-input" value="${memory.title}" placeholder="Memory title" style="margin-bottom: 8px;" onchange="updateMemory(${index}, 'title', this.value)">
+                    <textarea class="form-textarea" placeholder="Memory content" onchange="updateMemory(${index}, 'content', this.value)" style="min-height: 80px;">${memory.content}</textarea>
+                `;
+                container.appendChild(memoryDiv);
+            });
+        }
+
+        function loadProjects() {
+            const container = document.getElementById('projectsList');
+            container.innerHTML = '';
+
+            (agentData.projects || []).forEach((project, index) => {
+                const projectDiv = document.createElement('div');
+                projectDiv.className = 'project-item';
+                projectDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <input type="text" class="form-input" value="${project.title || ''}" placeholder="Project title" style="flex: 1; margin-right: 10px;" onchange="updateProject(${index}, 'title', this.value)">
+                        <select class="form-select" style="width: 120px; margin-right: 10px;" onchange="updateProject(${index}, 'status', this.value)">
+                            <option value="active" ${project.status === 'active' ? 'selected' : ''}>Active</option>
+                            <option value="paused" ${project.status === 'paused' ? 'selected' : ''}>Paused</option>
+                            <option value="completed" ${project.status === 'completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                        <button class="btn danger" onclick="removeProject(${index})" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                    </div>
+                    <textarea class="form-textarea" placeholder="Project description and details" onchange="updateProject(${index}, 'description', this.value)" style="min-height: 80px;">${project.description || ''}</textarea>
+                `;
+                container.appendChild(projectDiv);
+            });
+        }
+
+        function loadWorkflows() {
+            const container = document.getElementById('workflowSteps');
+            container.innerHTML = '';
+
+            (agentData.workflows || []).forEach((step, index) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'workflow-node';
+                stepDiv.setAttribute('data-step', `Step ${index + 1}`);
+                stepDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <input type="text" class="form-input" value="${step.title || ''}" placeholder="Workflow step title" style="flex: 1; margin-right: 10px;" onchange="updateWorkflow(${index}, 'title', this.value)">
+                        <select class="form-select" style="width: 120px; margin-right: 10px;" onchange="updateWorkflow(${index}, 'type', this.value)">
+                            <option value="task" ${step.type === 'task' ? 'selected' : ''}>Task</option>
+                            <option value="message" ${step.type === 'message' ? 'selected' : ''}>Send Message</option>
+                            <option value="webhook" ${step.type === 'webhook' ? 'selected' : ''}>Webhook</option>
+                            <option value="schedule" ${step.type === 'schedule' ? 'selected' : ''}>Schedule</option>
+                            <option value="condition" ${step.type === 'condition' ? 'selected' : ''}>Condition</option>
+                            <option value="api" ${step.type === 'api' ? 'selected' : ''}>API Call</option>
+                        </select>
+                        <button class="btn danger" onclick="removeWorkflow(${index})" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <select class="form-select" onchange="updateWorkflow(${index}, 'trigger', this.value)">
+                            <option value="manual" ${step.trigger === 'manual' ? 'selected' : ''}>Manual</option>
+                            <option value="webhook" ${step.trigger === 'webhook' ? 'selected' : ''}>Webhook Received</option>
+                            <option value="schedule" ${step.trigger === 'schedule' ? 'selected' : ''}>Scheduled</option>
+                            <option value="condition" ${step.trigger === 'condition' ? 'selected' : ''}>Condition Met</option>
+                            <option value="previous" ${step.trigger === 'previous' ? 'selected' : ''}>After Previous</option>
+                        </select>
+                        <select class="form-select" onchange="updateWorkflow(${index}, 'priority', this.value)">
+                            <option value="low" ${step.priority === 'low' ? 'selected' : ''}>Low Priority</option>
+                            <option value="medium" ${step.priority === 'medium' ? 'selected' : ''}>Medium Priority</option>
+                            <option value="high" ${step.priority === 'high' ? 'selected' : ''}>High Priority</option>
+                            <option value="urgent" ${step.priority === 'urgent' ? 'selected' : ''}>Urgent</option>
+                        </select>
+                    </div>
+                    <textarea class="form-textarea" placeholder="Workflow step details, conditions, API endpoints, schedule (cron), or webhook data" onchange="updateWorkflow(${index}, 'description', this.value)" style="min-height: 80px;">${step.description || ''}</textarea>
+                    <div id="messageConfig_${index}" style="display: ${step.type === 'message' ? 'block' : 'none'}; margin-top: 10px; padding: 15px; background: rgba(255, 107, 53, 0.1); border-radius: 8px; border: 1px solid rgba(255, 107, 53, 0.3);">
+                        <label class="form-label" style="font-size: 12px; color: #ff6b35;">Message Configuration</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <select class="form-select" onchange="updateWorkflow(${index}, 'messageType', this.value)">
+                                <option value="slack" ${step.messageType === 'slack' ? 'selected' : ''}>📢 Slack</option>
+                                <option value="discord" ${step.messageType === 'discord' ? 'selected' : ''}>💬 Discord</option>
+                                <option value="teams" ${step.messageType === 'teams' ? 'selected' : ''}>👥 Teams</option>
+                                <option value="webhook" ${step.messageType === 'webhook' ? 'selected' : ''}>🔗 Webhook</option>
+                                <option value="email" ${step.messageType === 'email' ? 'selected' : ''}>📧 Email</option>
+                                <option value="sms" ${step.messageType === 'sms' ? 'selected' : ''}>📱 SMS</option>
+                                <option value="api" ${step.messageType === 'api' ? 'selected' : ''}>🔌 API Call</option>
+                            </select>
+                            <input type="text" class="form-input" value="${step.destination || ''}" placeholder="Destination (channel, webhook URL, email)" onchange="updateWorkflow(${index}, 'destination', this.value)">
+                        </div>
+                        <textarea class="form-textarea" placeholder="Message template (use {{variable}} for dynamic content)" onchange="updateWorkflow(${index}, 'messageTemplate', this.value)" style="min-height: 60px;">${step.messageTemplate || 'Task completed: {{task_title}}\nAgent: {{agent_name}}\nTimestamp: {{timestamp}}'}</textarea>
+                        <button class="btn secondary" onclick="testMessageStep(${index})" style="margin-top: 10px; padding: 6px 12px; font-size: 12px;">🧪 Test Message</button>
+                    </div>
+                    <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
+                        <label style="color: #999; font-size: 12px;">Retry on failure:</label>
+                        <input type="number" class="form-input" value="${step.retries || 0}" min="0" max="5" style="width: 60px;" onchange="updateWorkflow(${index}, 'retries', parseInt(this.value))">
+                        <label style="color: #999; font-size: 12px;">Timeout (seconds):</label>
+                        <input type="number" class="form-input" value="${step.timeout || 30}" min="5" max="300" style="width: 80px;" onchange="updateWorkflow(${index}, 'timeout', parseInt(this.value))">
+                    </div>
+                `;
+                container.appendChild(stepDiv);
+            });
+        }
+
+        function addMemory() {
+            if (!agentData.memories) agentData.memories = [];
+            agentData.memories.push({
+                type: 'General',
+                title: '',
+                content: ''
+            });
+            loadMemories();
+        }
+
+        function addProject() {
+            if (!agentData.projects) agentData.projects = [];
+            agentData.projects.push({
+                title: '',
+                status: 'active',
+                description: ''
+            });
+            loadProjects();
+        }
+
+        function addWorkflowStep() {
+            if (!agentData.workflows) agentData.workflows = [];
+            agentData.workflows.push({
+                title: '',
+                description: ''
+            });
+            loadWorkflows();
+        }
+
+        function updateMemory(index, field, value) {
+            if (!agentData.memories[index]) agentData.memories[index] = {};
+            agentData.memories[index][field] = value;
+        }
+
+        function updateProject(index, field, value) {
+            if (!agentData.projects[index]) agentData.projects[index] = {};
+            agentData.projects[index][field] = value;
+        }
+
+        function updateWorkflow(index, field, value) {
+            if (!agentData.workflows[index]) agentData.workflows[index] = {};
+            agentData.workflows[index][field] = value;
+            
+            // Toggle message configuration visibility
+            if (field === 'type') {
+                const messageConfig = document.getElementById(`messageConfig_${index}`);
+                if (messageConfig) {
+                    messageConfig.style.display = value === 'message' ? 'block' : 'none';
+                }
+            }
+        }
+
+        function removeMemory(index) {
+            agentData.memories.splice(index, 1);
+            loadMemories();
+        }
+
+        function removeProject(index) {
+            agentData.projects.splice(index, 1);
+            loadProjects();
+        }
+
+        function removeWorkflow(index) {
+            agentData.workflows.splice(index, 1);
+            loadWorkflows();
+        }
+
+        function saveBasicInfo() {
+            agentData.basic = {
+                name: document.getElementById('agentName').value,
+                mood: document.getElementById('agentMood').value,
+                workload: parseInt(document.getElementById('workloadSlider').value),
+                personality: document.getElementById('personality').value,
+                background: document.getElementById('background').value
+            };
+            saveCurrentAgentData();
+            alert('Basic info saved successfully!');
+        }
+
+        function saveMemories() {
+            saveCurrentAgentData();
+            alert('Memories saved successfully!');
+        }
+
+        function savePermissions() {
+            agentData.permissions = {};
+            document.querySelectorAll('.permission-toggle').forEach(toggle => {
+                const permission = toggle.dataset.permission;
+                agentData.permissions[permission] = toggle.classList.contains('active');
+            });
+            
+            // Save permission details
+            agentData.permissions.details = {
+                googleDrive: document.getElementById('googleDriveLink').value,
+                googleDocs: document.getElementById('googleDocsLink').value,
+                email: document.getElementById('emailAccess').value,
+                calendar: document.getElementById('calendarAccess').value,
+                social: document.getElementById('socialAccess').value,
+                files: document.getElementById('fileAccess').value
+            };
+
+            saveCurrentAgentData();
+            alert('Permissions saved successfully!');
+        }
+
+        function saveProjects() {
+            saveCurrentAgentData();
+            alert('Projects saved successfully!');
+        }
+
+        function saveWorkflows() {
+            saveCurrentAgentData();
+            alert('Workflows saved successfully!');
+        }
+
+        function saveCurrentAgentData() {
+            localStorage.setItem(`agent_${currentAgent}`, JSON.stringify(agentData));
+        }
+
+        function autoGenerateWorkflow() {
+            alert('Sending request to Auto and Aurelius to generate optimized workflows for ' + currentAgent + '...');
+            // This would integrate with your agent communication system
+        }
+
+        // ========= WEBHOOK MANAGEMENT FUNCTIONS =========
+
+        function loadWebhooks() {
+            if (!agentData.webhooks) {
+                agentData.webhooks = { incoming: [], outgoing: [], triggers: [] };
+            }
+            loadIncomingWebhooks();
+            loadOutgoingWebhooks();
+            loadWebhookTriggers();
+        }
+
+        function loadIncomingWebhooks() {
+            const container = document.getElementById('incomingWebhooksList');
+            container.innerHTML = '';
+
+            (agentData.webhooks.incoming || []).forEach((webhook, index) => {
+                const webhookDiv = document.createElement('div');
+                webhookDiv.className = 'memory-item';
+                webhookDiv.style.borderLeftColor = '#2196F3';
+                webhookDiv.innerHTML = `
+                    <div class="memory-header">
+                        <span class="memory-type" style="background: #2196F3;">${webhook.service || 'Service'}</span>
+                        <button class="btn danger" onclick="removeIncomingWebhook(${index})" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <select class="form-select" onchange="updateIncomingWebhook(${index}, 'service', this.value)" style="margin-bottom: 8px;">
+                            <option value="stripe" ${webhook.service === 'stripe' ? 'selected' : ''}>💳 Stripe</option>
+                            <option value="square" ${webhook.service === 'square' ? 'selected' : ''}>🟨 Square</option>
+                            <option value="discord" ${webhook.service === 'discord' ? 'selected' : ''}>💬 Discord</option>
+                            <option value="slack" ${webhook.service === 'slack' ? 'selected' : ''}>📢 Slack</option>
+                            <option value="zapier" ${webhook.service === 'zapier' ? 'selected' : ''}>⚡ Zapier</option>
+                            <option value="github" ${webhook.service === 'github' ? 'selected' : ''}>🐙 GitHub</option>
+                            <option value="custom" ${webhook.service === 'custom' ? 'selected' : ''}>🔧 Custom</option>
+                        </select>
+                        <select class="form-select" onchange="updateIncomingWebhook(${index}, 'event', this.value)" style="margin-bottom: 8px;">
+                            <option value="payment.success" ${webhook.event === 'payment.success' ? 'selected' : ''}>Payment Success</option>
+                            <option value="payment.failed" ${webhook.event === 'payment.failed' ? 'selected' : ''}>Payment Failed</option>
+                            <option value="customer.created" ${webhook.event === 'customer.created' ? 'selected' : ''}>New Customer</option>
+                            <option value="subscription.created" ${webhook.event === 'subscription.created' ? 'selected' : ''}>New Subscription</option>
+                            <option value="message.received" ${webhook.event === 'message.received' ? 'selected' : ''}>Message Received</option>
+                            <option value="task.completed" ${webhook.event === 'task.completed' ? 'selected' : ''}>Task Completed</option>
+                            <option value="custom" ${webhook.event === 'custom' ? 'selected' : ''}>Custom Event</option>
+                        </select>
+                    </div>
+                    <input type="text" class="form-input" value="${webhook.name || ''}" placeholder="Webhook name/description" style="margin-bottom: 8px;" onchange="updateIncomingWebhook(${index}, 'name', this.value)">
+                    <input type="text" class="form-input" value="${webhook.endpoint || ''}" placeholder="Webhook endpoint URL" style="margin-bottom: 8px;" onchange="updateIncomingWebhook(${index}, 'endpoint', this.value)">
+                    <textarea class="form-textarea" placeholder="Authentication headers (JSON format)" onchange="updateIncomingWebhook(${index}, 'auth', this.value)" style="min-height: 60px;">${webhook.auth || ''}</textarea>
+                `;
+                container.appendChild(webhookDiv);
+            });
+        }
+
+        function loadOutgoingWebhooks() {
+            const container = document.getElementById('outgoingWebhooksList');
+            container.innerHTML = '';
+
+            (agentData.webhooks.outgoing || []).forEach((webhook, index) => {
+                const webhookDiv = document.createElement('div');
+                webhookDiv.className = 'memory-item';
+                webhookDiv.style.borderLeftColor = '#4CAF50';
+                webhookDiv.innerHTML = `
+                    <div class="memory-header">
+                        <span class="memory-type" style="background: #4CAF50;">${webhook.service || 'Service'}</span>
+                        <button class="btn danger" onclick="removeOutgoingWebhook(${index})" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <select class="form-select" onchange="updateOutgoingWebhook(${index}, 'service', this.value)" style="margin-bottom: 8px;">
+                            <option value="slack" ${webhook.service === 'slack' ? 'selected' : ''}>📢 Slack</option>
+                            <option value="discord" ${webhook.service === 'discord' ? 'selected' : ''}>💬 Discord</option>
+                            <option value="teams" ${webhook.service === 'teams' ? 'selected' : ''}>👥 Teams</option>
+                            <option value="email" ${webhook.service === 'email' ? 'selected' : ''}>📧 Email</option>
+                            <option value="sms" ${webhook.service === 'sms' ? 'selected' : ''}>📱 SMS</option>
+                            <option value="api" ${webhook.service === 'api' ? 'selected' : ''}>🔌 API Call</option>
+                            <option value="custom" ${webhook.service === 'custom' ? 'selected' : ''}>🔧 Custom</option>
+                        </select>
+                        <select class="form-select" onchange="updateOutgoingWebhook(${index}, 'trigger', this.value)" style="margin-bottom: 8px;">
+                            <option value="task.complete" ${webhook.trigger === 'task.complete' ? 'selected' : ''}>Task Complete</option>
+                            <option value="error.occurred" ${webhook.trigger === 'error.occurred' ? 'selected' : ''}>Error Occurred</option>
+                            <option value="goal.achieved" ${webhook.trigger === 'goal.achieved' ? 'selected' : ''}>Goal Achieved</option>
+                            <option value="daily.report" ${webhook.trigger === 'daily.report' ? 'selected' : ''}>Daily Report</option>
+                            <option value="client.update" ${webhook.trigger === 'client.update' ? 'selected' : ''}>Client Update</option>
+                            <option value="manual" ${webhook.trigger === 'manual' ? 'selected' : ''}>Manual Send</option>
+                        </select>
+                    </div>
+                    <input type="text" class="form-input" value="${webhook.name || ''}" placeholder="Webhook name/description" style="margin-bottom: 8px;" onchange="updateOutgoingWebhook(${index}, 'name', this.value)">
+                    <input type="text" class="form-input" value="${webhook.url || ''}" placeholder="Destination URL" style="margin-bottom: 8px;" onchange="updateOutgoingWebhook(${index}, 'url', this.value)">
+                    <textarea class="form-textarea" placeholder="Message template or payload format" onchange="updateOutgoingWebhook(${index}, 'template', this.value)" style="min-height: 60px;">${webhook.template || ''}</textarea>
+                `;
+                container.appendChild(webhookDiv);
+            });
+        }
+
+        function loadWebhookTriggers() {
+            const container = document.getElementById('webhookTriggersList');
+            container.innerHTML = '';
+
+            (agentData.webhooks.triggers || []).forEach((trigger, index) => {
+                const triggerDiv = document.createElement('div');
+                triggerDiv.className = 'workflow-node';
+                triggerDiv.setAttribute('data-step', `Trigger ${index + 1}`);
+                triggerDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <input type="text" class="form-input" value="${trigger.name || ''}" placeholder="Trigger name" style="flex: 1; margin-right: 10px;" onchange="updateWebhookTrigger(${index}, 'name', this.value)">
+                        <button class="btn danger" onclick="removeWebhookTrigger(${index})" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <select class="form-select" onchange="updateWebhookTrigger(${index}, 'when', this.value)">
+                            <option value="incoming" ${trigger.when === 'incoming' ? 'selected' : ''}>When Incoming Webhook</option>
+                            <option value="scheduled" ${trigger.when === 'scheduled' ? 'selected' : ''}>On Schedule</option>
+                            <option value="condition" ${trigger.when === 'condition' ? 'selected' : ''}>When Condition Met</option>
+                        </select>
+                        <select class="form-select" onchange="updateWebhookTrigger(${index}, 'action', this.value)">
+                            <option value="notify" ${trigger.action === 'notify' ? 'selected' : ''}>Send Notification</option>
+                            <option value="execute" ${trigger.action === 'execute' ? 'selected' : ''}>Execute Workflow</option>
+                            <option value="delegate" ${trigger.action === 'delegate' ? 'selected' : ''}>Delegate to Agent</option>
+                            <option value="update" ${trigger.action === 'update' ? 'selected' : ''}>Update Data</option>
+                        </select>
+                    </div>
+                    <textarea class="form-textarea" placeholder="Trigger conditions and action details" onchange="updateWebhookTrigger(${index}, 'details', this.value)" style="min-height: 60px;">${trigger.details || ''}</textarea>
+                `;
+                container.appendChild(triggerDiv);
+            });
+        }
+
+        // Add webhook functions
+        function addIncomingWebhook() {
+            if (!agentData.webhooks) agentData.webhooks = { incoming: [], outgoing: [], triggers: [] };
+            agentData.webhooks.incoming.push({
+                service: 'stripe',
+                event: 'payment.success',
+                name: '',
+                endpoint: '',
+                auth: ''
+            });
+            loadIncomingWebhooks();
+        }
+
+        function addOutgoingWebhook() {
+            if (!agentData.webhooks) agentData.webhooks = { incoming: [], outgoing: [], triggers: [] };
+            agentData.webhooks.outgoing.push({
+                service: 'slack',
+                trigger: 'task.complete',
+                name: '',
+                url: '',
+                template: ''
+            });
+            loadOutgoingWebhooks();
+        }
+
+        function addWebhookTrigger() {
+            if (!agentData.webhooks) agentData.webhooks = { incoming: [], outgoing: [], triggers: [] };
+            agentData.webhooks.triggers.push({
+                name: '',
+                when: 'incoming',
+                action: 'notify',
+                details: ''
+            });
+            loadWebhookTriggers();
+        }
+
+        // Update webhook functions
+        function updateIncomingWebhook(index, field, value) {
+            if (!agentData.webhooks.incoming[index]) agentData.webhooks.incoming[index] = {};
+            agentData.webhooks.incoming[index][field] = value;
+        }
+
+        function updateOutgoingWebhook(index, field, value) {
+            if (!agentData.webhooks.outgoing[index]) agentData.webhooks.outgoing[index] = {};
+            agentData.webhooks.outgoing[index][field] = value;
+        }
+
+        function updateWebhookTrigger(index, field, value) {
+            if (!agentData.webhooks.triggers[index]) agentData.webhooks.triggers[index] = {};
+            agentData.webhooks.triggers[index][field] = value;
+        }
+
+        // Remove webhook functions
+        function removeIncomingWebhook(index) {
+            agentData.webhooks.incoming.splice(index, 1);
+            loadIncomingWebhooks();
+        }
+
+        function removeOutgoingWebhook(index) {
+            agentData.webhooks.outgoing.splice(index, 1);
+            loadOutgoingWebhooks();
+        }
+
+        function removeWebhookTrigger(index) {
+            agentData.webhooks.triggers.splice(index, 1);
+            loadWebhookTriggers();
+        }
+
+        // Webhook management functions
+        function saveWebhooks() {
+            saveCurrentAgentData();
+            alert('Webhooks saved successfully!');
+        }
+
+        function testWebhookConnection() {
+            const webhookCount = (agentData.webhooks?.incoming?.length || 0) + (agentData.webhooks?.outgoing?.length || 0);
+            if (webhookCount === 0) {
+                alert('No webhooks configured to test.');
+                return;
+            }
+            alert(`Testing ${webhookCount} webhook connections for ${currentAgent}...\n\nThis would send test requests to all configured endpoints and validate responses.`);
+        }
+
+        // ========= MESSAGE SENDING INTEGRATION =========
+
+        // Test message step function - integrates with JSON Message Sender API
+        async function testMessageStep(index) {
+            const step = agentData.workflows[index];
+            if (!step || step.type !== 'message') {
+                alert('This is not a message step!');
+                return;
+            }
+
+            if (!step.messageType || !step.destination || !step.messageTemplate) {
+                alert('Please configure message type, destination, and template first!');
+                return;
+            }
+
+            // Replace template variables with test data
+            const testVariables = {
+                task_title: step.title || 'Test Workflow Step',
+                agent_name: currentAgent.charAt(0).toUpperCase() + currentAgent.slice(1),
+                timestamp: new Date().toISOString(),
+                priority: step.priority || 'medium',
+                description: step.description || 'Test workflow execution',
+                trigger: step.trigger || 'manual',
+                step_number: index + 1
+            };
+
+            let processedMessage = step.messageTemplate;
+            Object.keys(testVariables).forEach(key => {
+                const regex = new RegExp(`{{${key}}}`, 'g');
+                processedMessage = processedMessage.replace(regex, testVariables[key]);
+            });
+
+            // Prepare API payload
+            const payload = {
+                agentId: currentAgent,
+                destination: step.destination,
+                messageType: step.messageType,
+                payload: {
+                    text: processedMessage,
+                    title: `Test Message from ${testVariables.agent_name}`,
+                    priority: step.priority || 'medium',
+                    timestamp: testVariables.timestamp,
+                    metadata: {
+                        workflowStep: index + 1,
+                        stepTitle: step.title,
+                        trigger: step.trigger,
+                        testMode: true
+                    }
+                },
+                template: step.messageTemplate
+            };
+
+            try {
+                // Show loading state
+                const button = document.querySelector(`[onclick="testMessageStep(${index})"]`);
+                const originalText = button.textContent;
+                button.textContent = '🔄 Sending...';
+                button.disabled = true;
+
+                // Send to JSON Message Sender API
+                const response = await fetch('/api/send-message.js', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                // Reset button
+                button.textContent = originalText;
+                button.disabled = false;
+
+                if (response.ok && result.success) {
+                    alert(`✅ Test message sent successfully!\n\nType: ${step.messageType}\nDestination: ${step.destination}\nMessage: "${processedMessage}"\n\nResponse: ${result.message || 'Sent successfully'}`);
+                } else {
+                    alert(`❌ Failed to send test message:\n\n${result.error || 'Unknown error occurred'}`);
+                }
+            } catch (error) {
+                // Reset button on error
+                const button = document.querySelector(`[onclick="testMessageStep(${index})"]`);
+                if (button) {
+                    button.textContent = '🧪 Test Message';
+                    button.disabled = false;
+                }
+                alert(`❌ Error testing message:\n\n${error.message}`);
+                console.error('Message test error:', error);
+            }
+        }
+
+        // Execute workflow step (for actual workflow execution)
+        async function executeWorkflowStep(index) {
+            const step = agentData.workflows[index];
+            if (!step) return;
+
+            switch (step.type) {
+                case 'message':
+                    if (step.messageType && step.destination && step.messageTemplate) {
+                        // Use the same logic as testMessageStep but without test flag
+                        const payload = {
+                            agentId: currentAgent,
+                            destination: step.destination,
+                            messageType: step.messageType,
+                            payload: {
+                                text: step.messageTemplate, // Will be processed by the API
+                                title: step.title || 'Workflow Notification',
+                                priority: step.priority || 'medium'
+                            },
+                            template: step.messageTemplate
+                        };
+
+                        try {
+                            const response = await fetch('/api/send-message.js', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            const result = await response.json();
+                            console.log('Workflow message sent:', result);
+                        } catch (error) {
+                            console.error('Workflow message error:', error);
+                        }
+                    }
+                    break;
+                case 'webhook':
+                    // Handle webhook calls
+                    break;
+                case 'api':
+                    // Handle API calls
+                    break;
+                case 'task':
+                    // Handle task execution
+                    break;
+                default:
+                    console.log('Workflow step executed:', step);
+            }
+        }
+
+        // ========= n8n INTEGRATION FUNCTIONS =========
+
+        function saveN8nConfig() {
+            // Save primary n8n workflow configuration
+            agentData.n8n = {
+                primaryWorkflow: {
+                    webhookUrl: document.getElementById('n8nWebhookUrl').value,
+                    authToken: document.getElementById('n8nAuthToken').value,
+                    workflowId: document.getElementById('n8nWorkflowId').value
+                },
+                gptConfig: {
+                    preferredModel: document.getElementById('preferredModel').value,
+                    maxTokens: parseInt(document.getElementById('maxTokens').value) || 2000,
+                    systemPromptTemplate: document.getElementById('systemPromptTemplate').value
+                },
+                additionalWorkflows: agentData.n8n?.additionalWorkflows || [],
+                triggers: agentData.n8n?.triggers || []
+            };
+
+            saveCurrentAgentData();
+            alert('n8n configuration saved successfully!');
+        }
+
+        async function testN8nConnection() {
+            const webhookUrl = document.getElementById('n8nWebhookUrl').value;
+            const authToken = document.getElementById('n8nAuthToken').value;
+
+            if (!webhookUrl) {
+                alert('Please enter an n8n webhook URL first.');
+                return;
+            }
+
+            const testPayload = {
+                agent_id: currentAgent,
+                user_message: 'Test connection from Agent Memory Manager',
+                system_prompt: `You are ${currentAgent}, testing the n8n workflow connection.`,
+                context: 'Connection test initiated from the Agent Memory & Configuration Manager interface.',
+                test_mode: true
+            };
+
+            try {
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                if (authToken) {
+                    headers['Authorization'] = authToken.startsWith('Bearer ') ? authToken : `Bearer ${authToken}`;
+                }
+
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(testPayload)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`✅ n8n connection successful!\n\nStatus: ${response.status}\nResponse: ${JSON.stringify(result, null, 2)}`);
+                } else {
+                    alert(`❌ n8n connection failed!\n\nStatus: ${response.status}\nError: ${response.statusText}`);
+                }
+            } catch (error) {
+                alert(`❌ n8n connection error:\n\n${error.message}`);
+                console.error('n8n connection error:', error);
+            }
+        }
+
+        function addN8nWorkflow() {
+            if (!agentData.n8n) agentData.n8n = { additionalWorkflows: [], triggers: [] };
+            if (!agentData.n8n.additionalWorkflows) agentData.n8n.additionalWorkflows = [];
+            
+            agentData.n8n.additionalWorkflows.push({
+                name: '',
+                webhookUrl: '',
+                workflowId: '',
+                description: '',
+                trigger: 'manual'
+            });
+            loadN8nAdditionalWorkflows();
+        }
+
+        function addN8nTrigger() {
+            if (!agentData.n8n) agentData.n8n = { additionalWorkflows: [], triggers: [] };
+            if (!agentData.n8n.triggers) agentData.n8n.triggers = [];
+            
+            agentData.n8n.triggers.push({
+                name: '',
+                condition: 'message_contains',
+                value: '',
+                action: 'trigger_workflow',
+                target: ''
+            });
+            loadN8nTriggers();
+        }
+
+        function loadN8nAdditionalWorkflows() {
+            const container = document.getElementById('additionalWorkflows');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (!agentData.n8n?.additionalWorkflows) return;
+
+            agentData.n8n.additionalWorkflows.forEach((workflow, index) => {
+                const workflowDiv = document.createElement('div');
+                workflowDiv.className = 'memory-item';
+                workflowDiv.style.borderLeftColor = '#9C27B0';
+                workflowDiv.innerHTML = `
+                    <div class="memory-header">
+                        <span class="memory-type" style="background: #9C27B0;">Workflow</span>
+                        <button class="btn danger" onclick="removeN8nWorkflow(${index})" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" class="form-input" value="${workflow.name || ''}" placeholder="Workflow name" onchange="updateN8nWorkflow(${index}, 'name', this.value)">
+                        <input type="text" class="form-input" value="${workflow.workflowId || ''}" placeholder="Workflow ID" onchange="updateN8nWorkflow(${index}, 'workflowId', this.value)">
+                    </div>
+                    <input type="url" class="form-input" value="${workflow.webhookUrl || ''}" placeholder="n8n webhook URL" style="margin-bottom: 8px;" onchange="updateN8nWorkflow(${index}, 'webhookUrl', this.value)">
+                    <select class="form-select" style="margin-bottom: 8px;" onchange="updateN8nWorkflow(${index}, 'trigger', this.value)">
+                        <option value="manual" ${workflow.trigger === 'manual' ? 'selected' : ''}>Manual Trigger</option>
+                        <option value="keyword" ${workflow.trigger === 'keyword' ? 'selected' : ''}>Keyword Match</option>
+                        <option value="schedule" ${workflow.trigger === 'schedule' ? 'selected' : ''}>Scheduled</option>
+                        <option value="event" ${workflow.trigger === 'event' ? 'selected' : ''}>Event Based</option>
+                    </select>
+                    <textarea class="form-textarea" placeholder="Workflow description and trigger conditions" onchange="updateN8nWorkflow(${index}, 'description', this.value)" style="min-height: 60px;">${workflow.description || ''}</textarea>
+                `;
+                container.appendChild(workflowDiv);
+            });
+        }
+
+        function loadN8nTriggers() {
+            const container = document.getElementById('n8nTriggersList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (!agentData.n8n?.triggers) return;
+
+            agentData.n8n.triggers.forEach((trigger, index) => {
+                const triggerDiv = document.createElement('div');
+                triggerDiv.className = 'workflow-node';
+                triggerDiv.setAttribute('data-step', `Trigger ${index + 1}`);
+                triggerDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <input type="text" class="form-input" value="${trigger.name || ''}" placeholder="Trigger name" style="flex: 1; margin-right: 10px;" onchange="updateN8nTrigger(${index}, 'name', this.value)">
+                        <button class="btn danger" onclick="removeN8nTrigger(${index})" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <select class="form-select" onchange="updateN8nTrigger(${index}, 'condition', this.value)">
+                            <option value="message_contains" ${trigger.condition === 'message_contains' ? 'selected' : ''}>Message Contains</option>
+                            <option value="message_equals" ${trigger.condition === 'message_equals' ? 'selected' : ''}>Message Equals</option>
+                            <option value="agent_mentioned" ${trigger.condition === 'agent_mentioned' ? 'selected' : ''}>Agent Mentioned</option>
+                            <option value="keyword_detected" ${trigger.condition === 'keyword_detected' ? 'selected' : ''}>Keyword Detected</option>
+                            <option value="time_based" ${trigger.condition === 'time_based' ? 'selected' : ''}>Time Based</option>
+                            <option value="custom" ${trigger.condition === 'custom' ? 'selected' : ''}>Custom Condition</option>
+                        </select>
+                        <select class="form-select" onchange="updateN8nTrigger(${index}, 'action', this.value)">
+                            <option value="trigger_workflow" ${trigger.action === 'trigger_workflow' ? 'selected' : ''}>Trigger n8n Workflow</option>
+                            <option value="send_webhook" ${trigger.action === 'send_webhook' ? 'selected' : ''}>Send Webhook</option>
+                            <option value="delegate_agent" ${trigger.action === 'delegate_agent' ? 'selected' : ''}>Delegate to Agent</option>
+                            <option value="update_memory" ${trigger.action === 'update_memory' ? 'selected' : ''}>Update Memory</option>
+                        </select>
+                    </div>
+                    <input type="text" class="form-input" value="${trigger.value || ''}" placeholder="Condition value (keyword, time, etc.)" style="margin-bottom: 8px;" onchange="updateN8nTrigger(${index}, 'value', this.value)">
+                    <input type="text" class="form-input" value="${trigger.target || ''}" placeholder="Target (workflow ID, webhook URL, agent name)" onchange="updateN8nTrigger(${index}, 'target', this.value)">
+                `;
+                container.appendChild(triggerDiv);
+            });
+        }
+
+        function updateN8nWorkflow(index, field, value) {
+            if (!agentData.n8n?.additionalWorkflows[index]) return;
+            agentData.n8n.additionalWorkflows[index][field] = value;
+        }
+
+        function updateN8nTrigger(index, field, value) {
+            if (!agentData.n8n?.triggers[index]) return;
+            agentData.n8n.triggers[index][field] = value;
+        }
+
+        function removeN8nWorkflow(index) {
+            if (!agentData.n8n?.additionalWorkflows) return;
+            agentData.n8n.additionalWorkflows.splice(index, 1);
+            loadN8nAdditionalWorkflows();
+        }
+
+        function removeN8nTrigger(index) {
+            if (!agentData.n8n?.triggers) return;
+            agentData.n8n.triggers.splice(index, 1);
+            loadN8nTriggers();
+        }
+
+        // Export agent data for integration
+        function exportAgentData() {
+            const allAgents = {};
+            ['vanessa', 'charlie', 'tiki', 'sophia', 'william', 'zen', 'marsha', 'selina', 'auto', 'titan', 'rory', 'echo', 'aurelius'].forEach(agent => {
+                const data = localStorage.getItem(`agent_${agent}`);
+                if (data) allAgents[agent] = JSON.parse(data);
+            });
+            
+            const blob = new Blob([JSON.stringify(allAgents, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'agent_configurations.json';
+            a.click();
+        }
+    </script>
+
+    <div style="position: fixed; bottom: 20px; right: 20px;">
+        <button class="btn secondary" onclick="exportAgentData()">Export All Agent Data</button>
+        <button class="btn" onclick="window.open('admin-superpage.html', '_blank')">Back to Admin</button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT-5 Responses API Tester - EgoPanda Creative</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+            width: calc(100% - 10px);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #666, #888);
+        }
+
+        .response-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            min-height: 300px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: pre-wrap;
+        }
+
+        .success {
+            color: #4CAF50;
+        }
+
+        .error {
+            color: #f44336;
+        }
+
+        .info {
+            color: #2196F3;
+        }
+
+        .warning {
+            color: #ff9800;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .status-success { background: #4CAF50; color: white; }
+        .status-error { background: #f44336; color: white; }
+        .status-testing { background: #ff9800; color: white; }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 GPT-5 Responses API Tester</h1>
+        <p>Test the new OpenAI Responses API with GPT-5 model for Vanessa agent</p>
+    </div>
+
+    <div class="container">
+        <!-- Test Controls Panel -->
+        <div class="panel">
+            <h2 style="color: #ff6b35; margin-bottom: 20px;">🧪 Test Controls</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #ccc; margin-bottom: 10px;">Simple Tests</h3>
+                <button class="btn" onclick="runTest('/api/vanessa-test', 'Vanessa Simple Test')">
+                    🎯 Test Vanessa (Simple)
+                </button>
+                <button class="btn" onclick="runTest('/api/gpt5-test?test_type=simple', 'GPT-5 Simple Test')">
+                    ⚡ Test GPT-5 (Simple Input)
+                </button>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #ccc; margin-bottom: 10px;">Conversation Tests</h3>
+                <button class="btn" onclick="runTest('/api/gpt5-test?test_type=conversation', 'GPT-5 Conversation Test')">
+                    💬 Test GPT-5 (Conversation Format)
+                </button>
+            </div>
+
+            <div>
+                <h3 style="color: #ccc; margin-bottom: 10px;">Utilities</h3>
+                <button class="btn secondary" onclick="clearResults()">
+                    🗑️ Clear Results
+                </button>
+                <button class="btn secondary" onclick="showEnvironmentInfo()">
+                    ℹ️ Environment Info
+                </button>
+            </div>
+
+            <div style="margin-top: 30px; padding: 15px; background: rgba(255, 255, 255, 0.03); border-radius: 8px;">
+                <h4 style="color: #ff6b35; margin-bottom: 10px;">📋 Test Sequence</h4>
+                <ol style="color: #ccc; font-size: 14px; line-height: 1.6;">
+                    <li>Run <strong>Simple Test</strong> first to check basic connectivity</li>
+                    <li>If successful, try <strong>Conversation Format</strong> test</li>
+                    <li>Check response format and content quality</li>
+                    <li>Look for any authentication or model access issues</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="panel">
+            <h2 style="color: #ff6b35; margin-bottom: 20px;">📊 Test Results</h2>
+            
+            <div id="statusBar" style="margin-bottom: 20px;">
+                <span class="status-indicator status-testing">Ready to Test</span>
+                <span id="statusText">Click a test button to begin</span>
+            </div>
+
+            <div class="response-area" id="results">
+                <div style="color: #999;">Test results will appear here...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTest = null;
+
+        // Run API test
+        async function runTest(endpoint, testName) {
+            currentTest = testName;
+            updateStatus('testing', `Running ${testName}...`);
+            updateResults(`🔄 Starting ${testName}...\n\nEndpoint: ${endpoint}\nTimestamp: ${new Date().toISOString()}\n\n`, 'info');
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                
+                const resultText = `
+=== ${testName} Results ===
+
+Status: ${response.status} ${response.statusText}
+Success: ${response.ok ? 'YES' : 'NO'}
+
+Response Data:
+${JSON.stringify(result, null, 2)}
+
+=== End Results ===
+`;
+
+                if (response.ok && result.success) {
+                    updateStatus('success', `${testName} - SUCCESS`);
+                    updateResults(resultText, 'success');
+                    
+                    // Show specific success info for GPT-5 tests
+                    if (result.response && result.response.output) {
+                        updateResults(`\n🎉 GPT-5 Response: "${result.response.output}"\n`, 'success');
+                    }
+                } else {
+                    updateStatus('error', `${testName} - FAILED`);
+                    updateResults(resultText, 'error');
+                    
+                    // Show troubleshooting info for common errors
+                    if (result.troubleshooting) {
+                        updateResults(`\n🔧 Troubleshooting Tips:\n${JSON.stringify(result.troubleshooting, null, 2)}\n`, 'warning');
+                    }
+                }
+
+            } catch (error) {
+                const errorText = `
+❌ Network/JavaScript Error:
+${error.message}
+
+Test: ${testName}
+Endpoint: ${endpoint}
+Timestamp: ${new Date().toISOString()}
+`;
+                updateStatus('error', `${testName} - ERROR`);
+                updateResults(errorText, 'error');
+            }
+        }
+
+        // Update status indicator
+        function updateStatus(status, message) {
+            const statusBar = document.getElementById('statusBar');
+            const statusText = document.getElementById('statusText');
+            
+            statusBar.innerHTML = `<span class="status-indicator status-${status}">${status.toUpperCase()}</span>`;
+            statusText.textContent = message;
+        }
+
+        // Update results area
+        function updateResults(message, type = 'info') {
+            const results = document.getElementById('results');
+            const currentContent = results.textContent;
+            
+            if (currentContent.includes('Test results will appear here...')) {
+                results.innerHTML = `<div class="${type}">${message}</div>`;
+            } else {
+                results.innerHTML += `<div class="${type}">${message}</div>`;
+            }
+            
+            // Auto-scroll to bottom
+            results.scrollTop = results.scrollHeight;
+        }
+
+        // Clear results
+        function clearResults() {
+            document.getElementById('results').innerHTML = '<div style="color: #999;">Test results will appear here...</div>';
+            updateStatus('testing', 'Ready to Test');
+        }
+
+        // Show environment info
+        function showEnvironmentInfo() {
+            const info = `
+🔧 Environment Information
+
+Current Domain: ${window.location.origin}
+Test Endpoints:
+- /api/vanessa-test (Simple Vanessa test)
+- /api/gpt5-test?test_type=simple (GPT-5 simple input)
+- /api/gpt5-test?test_type=conversation (GPT-5 conversation format)
+
+Expected Environment Variables:
+- OPENAI_API_KEY (required)
+- OPENAI_ORG_ID (optional, for org-scoped keys)
+- OPENAI_PROJECT_ID (optional, for project-scoped keys)
+
+GPT-5 Model Features:
+- New Responses API endpoint (/v1/responses)
+- Supports both simple input and conversation format
+- Optional parameters: verbosity, reasoning_effort
+- Recommended over Chat Completions API
+
+Timestamp: ${new Date().toISOString()}
+`;
+            updateResults(info, 'info');
+        }
+
+        // Auto-run simple test on page load (optional)
+        // setTimeout(() => runTest('/api/gpt5-test?test_type=simple', 'Auto GPT-5 Test'), 1000);
+    </script>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <button class="btn secondary" onclick="window.open('admin-superpage.html', '_blank')">
+            🧠 Open Admin Panel
+        </button>
+        <button class="btn secondary" onclick="window.open('test-memory-webhooks.html', '_blank')">
+            💾 Memory Webhook Tests
+        </button>
+    </div>
+</body>
+</html>

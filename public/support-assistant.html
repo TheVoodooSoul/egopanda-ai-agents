@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EgoPanda Creative - Integration Support Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .support-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            min-height: 80vh;
+        }
+
+        .main-content {
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .chat-sidebar {
+            background: #f8f9fa;
+            border-left: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-header h3 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+        }
+
+        .chat-header .subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+
+        .message.assistant {
+            background: #e3f2fd;
+            color: #0d47a1;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.system {
+            background: #fff3e0;
+            color: #e65100;
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+            margin: 10px auto;
+            border-radius: 12px;
+        }
+
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            background: white;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input input:focus {
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .send-btn:hover {
+            background: #5a67d8;
+        }
+
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .quick-actions {
+            padding: 15px 20px;
+            border-top: 1px solid #e9ecef;
+            background: #fafafa;
+        }
+
+        .quick-actions h4 {
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-btn {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .help-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .help-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+        }
+
+        .status-indicator.warning {
+            background: #ffc107;
+        }
+
+        .status-indicator.error {
+            background: #dc3545;
+        }
+
+        .integration-steps {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .step {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .step:hover {
+            border-color: #667eea;
+        }
+
+        .step h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .code-snippet {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            color: #856404;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .support-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .chat-sidebar {
+                border-left: none;
+                border-top: 1px solid #e9ecef;
+                max-height: 50vh;
+            }
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .typing-indicator.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="support-container">
+        <div class="main-content">
+            <div class="page-header">
+                <h1>🛠️ Integration Support Center</h1>
+                <p>Get help setting up your AI agent integrations with step-by-step guidance</p>
+            </div>
+
+            <div class="help-section">
+                <h3>
+                    <span class="status-indicator"></span>
+                    System Status
+                </h3>
+                <div id="systemStatus">
+                    <p>✅ AI Agents: Online</p>
+                    <p id="apiStatus">🔄 Checking API connectivity...</p>
+                    <p>✅ Support Assistant: Ready</p>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h3>🔗 Popular Integrations</h3>
+                <div class="integration-steps">
+                    <div class="step" onclick="askForHelp('How do I set up n8n with Vanessa?')">
+                        <h4><span class="step-number">1</span>n8n + Vanessa Integration</h4>
+                        <p>Connect n8n workflows to Vanessa for automated decision making and task coordination</p>
+                        <div class="code-snippet">POST /api/vanessa-n8n</div>
+                    </div>
+                    
+                    <div class="step" onclick="askForHelp('How do I connect Google Drive to agents?')">
+                        <h4><span class="step-number">2</span>Google Drive Integration</h4>
+                        <p>Enable agents to read, write, and manage documents in your Google Drive</p>
+                        <div class="code-snippet">OAuth 2.0 + Drive API</div>
+                    </div>
+                    
+                    <div class="step" onclick="askForHelp('How do I set up webhook notifications?')">
+                        <h4><span class="step-number">3</span>Webhook Notifications</h4>
+                        <p>Receive real-time notifications when agents complete tasks or need attention</p>
+                        <div class="code-snippet">POST /api/webhooks/notify</div>
+                    </div>
+                    
+                    <div class="step" onclick="askForHelp('How do I use the Slack integration?')">
+                        <h4><span class="step-number">4</span>Slack Integration</h4>
+                        <p>Get agent updates and send commands directly through Slack channels</p>
+                        <div class="code-snippet">Slack Bot Token Required</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h3>📚 Quick References</h3>
+                <p><strong>API Base URL:</strong> <span class="highlight">https://minimax-supabase-integration-9bp0co4nt-egopanda.vercel.app</span></p>
+                <p><strong>Authentication:</strong> API keys provided in your dashboard</p>
+                <p><strong>Rate Limits:</strong> 100 requests per minute per agent</p>
+                <p><strong>Support Hours:</strong> 24/7 via AI Assistant</p>
+            </div>
+        </div>
+
+        <div class="chat-sidebar">
+            <div class="chat-header">
+                <h3>🤖 Support Assistant</h3>
+                <div class="subtitle">Powered by EgoPanda AI</div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message system">Support Assistant Connected</div>
+                <div class="message assistant">
+                    Hi! I'm here to help you with integrations. Ask me anything about:
+                    <br><br>
+                    • Setting up n8n workflows<br>
+                    • Configuring API endpoints<br>
+                    • Troubleshooting connections<br>
+                    • Agent permissions<br>
+                    <br>
+                    What would you like to know?
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                Support Assistant is typing...
+            </div>
+            
+            <div class="quick-actions">
+                <h4>Quick Help</h4>
+                <button class="quick-btn" onclick="askForHelp('Show me the n8n setup steps')">n8n Setup Steps</button>
+                <button class="quick-btn" onclick="askForHelp('What API endpoints are available?')">Available APIs</button>
+                <button class="quick-btn" onclick="askForHelp('How do I test my integration?')">Test Integration</button>
+                <button class="quick-btn" onclick="askForHelp('Common error solutions')">Common Errors</button>
+                <button class="quick-btn" onclick="askForHelp('Agent permissions guide')">Agent Permissions</button>
+            </div>
+            
+            <div class="chat-input">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="chatInput" 
+                        placeholder="Ask for help with integrations..."
+                        onkeypress="if(event.key==='Enter') sendMessage()"
+                    >
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                        ➤
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isTyping = false;
+
+        // Check API status on load
+        async function checkAPIStatus() {
+            try {
+                const response = await fetch('/api/vanessa-n8n', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'Health check' })
+                });
+                
+                const statusEl = document.getElementById('apiStatus');
+                if (response.ok) {
+                    statusEl.innerHTML = '✅ API Endpoints: Online';
+                } else {
+                    statusEl.innerHTML = '⚠️ API Endpoints: Limited';
+                }
+            } catch (error) {
+                document.getElementById('apiStatus').innerHTML = '❌ API Endpoints: Offline';
+            }
+        }
+
+        // Send message to support assistant
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message || isTyping) return;
+            
+            input.value = '';
+            addMessage(message, 'user');
+            
+            // Show typing indicator
+            showTyping();
+            
+            try {
+                // Call support AI endpoint
+                const response = await fetch('/api/support-assistant', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                });
+                
+                const data = await response.json();
+                hideTyping();
+                
+                if (data.success && data.response) {
+                    addMessage(data.response, 'assistant');
+                } else {
+                    addMessage("I'm sorry, I'm having trouble connecting right now. Please try refreshing the page or contact support directly.", 'assistant');
+                }
+            } catch (error) {
+                hideTyping();
+                addMessage("I'm having connection issues. Please try again in a moment.", 'assistant');
+            }
+        }
+
+        // Quick help function
+        function askForHelp(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        // Add message to chat
+        function addMessage(text, type) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = text.replace(/\n/g, '<br>');
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Show typing indicator
+        function showTyping() {
+            isTyping = true;
+            document.getElementById('typingIndicator').classList.add('show');
+            document.getElementById('sendBtn').disabled = true;
+        }
+
+        // Hide typing indicator
+        function hideTyping() {
+            isTyping = false;
+            document.getElementById('typingIndicator').classList.remove('show');
+            document.getElementById('sendBtn').disabled = false;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAPIStatus();
+            document.getElementById('chatInput').focus();
+        });
+
+        // Pre-populate with helpful responses based on integration type
+        const supportResponses = {
+            'n8n': {
+                setup: `Here's how to set up n8n with Vanessa:
+
+1. **Create Webhook Node**
+   - HTTP Method: POST
+   - Path: /webhook/vanessa-trigger
+
+2. **Add HTTP Request Node**
+   - URL: https://minimax-supabase-integration-9bp0co4nt-egopanda.vercel.app/api/vanessa-n8n
+   - Method: POST
+   - Headers: Content-Type: application/json
+   - Body: {"message": "{{ $json.message }}"}
+
+3. **Test the Connection**
+   - Send a test message like "Hello Vanessa"
+   - You should get a strategic response back
+
+Need help with any specific step?`,
+                
+                troubleshooting: `Common n8n issues and solutions:
+
+**Connection Errors:**
+- Check your webhook URL is correct
+- Verify the API endpoint is accessible
+- Make sure Content-Type header is set
+
+**Empty Responses:**
+- Ensure your message field isn't empty
+- Check the request body format
+- Verify API key is configured
+
+**Authentication Issues:**
+- API uses server-side authentication
+- No additional tokens needed for basic calls
+
+Would you like me to help troubleshoot a specific error?`
+            }
+        };
+    </script>
+</body>
+</html>

@@ -276,13 +276,31 @@
             background: linear-gradient(45deg, #ff6b35, #f7931e);
             margin-left: auto;
             text-align: right;
-            color: white;
+            color: white !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            font-weight: 500;
+        }
+
+        .message.admin * {
+            color: white !important;
         }
 
         .message.agent {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             margin-right: auto;
-            color: white;
+            color: #ffffff !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+        }
+
+        .message.agent * {
+            color: #ffffff !important;
+        }
+
+        .message.agent strong {
+            color: #ff6b35 !important;
+            font-weight: bold;
         }
 
         .chat-input-area {
@@ -628,6 +646,7 @@
             <div style="margin-top: 20px;">
                 <button class="action-btn" onclick="window.open('performance-tracker.html', '_blank')">📊 Performance Tracker</button>
                 <button class="action-btn" onclick="window.open('agent-ai-console.html', '_blank')">🤖 AI Console</button>
+                <button class="action-btn" onclick="window.open('agent-memory-manager.html', '_blank')">🧠 Agent Memory Manager</button>
                 <button class="action-btn secondary" onclick="window.open('project-orchestrator.html', '_blank')">🎭 Project Orchestrator</button>
             </div>
         </div>
@@ -684,12 +703,12 @@
         const agentProfiles = {
             vanessa: {
                 name: 'Vanessa',
-                specialty: 'Leadership',
-                personality: 'Strategic, visionary, and decisive',
-                mood: 'Determined',
-                currentProjects: ['Agency direction', 'Team coordination', 'Strategic planning'],
+                specialty: 'VP of Operations',
+                personality: 'Executive Vice President with full authority over all agents. Strategic, decisive, results-driven. Revenue-focused with $100/day target.',
+                mood: 'Strategic',
+                currentProjects: ['Daily Revenue Optimization', 'Agent Performance Management', 'Strategic Business Planning'],
                 happiness: 100,
-                workload: 20
+                workload: 25
             },
             charlie: {
                 name: 'Charlie',
@@ -807,11 +826,32 @@
             document.getElementById('chatInput').disabled = false;
             document.getElementById('sendBtn').disabled = false;
             
-            const agent = agentProfiles[agentId];
+            // Load real agent data from memory manager if available
+            const savedAgentData = localStorage.getItem(`agent_${agentId}`);
+            let agent = agentProfiles[agentId];
+            
+            if (savedAgentData) {
+                const realData = JSON.parse(savedAgentData);
+                // Merge real data with defaults
+                agent = {
+                    ...agent,
+                    name: realData.basic?.name || agent.name,
+                    mood: realData.basic?.mood || agent.mood,
+                    workload: realData.basic?.workload || 0,
+                    personality: realData.basic?.personality || agent.personality,
+                    currentProjects: (realData.projects || []).filter(p => p.status === 'active').map(p => p.title || 'Untitled Project'),
+                    happiness: 100 - (realData.basic?.workload || 0) // Calculate happiness based on workload
+                };
+            }
+            
+            const projectCount = agent.currentProjects.length;
+            const workloadText = agent.workload > 0 ? `workload is ${agent.workload}%` : 'no active workload';
+            const projectText = projectCount > 0 ? `working on ${projectCount} project${projectCount > 1 ? 's' : ''}` : 'ready for new assignments';
+            
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = `
                 <div class="message agent">
-                    <strong>${agent.name}:</strong> Hello Boss! I'm ${agent.name}, your ${agent.specialty} specialist. I'm currently ${agent.mood.toLowerCase()} and working on ${agent.currentProjects.length} projects. My happiness is at ${agent.happiness}% and workload is ${agent.workload}%. How can I assist you today?
+                    <strong>${agent.name}:</strong> Hello Boss! I'm ${agent.name}, your ${agent.specialty} specialist. I'm currently ${agent.mood.toLowerCase()} and ${projectText}. My happiness is at ${agent.happiness}% and ${workloadText}. How can I assist you today?
                 </div>
             `;
             
@@ -879,7 +919,7 @@
         
         async function callAgentAI(agentId, userMessage, agentProfile) {
             // Call our secure API endpoint instead of OpenAI directly
-            const response = await fetch('/api/chat-agent.js', {
+            const response = await fetch('/api/chat-agent', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

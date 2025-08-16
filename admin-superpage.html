@@ -879,7 +879,7 @@
         
         async function callAgentAI(agentId, userMessage, agentProfile) {
             // Call our secure API endpoint instead of OpenAI directly
-            const response = await fetch('/api/chat-agent.js', {
+            const response = await fetch('/api/chat-agent', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

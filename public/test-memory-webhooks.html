@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Webhook Tester - EgoPanda Creative</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #ff6b35;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: white;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #666, #888);
+        }
+
+        .response-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            min-height: 200px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .success {
+            color: #4CAF50;
+        }
+
+        .error {
+            color: #f44336;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 Memory Webhook Tester</h1>
+        <p>Test memory read/write API endpoints for agent webhook integration</p>
+    </div>
+
+    <div class="container">
+        <!-- Memory Write Panel -->
+        <div class="panel">
+            <h2 style="color: #ff6b35; margin-bottom: 20px;">📝 Write Memory</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Agent ID</label>
+                <select class="form-select" id="writeAgentId">
+                    <option value="vanessa">Vanessa</option>
+                    <option value="charlie">Charlie</option>
+                    <option value="auto">Auto</option>
+                    <option value="aurelius">Aurelius</option>
+                    <option value="marsha">Marsha</option>
+                    <option value="selina">Selina</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Memory Title</label>
+                <input type="text" class="form-input" id="memoryTitle" placeholder="Enter memory title">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Memory Content</label>
+                <textarea class="form-textarea" id="memoryContent" placeholder="Enter memory content..."></textarea>
+            </div>
+
+            <button class="btn" onclick="writeMemory()">💾 Store Memory</button>
+
+            <div class="response-area" id="writeResponse">
+                <div style="color: #999;">Response will appear here...</div>
+            </div>
+        </div>
+
+        <!-- Memory Read Panel -->
+        <div class="panel">
+            <h2 style="color: #ff6b35; margin-bottom: 20px;">📖 Read Memories</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Filter by Agent (Optional)</label>
+                <select class="form-select" id="readAgentId">
+                    <option value="">All Agents</option>
+                    <option value="vanessa">Vanessa</option>
+                    <option value="charlie">Charlie</option>
+                    <option value="auto">Auto</option>
+                    <option value="aurelius">Aurelius</option>
+                    <option value="marsha">Marsha</option>
+                    <option value="selina">Selina</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Limit</label>
+                <input type="number" class="form-input" id="memoryLimit" value="5" min="1" max="50">
+            </div>
+
+            <button class="btn secondary" onclick="readMemories()">📚 Retrieve Memories</button>
+            <button class="btn secondary" onclick="clearResponses()" style="margin-top: 10px;">🗑️ Clear Responses</button>
+
+            <div class="response-area" id="readResponse">
+                <div style="color: #999;">Response will appear here...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Write memory function
+        async function writeMemory() {
+            const agentId = document.getElementById('writeAgentId').value;
+            const title = document.getElementById('memoryTitle').value;
+            const content = document.getElementById('memoryContent').value;
+
+            if (!content.trim()) {
+                alert('Please enter memory content');
+                return;
+            }
+
+            const payload = {
+                agent_id: agentId,
+                title: title || `${agentId}-memory-${Date.now()}`,
+                content: content.trim(),
+                client_id: "test-client-123"
+            };
+
+            try {
+                updateResponse('writeResponse', 'Sending memory write request...', 'info');
+
+                const response = await fetch('/api/memory-write', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    updateResponse('writeResponse', 
+                        `✅ SUCCESS:\n${JSON.stringify(result, null, 2)}`, 
+                        'success'
+                    );
+                    // Clear form
+                    document.getElementById('memoryTitle').value = '';
+                    document.getElementById('memoryContent').value = '';
+                } else {
+                    updateResponse('writeResponse', 
+                        `❌ ERROR:\n${JSON.stringify(result, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                updateResponse('writeResponse', 
+                    `❌ NETWORK ERROR:\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // Read memories function
+        async function readMemories() {
+            const agentId = document.getElementById('readAgentId').value;
+            const limit = document.getElementById('memoryLimit').value;
+
+            const params = new URLSearchParams({
+                limit: limit || '5'
+            });
+
+            if (agentId) {
+                params.append('agent_id', agentId);
+            }
+
+            try {
+                updateResponse('readResponse', 'Retrieving memories...', 'info');
+
+                const response = await fetch(`/api/memory-read?${params}`);
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    updateResponse('readResponse', 
+                        `✅ SUCCESS (${result.count} memories):\n${JSON.stringify(result, null, 2)}`, 
+                        'success'
+                    );
+                } else {
+                    updateResponse('readResponse', 
+                        `❌ ERROR:\n${JSON.stringify(result, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                updateResponse('readResponse', 
+                    `❌ NETWORK ERROR:\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // Update response area
+        function updateResponse(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        // Clear all responses
+        function clearResponses() {
+            document.getElementById('writeResponse').innerHTML = '<div style="color: #999;">Response will appear here...</div>';
+            document.getElementById('readResponse').innerHTML = '<div style="color: #999;">Response will appear here...</div>';
+        }
+
+        // Test webhook integration example
+        function showWebhookExample() {
+            const example = `
+// Example: Use these endpoints in your webhook workflows
+
+// 1. Store a memory when webhook is received:
+POST /api/memory-write
+{
+  "agent_id": "vanessa",
+  "title": "Client Payment Received",
+  "content": "Payment of $99 received from client@example.com via Square webhook",
+  "client_id": "client-uuid-here"
+}
+
+// 2. Retrieve memories for context:
+GET /api/memory-read?agent_id=vanessa&limit=5
+
+// 3. Use in workflow automation:
+// - Webhook triggers → Store memory → Send notification → Update agent context
+            `;
+
+            alert(example);
+        }
+    </script>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <button class="btn secondary" onclick="showWebhookExample()">📋 Show Webhook Integration Example</button>
+        <button class="btn secondary" onclick="window.open('agent-memory-manager.html', '_blank')" style="margin-left: 10px;">🧠 Open Memory Manager</button>
+    </div>
+</body>
+</html>
